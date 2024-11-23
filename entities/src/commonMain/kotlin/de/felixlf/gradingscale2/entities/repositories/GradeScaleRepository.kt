@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * Repository for [GradeScale] entities.
  */
-interface GradeScaleRepository {
+internal interface GradeScaleRepository {
     /**
      * Get a [GradeScale] by its unique identifier.
      */

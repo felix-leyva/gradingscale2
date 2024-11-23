@@ -10,4 +10,7 @@ data class PointedGrade(
     val uuid: String = grade.uuid
 }
 
-fun Grade.toPointedGrade(totalPoints: Double): PointedGrade = PointedGrade(grade = this, points = this.percentage * totalPoints)
+fun Grade.toPointedGrade(totalPoints: Double): PointedGrade = PointedGrade(
+    grade = this,
+    points = this.percentage * totalPoints,
+)

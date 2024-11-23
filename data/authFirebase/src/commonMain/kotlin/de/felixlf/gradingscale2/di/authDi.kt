@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package de.felixlf.gradingscale2.di
 
 import de.felixlf.gradingscale2.AuthInitializer
@@ -24,7 +26,9 @@ val authModule =
         single<AuthTokenProvider> {
             AuthTokenProviderImpl(
                 auth = Firebase.auth,
-                scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + CoroutineName("authScope")),
+                scope = CoroutineScope(
+                    SupervisorJob() + Dispatchers.Default + CoroutineName("authScope"),
+                ),
             )
         }
     }

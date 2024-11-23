@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package de.felixlf.gradingscale2.di
 
 import de.felixlf.gradingscale2.AnalyticsProvider

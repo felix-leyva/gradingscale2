@@ -15,12 +15,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepository
-import de.felixlf.gradingscale2.entities.util.GradeScaleGenerator
 import gradingscale2.composeapp.generated.resources.Res
 import gradingscale2.composeapp.generated.resources.compose_multiplatform
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.painterResource
@@ -35,8 +31,6 @@ fun App() {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
         var text by remember { mutableStateOf("Hello, World!") }
-        val repo = koinInject<GradeScaleRepository>()
-        val grades by repo.getGradeScales().collectAsStateWithLifecycle(persistentListOf())
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             val analyticsProvider: AnalyticsProvider = koinInject()
             Button(onClick = { showContent = !showContent }) {
@@ -54,8 +48,6 @@ fun App() {
                 analyticsProvider.logEvent("TestEvent", mapOf("text" to "text2"))
             }
             LaunchedEffect(Unit) {
-                val gradeScale = GradeScaleGenerator().gradeScales
-                gradeScale.forEach { repo.upsertGradeScale(it) }
             }
             AnimatedVisibility(showContent) {
                 Column(
@@ -63,7 +55,7 @@ fun App() {
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $grades")
+                    Text("Compose: ")
                 }
             }
             Text(text)

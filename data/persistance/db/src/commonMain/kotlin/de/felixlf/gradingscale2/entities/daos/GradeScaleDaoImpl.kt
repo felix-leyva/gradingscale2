@@ -54,12 +54,3 @@ internal class GradeScaleDaoImpl(
             gradeScaleQueries.deleteGradesByUuid(gradeScaleId)
         }
 }
-
-internal data class JoinedGradeScaleWithGradeDao(
-    val gradeScaleId: String,
-    val gradeScaleName: String,
-    val gradeUuid: String,
-    val namedGrade: String,
-    val percentage: Double,
-    val scaleId: String,
-)

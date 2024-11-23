@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package de.felixlf.gradingscale2
 
 import androidx.compose.runtime.LaunchedEffect

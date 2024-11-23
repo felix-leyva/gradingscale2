@@ -7,7 +7,7 @@ import kotlinx.collections.immutable.toImmutableList
 /**
  * Comfort class to generate a grade scale with a given size.
  */
-class GradeScaleGenerator(
+internal class GradeScaleGenerator(
     val size: Int = 20,
 ) {
     private val range = 0..size

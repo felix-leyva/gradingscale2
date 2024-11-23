@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
-class GradeScaleRepositoryImpl(
+internal class GradeScaleRepositoryImpl(
     private val gradeScaleDao: GradeScaleDao,
     private val scope: CoroutineScope = CoroutineScope(CoroutineName("GradeScaleRepositoryImpl")),
 ) : GradeScaleRepository {
@@ -21,7 +21,9 @@ class GradeScaleRepositoryImpl(
 
     override fun getGradeScales(): StateFlow<ImmutableList<GradeScale>> =
         gradeScaleDao.getGradeScales().stateIn(
-            scope = scope, started = SharingStarted.Lazily, initialValue = persistentListOf()
+            scope = scope,
+            started = SharingStarted.Lazily,
+            initialValue = persistentListOf(),
         )
 
     override suspend fun upsertGradeScale(gradeScale: GradeScale): Result<Unit> =

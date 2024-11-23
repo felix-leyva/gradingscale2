@@ -16,7 +16,11 @@ class MockGradeScaleDao(
     val gradeScales = MutableStateFlow(initialGradeScales)
     var success = true
 
-    override fun getGradeScaleById(id: String): Flow<GradeScale?> = gradeScales.map { scales -> scales.find { it.id == id } }
+    override fun getGradeScaleById(id: String): Flow<GradeScale?> = gradeScales.map { scales ->
+        scales.find {
+            it.id == id
+        }
+    }
 
     override fun getGradeScales(): Flow<ImmutableList<GradeScale>> = gradeScales.asStateFlow()
 
