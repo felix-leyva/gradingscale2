@@ -9,7 +9,13 @@ plugins {
 
 kotlin {
     js {
-        moduleName = "usecases"
+        browser {
+            testTask {
+                useKarma {
+                    useFirefox()
+                }
+            }
+        }
     }
     sourceSets {
 

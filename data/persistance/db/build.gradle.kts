@@ -10,6 +10,15 @@ plugins {
 }
 
 kotlin {
+    js {
+        browser {
+            testTask {
+                useKarma {
+                    useFirefox()
+                }
+            }
+        }
+    }
     sourceSets {
         androidMain.dependencies {
             implementation(libs2.android.driver)

@@ -10,6 +10,7 @@ plugins {
 kotlin {
     js {
         moduleName = "authfirebase"
+        browser()
     }
     sourceSets {
         androidMain.dependencies {

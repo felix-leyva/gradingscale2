@@ -4,7 +4,9 @@ fun interface AuthInitializer {
     operator fun invoke()
 }
 
-internal expect class AuthInitializerImpl() : AuthInitializer
+internal expect class AuthInitializerImpl() : AuthInitializer {
+    override fun invoke()
+}
 
 internal class CommonAuthInitializerImpl : AuthInitializer {
     override operator fun invoke() {

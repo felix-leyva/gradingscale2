@@ -1,5 +1,4 @@
-import extensions.jacocoBaseConfig
 import extensions.sonarQubeBaseConfig
 
-jacocoBaseConfig()
+//jacocoBaseConfig()
 sonarQubeBaseConfig()

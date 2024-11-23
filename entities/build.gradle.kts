@@ -3,6 +3,15 @@ plugins {
 }
 
 kotlin {
+    js {
+        browser {
+            testTask {
+                useKarma {
+                    useFirefox()
+                }
+            }
+        }
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(libs2.kotlinx.collections.immutable)

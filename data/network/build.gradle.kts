@@ -15,7 +15,14 @@ plugins {
 kotlin {
 
     js {
-        moduleName = "composeApp"
+        moduleName = "network"
+        browser {
+            testTask {
+                useKarma {
+                    useFirefox()
+                }
+            }
+        }
     }
 
     sourceSets {

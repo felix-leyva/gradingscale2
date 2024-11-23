@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 internal actual class AuthInitializerImpl : AuthInitializer {
-    override operator fun invoke() {
+    actual override operator fun invoke() {
         FirebasePlatform.initializeFirebasePlatform(
             object : FirebasePlatform() {
                 val storage = mutableMapOf<String, String>()
