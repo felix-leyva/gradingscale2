@@ -1,0 +1,145 @@
+[versions]
+# Project specific
+sqlDelightVersion = "2.0.2"
+firebaseBom = "33.2.0"
+kotlinxCollectionsImmutable = "0.3.8"
+multiplatformSettingsNoArg = "1.2.0"
+nativeDriver = "2.0.2"
+packagename = "de.felixlf.gradingscale"
+applicationId = "de.felixlf.gradingscale2"
+sqliteDriver = "2.0.2"
+versionCode = "1"
+versionName = "1.0"
+
+agp = "8.6.0"
+android-compileSdk = "34"
+android-minSdk = "24"
+android-targetSdk = "34"
+gradle = "8.2.2"
+androidx-activityCompose = "1.9.2"
+androidx-appcompat = "1.7.0"
+androidx-constraintlayout = "2.1.4"
+androidx-core-ktx = "1.13.1"
+androidx-espresso-core = "3.6.1"
+androidx-lifecycle = "2.8.0"
+androidx-material = "1.12.0"
+androidx-test-junit = "1.2.1"
+android-desugar = "2.1.2"
+compose-plugin = "1.6.11"
+junit = "4.13.2"
+kotlin = "2.0.20"
+java = "11"
+kotlinx-coroutines = "1.9.0"
+kotlinx-dateTime = "0.6.0"
+koin = "4.0.0-RC2"
+ktor = "2.3.12"
+ktlintGradle = "12.1.1" # https://github.com/JLLeitschuh/ktlint-gradle/releases
+gmazzoBuildConfig = "5.4.0" # https://github.com/gmazzo/gradle-buildconfig-plugin
+aboutLibraries = "11.1.4" # https://github.com/mikepenz/AboutLibraries/releases
+sonarqubeGradlePlugin = "5.1.0.4882"
+turbineVersion = "1.2.0" # https://mvnrepository.com/artifact/app.cash.turbine/turbine
+
+# Room
+room = "2.7.0-alpha11"
+ksp = "2.0.20-1.0.25"
+sqlite = "2.5.0-SNAPSHOT"
+
+sqlDelightPlugin = "2.0.2"
+
+#Firebase
+firebase-kotlin = "2.1.0"
+google-services = "4.4.2"
+jetbrainsKotlinJvm = "1.9.0"
+firebaseCrashlyticsBuildtools = "3.0.2"
+
+
+[libraries]
+# Tests
+android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
+sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelightVersion" }
+coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelightVersion" }
+firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+firebase-common-ktx = { module = "com.google.firebase:firebase-common-ktx" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbineVersion" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+
+# Android
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
+androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
+android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar"}
+# Compose
+androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+compose-preview-tooling = { group = "org.jetbrains.compose.ui", name= "ui-tooling", version.ref = "compose-plugin" }
+
+# ViewModel & Coroutines
+androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
+kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
+kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+
+# Persistence
+multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettingsNoArg" }
+native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "nativeDriver" }
+sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqliteDriver" }
+sqljs-driver = { module = "app.cash.sqldelight:sqljs-driver", version.ref = "sqliteDriver" }
+
+# Firebase
+firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase-kotlin" }
+firebase-analytics = { group = "dev.gitlive", name = "firebase-analytics", version.ref = "firebase-kotlin" }
+firebase-crashlytics = { group = "dev.gitlive", name = "firebase-crashlytics", version.ref = "firebase-kotlin" }
+
+# Ktor
+ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
+ktor-client-darwin = { group = "io.ktor", name = "ktor-client-darwin", version.ref = "ktor" }
+ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { group = "io.ktor", name = "ktor-serialization-kotlinx-json", version.ref = "ktor" }
+
+# Koin
+koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
+koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin" }
+koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
+koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
+
+# Convention Plugins Dependencies
+# Plugins for buildSrc see: https://discuss.gradle.org/t/using-version-catalogs-with-precompiled-script-plugins/45417
+gradle-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" } # https://maven.google.com/web/index.html#com.android.tools.build:gradle
+gradle-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-plugin" } # https://plugins.gradle.org/plugin/org.jetbrains.compose
+gradle-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.compose
+gradle-kotlinMultiplatform = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.multiplatform
+gradle-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" } # https://maven.google.com/web/index.html#androidx.room:room-gradle-plugin
+gradle-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" } # https://maven.google.com/web/index.html#com.google.devtools.ksp
+gradle-google-services = { module = "com.google.gms.google-services:com.google.gms.google-services.gradle.plugin", version.ref = "google-services" } # https://maven.google.com/web/index.html#com.google.gms.google-services:com.google.gms.google-services.gradle.plugin
+gradle-kotlinxSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.serialization
+gradle-gmazzoBuildConfig = { module = "com.github.gmazzo.buildconfig:plugin", version.ref = "gmazzoBuildConfig" } # https://plugins.gradle.org/plugin/com.github.gmazzo.buildconfig
+gradle-aboutLibraries = { module = "com.mikepenz.aboutlibraries.plugin:aboutlibraries-plugin", version.ref = "aboutLibraries" } # https://plugins.gradle.org/plugin/com.mikepenz.aboutlibraries.plugin
+gradle-sonarqube = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin", version.ref = "sonarqubeGradlePlugin" } # https://plugins.gradle.org/plugin/org.sonarqube
+gradle-firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" } # https://maven.google.com/web/index.html#com.google.firebase:firebase-crashlytics-buildtools
+gradle-sqldelight = { group = "app.cash.sqldelight", name = "app.cash.sqldelight.gradle.plugin", version.ref = "sqlDelightPlugin" } # https://oss.sonatype.org/#nexus-search;quick~sqldelight
+
+
+[plugins]
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidLibrary = { id = "com.android.library", version.ref = "agp" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+room = { id = "androidx.room", version.ref = "room" }#
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsBuildtools"}
+kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+gmazzoBuildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "gmazzoBuildConfig" }
+aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
+sonarqube = { id = "org.sonarqube", version.ref = "sonarqubeGradlePlugin" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightPlugin" }

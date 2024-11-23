@@ -1,0 +1,51 @@
+CREATE TABLE grade_scale (
+    id TEXT PRIMARY KEY NOT NULL,
+    grade_scale_name TEXT NOT NULL
+);
+
+CREATE TABLE grade (
+    uuid TEXT PRIMARY KEY NOT NULL,
+    named_grade TEXT NOT NULL,
+    percentage REAL NOT NULL,
+    scale_id TEXT NOT NULL,
+    FOREIGN KEY (scale_id) REFERENCES grade_scale(id)
+);
+
+-- Upsert a grade scale
+upsertGradeScale:
+INSERT OR REPLACE INTO grade_scale (id, grade_scale_name)
+VALUES (?, ?);
+
+-- Upsert a grade
+upsertGrade:
+INSERT OR REPLACE INTO grade (uuid, named_grade, percentage, scale_id)
+VALUES (?, ?, ?, ?);
+
+-- Delete a grade by uuid
+deleteGradesByUuid:
+DELETE FROM grade WHERE uuid = ?;
+
+-- Get a single grade by uuid
+getGradeByUuid:
+SELECT * FROM grade WHERE uuid = ?;
+
+-- Get grades by grade_scale_name
+getGradesByGradeScaleName:
+SELECT grade.*
+FROM grade
+JOIN grade_scale ON grade.scale_id = grade_scale.id
+WHERE grade_scale.grade_scale_name = ?;
+
+-- Get a grade scale with all its associated grades (1-to-many)
+getGradeScaleWithGrades:
+SELECT grade_scale.id AS grade_scale_id, grade_scale.grade_scale_name, grade.uuid AS grade_uuid, grade.named_grade, grade.percentage, grade.scale_id
+FROM grade_scale
+INNER JOIN grade ON grade_scale.id = grade.scale_id
+WHERE grade_scale.id = ?;
+
+-- Get all grade scales with all their associated grades (1-to-many)
+getAllGradeScalesWithGrades:
+SELECT grade_scale.id AS grade_scale_id, grade_scale.grade_scale_name, grade.uuid AS grade_uuid, grade.named_grade, grade.percentage, grade.scale_id
+FROM grade_scale
+INNER JOIN grade ON grade_scale.id = grade.scale_id;
+
