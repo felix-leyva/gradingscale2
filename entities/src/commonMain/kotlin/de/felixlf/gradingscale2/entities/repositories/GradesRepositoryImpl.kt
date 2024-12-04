@@ -4,17 +4,17 @@ import de.felixlf.gradingscale2.entities.daos.GradesDao
 import de.felixlf.gradingscale2.entities.models.Grade
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.shareIn
 
-class GradesRepositoryImpl(
+internal class GradesRepositoryImpl(
     private val gradesDao: GradesDao,
     private val scope: CoroutineScope = CoroutineScope(CoroutineName("GradesRepositoryImpl")),
 ) : GradesRepository {
-    override fun getGradeById(gradeId: String): StateFlow<Grade?> {
+    override fun getGradeById(gradeId: String): SharedFlow<Grade?> {
         return gradesDao.getGradeById(gradeId)
-            .stateIn(scope = scope, started = SharingStarted.Lazily, initialValue = null)
+            .shareIn(scope = scope, started = SharingStarted.Lazily, replay = 1)
     }
 
     override suspend fun upsertGrade(

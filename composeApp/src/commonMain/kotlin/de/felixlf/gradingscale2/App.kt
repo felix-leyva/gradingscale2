@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import de.felixlf.gradingscale2.features.gradescalecalculator.CalculatorScreen
 import gradingscale2.composeapp.generated.resources.Res
 import gradingscale2.composeapp.generated.resources.compose_multiplatform
 import kotlinx.coroutines.flow.filterNotNull
@@ -56,6 +57,7 @@ fun App() {
                 ) {
                     Image(painterResource(Res.drawable.compose_multiplatform), null)
                     Text("Compose: ")
+                    CalculatorScreen()
                 }
             }
             Text(text)

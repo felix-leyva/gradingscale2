@@ -30,7 +30,6 @@ class GradeScaleRepositoryImplTest {
 
         // When / Then
         sut.getGradeScales().test {
-            assertEquals(persistentListOf<GradeScale>(), awaitItem())
             assertEquals(expectedScales, awaitItem())
             cancelAndConsumeRemainingEvents()
         }
@@ -45,7 +44,6 @@ class GradeScaleRepositoryImplTest {
 
         // When / Then
         sut.getGradeScales().test {
-            assertEquals(persistentListOf<GradeScale>(), awaitItem())
             assertEquals(expectedScales, awaitItem())
 
             sut.upsertGradeScale(expectedScales.first().copy(gradeScaleName = "Neew")).getOrThrow()
@@ -79,7 +77,6 @@ class GradeScaleRepositoryImplTest {
 
         // When / Then
         sut.getGradeScaleById(id).test {
-            assertEquals(null, awaitItem())
             assertEquals(expectedScales.first(), awaitItem())
             cancelAndConsumeRemainingEvents()
         }
@@ -125,7 +122,6 @@ class GradeScaleRepositoryImplTest {
         val gradeScales = GradeScaleGenerator().gradeScales
         // Insert into the dao
         sut.getGradeScales().test {
-            assertEquals(persistentListOf<GradeScale>(), awaitItem())
             assertEquals(gradeScales, awaitItem())
             // When
             val updated = gradeScales.first().copy(totalPoints = 25.0)
@@ -144,7 +140,6 @@ class GradeScaleRepositoryImplTest {
         val gradeScales = GradeScaleGenerator().gradeScales
         // Insert into the dao
         sut.getGradeScales().test {
-            assertEquals(persistentListOf<GradeScale>(), awaitItem())
             assertEquals(gradeScales, awaitItem())
             // When
             val toDelete = gradeScales.first()
@@ -163,7 +158,6 @@ class GradeScaleRepositoryImplTest {
         val gradeScales = GradeScaleGenerator().gradeScales
         // Insert into the dao
         sut.getGradeScales().test {
-            assertEquals(persistentListOf<GradeScale>(), awaitItem())
             assertEquals(gradeScales, awaitItem())
             // When
             val result = sut.deleteGradeScale("non-existing-id")

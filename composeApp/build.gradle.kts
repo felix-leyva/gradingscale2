@@ -108,6 +108,8 @@ kotlin {
             implementation(libs2.ktor.serialization.kotlinx.json)
             implementation(libs2.koin.core)
             implementation(libs2.koin.compose)
+            implementation(libs2.koin.compose.viewmodel)
+            implementation(libs2.koin.compose.viewmodel.nav)
             implementation(libs2.kotlinx.collections.immutable)
             implementation(project(":entities"))
             implementation(project(":data:authFirebase"))

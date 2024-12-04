@@ -6,12 +6,16 @@ import de.felixlf.gradingscale2.entities.repositories.GradesRepository
 import de.felixlf.gradingscale2.entities.repositories.GradesRepositoryImpl
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.DeleteGradeUseCase
+import de.felixlf.gradingscale2.entities.usecases.DeleteGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeScaleUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
+import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.util.GradeScaleGenerator
 import org.koin.dsl.module
 
@@ -22,8 +26,10 @@ val entitiesModule =
         single<GradesRepository> { GradesRepositoryImpl(get()) }
 
         // Use cases
-        single<GetAllGradeScalesUseCase> { GetAllGradeScalesUseCaseImpl(get()) }
+        single<GetAllGradeScalesUseCase> { GetAllGradeScalesUseCaseImpl(get(), get()) }
         single<GetGradeScaleByIdUseCase> { GetGradeScaleByIdUseCaseImpl(get()) }
         single<UpsertGradeScaleUseCase> { UpsertGradeScaleUseCaseImpl() }
         single<DeleteGradeScaleUseCase> { DeleteGradeScaleUseCaseImpl() }
+        single<DeleteGradeUseCase> { DeleteGradeUseCaseImpl(get()) }
+        single<UpsertGradeUseCase> { UpsertGradeUseCaseImpl(get()) }
     }

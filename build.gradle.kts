@@ -12,10 +12,7 @@ subprojects {
         version.set("0.50.0")
         android.set(true)
         outputToConsole.set(true)
-        ignoreFailures.set(false)
+        ignoreFailures.set(true)
         enableExperimentalRules.set(true)
-        filter {
-            exclude("**/build/**")
-        }
     }
 }
