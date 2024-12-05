@@ -7,7 +7,7 @@
 
 name: Java CI with Gradle
 env:
-  GOOGLE_SERVICES: ${{ vars.GOOGLE_SERVICES }}
+  GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
   TEST: "Hello World"
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
 
     steps:
     - name: Hello Var
-      run: echo 'env:' "${{ env.GOOGLE_SERVICES }}" 'var:' "${{ vars.GOOGLE_SERVICES }}" 'test:' "${{ env.TEST }}"
+      run: echo 'env:' "${{ env.GOOGLE_SERVICES_ENV }}" 'secrets:' "${{ secrets.GOOGLE_SERVICES }}" 'new:' "${{ env.GOOGLE_SERVICES }}" 'test:' "${{ env.TEST }}"
         
     - uses: actions/checkout@v4
     - name: Set up JDK 17
