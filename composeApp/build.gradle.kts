@@ -149,3 +149,29 @@ compose.desktop {
         }
     }
 }
+
+
+tasks.register("checkAndCreateGoogleServices") {
+    val googleServicesFile = layout.projectDirectory.file("google-services.json")
+    val googleServicesContent = providers.environmentVariable("GOOGLE_SERVICES")
+
+    doLast {
+        if (!googleServicesFile.asFile.exists()) {
+            val content = googleServicesContent.orNull
+            if (content != null) {
+                googleServicesFile.asFile.writeText(content)
+                println("google-services.json file created.")
+            } else {
+                println("Environment variable GOOGLE_SERVICES is not set.")
+            }
+        } else {
+            println("google-services.json file already exists.")
+        }
+    }
+}
+
+tasks.filter { it.name.contains("process*GoogleServices") }.forEach {
+    it.dependsOn(tasks.getByName("checkAndCreateGoogleServices"))
+}
+
+

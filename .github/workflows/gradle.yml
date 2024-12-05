@@ -24,6 +24,8 @@ jobs:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
       uses: actions/setup-java@v4
+      env: # To setup the google_services.json in GitHub Actions
+        GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
       with:
         java-version: '17'
         distribution: 'temurin'
