@@ -6,7 +6,8 @@
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
 
 name: Java CI with Gradle
-
+env:
+  GOOGLE_SERVICES: ${{ vars.GOOGLE_SERVICES }}
 on:
   push:
     branches: [ "main" ]
@@ -22,7 +23,7 @@ jobs:
 
     steps:
     - name: Hello Var
-      run: echo "$GOOGLE_SERVICES"
+      run: echo 'env:' "${{ env.GOOGLE_SERVICES }}" 'var:' "${{ vars.GOOGLE_SERVICES }}"
         
     - uses: actions/checkout@v4
     - name: Set up JDK 17
