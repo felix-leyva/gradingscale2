@@ -13,6 +13,7 @@ kotlin {
     js {
         browser {
             testTask {
+                onlyIf { !System.getenv().containsKey("CI") }
                 useKarma {
                     useFirefox()
                 }

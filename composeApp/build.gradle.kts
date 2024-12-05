@@ -160,8 +160,7 @@ tasks.register("checkAndCreateGoogleServices") {
             val content = googleServicesContent.orNull
             if (content != null) {
                 googleServicesFile.asFile.writeText(content)
-                println("google-services.json file created with content: $content")
-                println("File content: ${googleServicesFile.asFile.readText()}")
+                println("google-services.json file created")
             } else {
                 println("Environment variable GOOGLE_SERVICES is not set.")
             }

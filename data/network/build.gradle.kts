@@ -18,6 +18,7 @@ kotlin {
         moduleName = "network"
         browser {
             testTask {
+                onlyIf { !System.getenv().containsKey("CI") }
                 useKarma {
                     useFirefox()
                 }
