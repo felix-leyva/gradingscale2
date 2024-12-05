@@ -161,6 +161,7 @@ tasks.register("checkAndCreateGoogleServices") {
             if (content != null) {
                 googleServicesFile.asFile.writeText(content)
                 println("google-services.json file created.")
+                println("File content: ${googleServicesFile.asFile.readText()}")
             } else {
                 println("Environment variable GOOGLE_SERVICES is not set.")
             }
