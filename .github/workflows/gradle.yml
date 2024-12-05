@@ -8,6 +8,7 @@
 name: Java CI with Gradle
 env:
   GOOGLE_SERVICES: ${{ vars.GOOGLE_SERVICES }}
+  TEST: "Hello World"
 on:
   push:
     branches: [ "main" ]
@@ -23,7 +24,7 @@ jobs:
 
     steps:
     - name: Hello Var
-      run: echo 'env:' "${{ env.GOOGLE_SERVICES }}" 'var:' "${{ vars.GOOGLE_SERVICES }}"
+      run: echo 'env:' "${{ env.GOOGLE_SERVICES }}" 'var:' "${{ vars.GOOGLE_SERVICES }}" 'test:' "${{ env.TEST }}"
         
     - uses: actions/checkout@v4
     - name: Set up JDK 17
