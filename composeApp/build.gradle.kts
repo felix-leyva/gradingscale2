@@ -170,8 +170,6 @@ tasks.register("checkAndCreateGoogleServices") {
     }
 }
 
-tasks.filter { it.name.contains("process*GoogleServices") }.forEach {
-    it.dependsOn(tasks.getByName("checkAndCreateGoogleServices"))
+tasks.named("preBuild") {
+    dependsOn("checkAndCreateGoogleServices")
 }
-
-
