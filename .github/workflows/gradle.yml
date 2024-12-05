@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - name: Hello Var
-      run: echo "${{ env.GOOGLE_SERVICES }}"
+      run: echo "$GOOGLE_SERVICES"
         
     - uses: actions/checkout@v4
     - name: Set up JDK 17
