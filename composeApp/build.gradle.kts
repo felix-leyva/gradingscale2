@@ -101,6 +101,8 @@ kotlin {
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+            implementation(libs2.navigation.compose)
+
             implementation(libs2.androidx.lifecycle.viewmodel)
             implementation(libs2.androidx.lifecycle.runtime.compose)
             implementation(libs2.ktor.client.core)
@@ -149,7 +151,6 @@ compose.desktop {
         }
     }
 }
-
 
 tasks.register("checkAndCreateGoogleServices") {
     val googleServicesFile = layout.projectDirectory.file("google-services.json")

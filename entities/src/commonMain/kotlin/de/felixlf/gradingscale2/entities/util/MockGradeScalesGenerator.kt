@@ -7,12 +7,12 @@ import kotlinx.collections.immutable.toImmutableList
 /**
  * Comfort class to generate a grade scale with a given size.
  */
-internal class GradeScaleGenerator(
+class MockGradeScalesGenerator(
     val size: Int = 20,
 ) {
     private val range = 0..size
     val percentages = range.map { it.toDouble() / size }
-    val gradeNames = range.map { Char('A'.code + it.toInt()) }
+    val gradeNames = range.map { Char('A'.code + it) }
     val gradeScaleNames = listOf("Hamburg", "Berlin", "Munich")
 
     val gradeScales =

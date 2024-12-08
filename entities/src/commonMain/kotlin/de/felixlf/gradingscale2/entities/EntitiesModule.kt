@@ -16,12 +16,12 @@ import de.felixlf.gradingscale2.entities.usecases.UpsertGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCaseImpl
-import de.felixlf.gradingscale2.entities.util.GradeScaleGenerator
+import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import org.koin.dsl.module
 
 val entitiesModule =
     module {
-        single { GradeScaleGenerator() }
+        single { MockGradeScalesGenerator() }
         single<GradeScaleRepository> { GradeScaleRepositoryImpl(get()) }
         single<GradesRepository> { GradesRepositoryImpl(get()) }
 

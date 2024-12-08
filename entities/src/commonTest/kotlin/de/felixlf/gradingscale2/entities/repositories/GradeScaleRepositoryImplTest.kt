@@ -2,7 +2,7 @@ package de.felixlf.gradingscale2.entities.repositories
 
 import app.cash.turbine.test
 import de.felixlf.gradingscale2.entities.models.GradeScale
-import de.felixlf.gradingscale2.entities.util.GradeScaleGenerator
+import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.test.runTest
@@ -18,7 +18,7 @@ class GradeScaleRepositoryImplTest {
     @BeforeTest
     fun setup() {
         dao.success = true
-        dao.gradeScales.value = GradeScaleGenerator().gradeScales
+        dao.gradeScales.value = MockGradeScalesGenerator().gradeScales
     }
 
     @Test
@@ -26,7 +26,7 @@ class GradeScaleRepositoryImplTest {
         // Given
         sut = GradeScaleRepositoryImpl(gradeScaleDao = dao, scope = this)
 
-        val expectedScales = GradeScaleGenerator().gradeScales
+        val expectedScales = MockGradeScalesGenerator().gradeScales
 
         // When / Then
         sut.getGradeScales().test {
@@ -40,7 +40,7 @@ class GradeScaleRepositoryImplTest {
     fun getGradeScales_returns_a_list_and_then_emits_again_after_list_changes() = runTest {
         // Given
         sut = GradeScaleRepositoryImpl(gradeScaleDao = dao, scope = this)
-        val expectedScales = GradeScaleGenerator().gradeScales
+        val expectedScales = MockGradeScalesGenerator().gradeScales
 
         // When / Then
         sut.getGradeScales().test {
@@ -72,7 +72,7 @@ class GradeScaleRepositoryImplTest {
     fun getGradeScaleById_returns_a_grade_scale_by_id() = runTest {
         // Given
         sut = GradeScaleRepositoryImpl(gradeScaleDao = dao, scope = this)
-        val expectedScales = GradeScaleGenerator().gradeScales
+        val expectedScales = MockGradeScalesGenerator().gradeScales
         val id = expectedScales.first().id
 
         // When / Then
@@ -101,7 +101,7 @@ class GradeScaleRepositoryImplTest {
     fun upsertGradeScale_inserts_a_new_grade_scale() = runTest {
         // Given
         sut = GradeScaleRepositoryImpl(gradeScaleDao = dao, scope = this)
-        val gradeScale = GradeScaleGenerator().gradeScales.first()
+        val gradeScale = MockGradeScalesGenerator().gradeScales.first()
         dao.gradeScales.value = persistentListOf()
 
         sut.getGradeScales().test {
@@ -119,7 +119,7 @@ class GradeScaleRepositoryImplTest {
     fun upsertGradeScale_updates_an_existing_grade_scale() = runTest {
         // Given
         sut = GradeScaleRepositoryImpl(gradeScaleDao = dao, scope = this)
-        val gradeScales = GradeScaleGenerator().gradeScales
+        val gradeScales = MockGradeScalesGenerator().gradeScales
         // Insert into the dao
         sut.getGradeScales().test {
             assertEquals(gradeScales, awaitItem())
@@ -137,7 +137,7 @@ class GradeScaleRepositoryImplTest {
     fun deleteGradeScale_deletes_a_grade_scale() = runTest {
         // Given
         sut = GradeScaleRepositoryImpl(gradeScaleDao = dao, scope = this)
-        val gradeScales = GradeScaleGenerator().gradeScales
+        val gradeScales = MockGradeScalesGenerator().gradeScales
         // Insert into the dao
         sut.getGradeScales().test {
             assertEquals(gradeScales, awaitItem())
@@ -155,7 +155,7 @@ class GradeScaleRepositoryImplTest {
     fun deleteGradeScale_does_nothing_if_no_grade_scale_with_id_exists() = runTest {
         // Given
         sut = GradeScaleRepositoryImpl(gradeScaleDao = dao, this)
-        val gradeScales = GradeScaleGenerator().gradeScales
+        val gradeScales = MockGradeScalesGenerator().gradeScales
         // Insert into the dao
         sut.getGradeScales().test {
             assertEquals(gradeScales, awaitItem())

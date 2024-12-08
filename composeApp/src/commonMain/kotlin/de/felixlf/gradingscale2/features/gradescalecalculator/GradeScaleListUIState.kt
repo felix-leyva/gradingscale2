@@ -5,7 +5,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
-data class GradeScaleCalculatorUIState(
+data class GradeScaleListUIState(
     val selectedGradeScale: GradeScale?,
     val gradeScalesNamesWithId: ImmutableList<GradeScaleNameWithId>,
 ) {
@@ -13,10 +13,11 @@ data class GradeScaleCalculatorUIState(
         gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList()
 
     companion object {
-        val Initial = GradeScaleCalculatorUIState(
-            gradeScalesNamesWithId = persistentListOf(),
-            selectedGradeScale = null,
-        )
+        val Initial =
+            GradeScaleListUIState(
+                gradeScalesNamesWithId = persistentListOf(),
+                selectedGradeScale = null,
+            )
     }
 
     data class GradeScaleNameWithId(
