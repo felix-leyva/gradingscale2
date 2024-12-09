@@ -14,6 +14,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        maven("https://packages.jetbrains.team/maven/p/firework/dev")
     }
 }
 
@@ -34,6 +35,7 @@ dependencyResolutionManagement {
         mavenCentral()
         gradlePluginPortal()
         maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
+        maven("https://packages.jetbrains.team/maven/p/firework/dev")
     }
 }
 include(":composeApp")
@@ -42,4 +44,3 @@ include(":data:authFirebase")
 include(":data:persistance:sharedprefs")
 include(":data:persistance:db")
 include(":entities")
-include(":usecases")

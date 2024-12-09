@@ -1,7 +1,7 @@
 plugins {
     id("multiplatform-plugin")
     id(
-        libs.plugins.kotlinxSerialization
+        libs2.plugins.kotlinxSerialization
             .get()
             .pluginId,
     )
@@ -27,7 +27,6 @@ kotlin {
     }
 
     sourceSets {
-        val desktopMain by getting
 
         androidMain.dependencies {
             implementation(libs2.ktor.client.okhttp)
@@ -39,7 +38,7 @@ kotlin {
             implementation(libs2.ktor.serialization.kotlinx.json)
         }
 
-        desktopMain.dependencies {
+        jvmMain.dependencies {
             implementation(libs2.ktor.client.okhttp)
         }
 

@@ -36,7 +36,7 @@ kotlin {
             implementation(libs2.sqldelight.runtime)
         }
 
-        desktopMain.dependencies {
+        jvmMain.dependencies {
             implementation(libs2.sqlite.driver)
         }
 

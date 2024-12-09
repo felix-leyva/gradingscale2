@@ -1,39 +1,44 @@
+import extensions.setJVMToolChain
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+//import org.jetbrains.compose.reload.ComposeHotRun
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id(
-        libs.plugins.kotlinMultiplatform
+        libs2.plugins.kotlinMultiplatform
             .get()
             .pluginId,
     )
     id("gs-android-app")
     id(
-        libs.plugins.google.services
+        libs2.plugins.google.services
             .get()
             .pluginId,
     )
     id(
-        libs.plugins.jetbrainsCompose
+        libs2.plugins.jetbrainsCompose
             .get()
             .pluginId,
     )
     id(
-        libs.plugins.compose.compiler
+        libs2.plugins.compose.compiler
             .get()
             .pluginId,
     )
     id(
-        libs.plugins.ksp
+        libs2.plugins.ksp
             .get()
             .pluginId,
     )
     id(
-        libs.plugins.kotlinxSerialization
+        libs2.plugins.kotlinxSerialization
             .get()
             .pluginId,
     )
+    // We add here alias, due that we do not add this buildSrc, as the Kotlin version would be enforced also there to 2.1
+    //alias(libs2.plugins.hot.reload)
 }
 
 kotlin {
@@ -65,13 +70,13 @@ kotlin {
 //    }
 
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.fromTarget(libs2.versions.java.get()))
         }
     }
 
-    jvm("desktop")
+    jvm()
+    jvmToolchain(libs2.versions.java.get().toInt())
 
     listOf(
         iosX64(),
@@ -85,8 +90,6 @@ kotlin {
     }
 
     sourceSets {
-        val desktopMain by getting
-
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs2.androidx.activity.compose)
@@ -125,7 +128,7 @@ kotlin {
             implementation(libs2.koin.test)
         }
 
-        desktopMain.dependencies {
+        jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs2.kotlinx.coroutines.swing)
             implementation(libs2.ktor.client.okhttp)
@@ -151,6 +154,14 @@ compose.desktop {
         }
     }
 }
+
+composeCompiler {
+    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
+}
+//// build.gradle.kts
+//tasks.register<ComposeHotRun>("runHot") {
+//    mainClass.set("de.felixlf.gradingscale2.MainKt")
+//}
 
 tasks.register("checkAndCreateGoogleServices") {
     val googleServicesFile = layout.projectDirectory.file("google-services.json")
