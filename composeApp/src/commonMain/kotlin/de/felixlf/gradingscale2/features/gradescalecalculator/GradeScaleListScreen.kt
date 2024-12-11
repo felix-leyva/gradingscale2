@@ -53,7 +53,7 @@ private fun GradeScaleListScreen(
             val textFieldValue =
                 textFieldManager(
                     uiState.selectedGradeScale?.totalPoints.toString(),
-                ) { onSetTotalPoints(it.toDoubleOrNull() ?: 0.0) }
+                ) { onSetTotalPoints(it.toDoubleOrNull() ?: 1.0) }
             var expandedDropdown by remember { mutableStateOf(false) }
             ExposedDropdownMenuBox(
                 modifier = Modifier.weight(1f),
@@ -135,14 +135,14 @@ private fun CalculatorScreenPreview() {
         GradeScaleListUIState(
             selectedGradeScale = MockGradeScalesGenerator().gradeScales.first(),
             gradeScalesNamesWithId =
-                MockGradeScalesGenerator()
-                    .gradeScales
-                    .map {
-                        GradeScaleListUIState.GradeScaleNameWithId(
-                            gradeScaleName = it.gradeScaleName,
-                            gradeScaleId = it.id,
-                        )
-                    }.toImmutableList(),
+            MockGradeScalesGenerator()
+                .gradeScales
+                .map {
+                    GradeScaleListUIState.GradeScaleNameWithId(
+                        gradeScaleName = it.gradeScaleName,
+                        gradeScaleId = it.id,
+                    )
+                }.toImmutableList(),
         ),
     )
 }

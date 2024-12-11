@@ -1,8 +1,6 @@
-import extensions.setJVMToolChain
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-//import org.jetbrains.compose.reload.ComposeHotRun
+// import org.jetbrains.compose.reload.ComposeHotRun
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -38,7 +36,7 @@ plugins {
             .pluginId,
     )
     // We add here alias, due that we do not add this buildSrc, as the Kotlin version would be enforced also there to 2.1
-    //alias(libs2.plugins.hot.reload)
+    // alias(libs2.plugins.hot.reload)
 }
 
 kotlin {
@@ -116,6 +114,8 @@ kotlin {
             implementation(libs2.koin.compose.viewmodel)
             implementation(libs2.koin.compose.viewmodel.nav)
             implementation(libs2.kotlinx.collections.immutable)
+            implementation(libs2.molecule.runtime)
+
             implementation(project(":entities"))
             implementation(project(":data:authFirebase"))
             implementation(project(":data:network"))
@@ -158,10 +158,10 @@ compose.desktop {
 composeCompiler {
     featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
-//// build.gradle.kts
-//tasks.register<ComposeHotRun>("runHot") {
+// // build.gradle.kts
+// tasks.register<ComposeHotRun>("runHot") {
 //    mainClass.set("de.felixlf.gradingscale2.MainKt")
-//}
+// }
 
 tasks.register("checkAndCreateGoogleServices") {
     val googleServicesFile = layout.projectDirectory.file("google-services.json")

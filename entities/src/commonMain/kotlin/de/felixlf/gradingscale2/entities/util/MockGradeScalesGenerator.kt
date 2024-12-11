@@ -23,15 +23,15 @@ class MockGradeScalesGenerator(
                     gradeScaleName = gradeScaleName,
                     totalPoints = 10.0,
                     grades =
-                        percentages
-                            .mapIndexed { index, percentage ->
-                                Grade(
-                                    namedGrade = gradeNames[index].toString(),
-                                    percentage = percentage,
-                                    nameOfScale = gradeScaleName,
-                                    uuid = "${gradeNames[index]}_${gradeScaleName}_$index",
-                                )
-                            }.toImmutableList(),
+                    percentages
+                        .mapIndexed { index, percentage ->
+                            Grade(
+                                namedGrade = gradeNames[index].toString(),
+                                percentage = percentage,
+                                nameOfScale = gradeScaleName,
+                                uuid = "${gradeNames[index]}_${gradeScaleName}_$index",
+                            )
+                        }.toImmutableList(),
                 )
             }.toImmutableList()
 }

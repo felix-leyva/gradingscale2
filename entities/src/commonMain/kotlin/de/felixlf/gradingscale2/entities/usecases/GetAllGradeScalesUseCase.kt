@@ -14,7 +14,7 @@ fun interface GetAllGradeScalesUseCase {
 
 internal class GetAllGradeScalesUseCaseImpl(
     private val gradeScaleRepository: GradeScaleRepository,
-    private val generator: MockGradeScalesGenerator
+    private val generator: MockGradeScalesGenerator,
 ) : GetAllGradeScalesUseCase {
     override fun invoke(): Flow<ImmutableList<GradeScale>> =
         gradeScaleRepository.getGradeScales()

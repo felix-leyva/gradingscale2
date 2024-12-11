@@ -20,7 +20,9 @@ internal class GradeScaleRepositoryImpl(
 
     override fun getGradeScales(): SharedFlow<ImmutableList<GradeScale>> =
         gradeScaleDao.getGradeScales().shareIn(
-            scope = scope, started = SharingStarted.Lazily, replay = 1
+            scope = scope,
+            started = SharingStarted.Lazily,
+            replay = 1,
         )
 
     override suspend fun upsertGradeScale(gradeScale: GradeScale): Result<Unit> =

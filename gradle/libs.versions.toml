@@ -1,5 +1,6 @@
 [versions]
 # Project specific
+moleculeRuntime = "2.0.0"
 navigationCompose = "2.8.0-alpha10"
 sqlDelightVersion = "2.0.2"
 firebaseBom = "33.2.0"
@@ -57,6 +58,7 @@ firebaseCrashlyticsBuildtools = "3.0.2"
 [libraries]
 # Tests
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
+molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "moleculeRuntime" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" } # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html#sample-project
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelightVersion" }
 coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelightVersion" }
