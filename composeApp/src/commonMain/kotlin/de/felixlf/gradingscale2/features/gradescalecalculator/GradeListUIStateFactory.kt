@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.uimodel.UIStateFactory
-import de.felixlf.gradingscale2.uimodel.asState
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,8 +16,8 @@ internal class GradeListUIStateFactory(
 ) : UIStateFactory<GradeScaleListUIState> {
     @Composable
     override fun produceUI(): GradeScaleListUIState {
-        val selectedGradeScale =
-            selectedGradeScaleId.asState()?.let(getGradeScaleByIdUseCase::invoke)?.asState(null)?.copy(totalPoints = totalPoints.asState())
+        val selectedGradeScale = selectedGradeScaleId.asState()?.let(getGradeScaleByIdUseCase::invoke)?.asState(null)
+        val modifiedGradeScale = selectedGradeScale?.copy(totalPoints = totalPoints.asState())
 
         val gradeScalesNamesWithId = allGradeScalesUseCase().asState(persistentListOf()).map {
             GradeScaleListUIState.GradeScaleNameWithId(
@@ -28,7 +27,7 @@ internal class GradeListUIStateFactory(
         }.toImmutableList()
 
         return GradeScaleListUIState(
-            selectedGradeScale = selectedGradeScale,
+            selectedGradeScale = modifiedGradeScale,
             gradeScalesNamesWithId = gradeScalesNamesWithId,
         )
     }

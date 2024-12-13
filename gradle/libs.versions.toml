@@ -1,6 +1,7 @@
 [versions]
 # Project specific
 moleculeRuntime = "2.0.0"
+napier = "2.7.1"
 navigationCompose = "2.8.0-alpha10"
 sqlDelightVersion = "2.0.2"
 firebaseBom = "33.2.0"
@@ -58,7 +59,7 @@ firebaseCrashlyticsBuildtools = "3.0.2"
 [libraries]
 # Tests
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
-molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "moleculeRuntime" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" } # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html#sample-project
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelightVersion" }
 coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelightVersion" }
@@ -83,6 +84,7 @@ androidx-material = { group = "com.google.android.material", name = "material", 
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 compose-preview-tooling = { group = "org.jetbrains.compose.ui", name= "ui-tooling", version.ref = "compose-plugin" }
+molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "moleculeRuntime" }
 
 # ViewModel & Coroutines
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }

@@ -104,6 +104,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs2.navigation.compose)
 
+            implementation(libs2.napier)
             implementation(libs2.androidx.lifecycle.viewmodel)
             implementation(libs2.androidx.lifecycle.runtime.compose)
             implementation(libs2.ktor.client.core)
@@ -126,6 +127,8 @@ kotlin {
             implementation(libs2.junit)
             implementation(libs2.kotlin.test)
             implementation(libs2.koin.test)
+            implementation(libs2.turbine)
+            implementation(libs2.coroutines.test)
         }
 
         jvmMain.dependencies {
@@ -138,9 +141,14 @@ kotlin {
             implementation(libs2.ktor.client.darwin)
         }
     }
+    
+    
 }
 android {
     namespace = "de.felixlf.gradingscale2"
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 compose.desktop {

@@ -12,14 +12,6 @@ data class GradeScaleListUIState(
     val gradeScalesNames: ImmutableList<String> =
         gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList()
 
-    companion object {
-        val Initial =
-            GradeScaleListUIState(
-                gradeScalesNamesWithId = persistentListOf(),
-                selectedGradeScale = null,
-            )
-    }
-
     data class GradeScaleNameWithId(
         val gradeScaleName: String,
         val gradeScaleId: String,

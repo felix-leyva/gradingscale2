@@ -1,27 +1,27 @@
 package de.felixlf.gradingscale2.features.gradescalecalculator
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.uimodel.UIStateFactory
-import de.felixlf.gradingscale2.uimodel.UIStateModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
 internal class GradeScaleListViewModel(
     allGradeScalesUseCase: GetAllGradeScalesUseCase,
     getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
-) : ViewModel(), UIStateModel<GradeScaleListUIState> {
+) : ViewModel() {
 
     private val selectedGradeScaleId = MutableStateFlow<String?>(null)
     private val totalPoints = MutableStateFlow(10.0)
-    override val uiStateFactory: UIStateFactory<GradeScaleListUIState> = GradeListUIStateFactory(
+
+    val uiState: StateFlow<GradeScaleListUIState> =  GradeListUIStateFactory(
         allGradeScalesUseCase = allGradeScalesUseCase,
         getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
         selectedGradeScaleId = selectedGradeScaleId,
         totalPoints = totalPoints,
-    )
-    override val uiState = moleculeUIState()
+    ).moleculeUIState(viewModelScope)
 
     fun selectGradeScale(gradeScaleName: String) {
         val gradeScaleId =
