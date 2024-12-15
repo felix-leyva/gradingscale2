@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface GradesDao {
     fun getGradeById(gradeId: String): Flow<Grade?>
-    suspend fun upsertGrade(grade: Grade, scaleId: String): Result<Unit>
+    suspend fun upsertGrade(grade: Grade): Result<Unit>
     suspend fun deleteGrade(gradeId: String): Result<Unit>
 }

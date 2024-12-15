@@ -47,4 +47,3 @@ internal fun interface UIStateFactory<T> {
     @Composable
     fun <T : R, R> Flow<T>.asState(initial: R): R = collectAsState(initial, EmptyCoroutineContext).value
 }
-

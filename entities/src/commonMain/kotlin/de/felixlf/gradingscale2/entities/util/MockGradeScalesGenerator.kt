@@ -17,19 +17,20 @@ class MockGradeScalesGenerator(
 
     val gradeScales =
         gradeScaleNames
-            .mapIndexed { index, gradeScaleName ->
+            .mapIndexed { scaleIndex, gradeScaleName ->
                 GradeScale(
-                    id = index.toString(),
+                    id = scaleIndex.toString(),
                     gradeScaleName = gradeScaleName,
                     totalPoints = 10.0,
                     grades =
                     percentages
-                        .mapIndexed { index, percentage ->
+                        .mapIndexed { percentagesIndex, percentage ->
                             Grade(
-                                namedGrade = gradeNames[index].toString(),
+                                namedGrade = gradeNames[percentagesIndex].toString(),
                                 percentage = percentage,
+                                idOfGradeScale = "$scaleIndex",
                                 nameOfScale = gradeScaleName,
-                                uuid = "${gradeNames[index]}_${gradeScaleName}_$index",
+                                uuid = "${gradeNames[percentagesIndex]}_${gradeScaleName}_$percentagesIndex",
                             )
                         }.toImmutableList(),
                 )

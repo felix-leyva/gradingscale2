@@ -4,6 +4,7 @@ import de.felixlf.gradingscale2.entities.models.Grade
 
 internal class GradeMapper {
     fun mapToGrade(
+        gradeScaleName: String,
         uuid: String,
         namedGrade: String,
         percentage: Double,
@@ -12,7 +13,8 @@ internal class GradeMapper {
         Grade(
             namedGrade = namedGrade,
             percentage = percentage,
-            nameOfScale = scaleId,
+            idOfGradeScale = scaleId,
+            nameOfScale = gradeScaleName,
             uuid = uuid,
         )
 }

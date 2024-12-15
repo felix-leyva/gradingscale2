@@ -8,9 +8,7 @@ fun interface GetGradeScaleByIdUseCase {
     operator fun invoke(gradeScaleId: String): Flow<GradeScale?>
 }
 
-internal class GetGradeScaleByIdUseCaseImpl(
-    private val gradeScaleRepository: GradeScaleRepository,
-) : GetGradeScaleByIdUseCase {
+internal class GetGradeScaleByIdUseCaseImpl(private val gradeScaleRepository: GradeScaleRepository) : GetGradeScaleByIdUseCase {
     override operator fun invoke(gradeScaleId: String): Flow<GradeScale?> =
         gradeScaleRepository.getGradeScaleById(gradeScaleId)
 }

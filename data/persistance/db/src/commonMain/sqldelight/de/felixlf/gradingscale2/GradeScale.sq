@@ -27,7 +27,10 @@ DELETE FROM grade WHERE uuid = ?;
 
 -- Get a single grade by uuid
 getGradeByUuid:
-SELECT * FROM grade WHERE uuid = ?;
+SELECT grade_scale.grade_scale_name AS grade_scale_name, grade.uuid AS grade_uuid, grade.named_grade AS grade_name, grade.percentage AS grade_percentage, grade.scale_id AS grade_scale_id
+FROM grade_scale
+INNER JOIN grade ON grade_scale.id = grade.scale_id
+WHERE uuid = ?;
 
 -- Get grades by grade_scale_name
 getGradesByGradeScaleName:

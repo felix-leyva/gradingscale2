@@ -6,7 +6,7 @@ data class PointedGrade(
 ) {
     val namedGrade: String = grade.namedGrade
     val percentage: Double = grade.percentage
-    val nameOfScale: String = grade.nameOfScale
+    val nameOfScale: String = grade.idOfGradeScale
     val uuid: String = grade.uuid
 }
 

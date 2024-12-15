@@ -20,12 +20,12 @@ internal class GradesDaoImpl(
             .mapToOneOrNull(dispatcher)
     }
 
-    override suspend fun upsertGrade(grade: Grade, scaleId: String): Result<Unit> = runCatching {
+    override suspend fun upsertGrade(grade: Grade): Result<Unit> = runCatching {
         gradeScaleQueries.upsertGrade(
             uuid = grade.uuid,
             named_grade = grade.namedGrade,
             percentage = grade.percentage,
-            scale_id = scaleId,
+            scale_id = grade.idOfGradeScale,
         )
         if (driver.execute(null, "SELECT changes() AS affected_rows", 0).await() == 0L) {
             throw Exception("Failed to upsert grade")

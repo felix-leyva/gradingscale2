@@ -141,8 +141,6 @@ kotlin {
             implementation(libs2.ktor.client.darwin)
         }
     }
-    
-    
 }
 android {
     namespace = "de.felixlf.gradingscale2"

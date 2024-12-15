@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 fun VerticalDivider(
     modifier: Modifier = Modifier.fillMaxHeight(),
     width: Dp = 1.dp,
-    color: Color = MaterialTheme.colors.onSurface.copy(alpha = DividerAlpha)
+    color: Color = MaterialTheme.colors.onSurface.copy(alpha = DividerAlpha),
 ) {
     Canvas(modifier = modifier) {
         val canvasHeight = size.height

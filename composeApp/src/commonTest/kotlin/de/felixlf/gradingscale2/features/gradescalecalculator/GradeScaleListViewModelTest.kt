@@ -51,11 +51,11 @@ class GradeScaleListViewModelTest {
             assertEquals(gradeScaleIds, state.gradeScalesNamesWithId.map { it.gradeScaleId })
         }
     }
-    
+
     @Test
     fun `selectGradeScale sets selectedGradeScaleId`() = runTest {
         viewModel = GradeScaleListViewModel(getAllGradeScalesUseCase, gradeScaleById)
-        
+
         viewModel.uiState.test {
             skipItems(2)
             viewModel.selectGradeScale(mockGradeScales[0].gradeScaleName)
@@ -64,11 +64,11 @@ class GradeScaleListViewModelTest {
             assertEquals(gradeScaleIds, state.gradeScalesNamesWithId.map { it.gradeScaleId })
         }
     }
-    
+
     @Test
     fun `setTotalPoints modifies the totalPoints of the selected gradescale`() = runTest {
         viewModel = GradeScaleListViewModel(getAllGradeScalesUseCase, gradeScaleById)
-        
+
         viewModel.uiState.test {
             skipItems(2)
             viewModel.selectGradeScale(mockGradeScales[0].gradeScaleName)
@@ -80,6 +80,3 @@ class GradeScaleListViewModelTest {
         }
     }
 }
-
-
-

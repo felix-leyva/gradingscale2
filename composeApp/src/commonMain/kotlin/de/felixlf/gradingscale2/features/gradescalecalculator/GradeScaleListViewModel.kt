@@ -16,7 +16,7 @@ internal class GradeScaleListViewModel(
     private val selectedGradeScaleId = MutableStateFlow<String?>(null)
     private val totalPoints = MutableStateFlow(10.0)
 
-    val uiState: StateFlow<GradeScaleListUIState> =  GradeListUIStateFactory(
+    val uiState: StateFlow<GradeScaleListUIState> = GradeListUIStateFactory(
         allGradeScalesUseCase = allGradeScalesUseCase,
         getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
         selectedGradeScaleId = selectedGradeScaleId,

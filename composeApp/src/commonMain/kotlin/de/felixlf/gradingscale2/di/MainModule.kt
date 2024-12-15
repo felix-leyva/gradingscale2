@@ -6,6 +6,7 @@ import de.felixlf.gradingscale2.dbModule
 import de.felixlf.gradingscale2.entities.entitiesModule
 import de.felixlf.gradingscale2.features.gradescalecalculator.GradeListUIStateFactory
 import de.felixlf.gradingscale2.features.gradescalecalculator.GradeScaleListViewModel
+import de.felixlf.gradingscale2.features.gradescalecalculator.editgradedialog.EditGradeViewModel
 import de.felixlf.gradingscale2.network.di.networkModule
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -24,4 +25,5 @@ val mainModule =
         singleOf(::InitializerImpl).bind<Initializer>()
         factoryOf(::GradeListUIStateFactory)
         factoryOf(::GradeScaleListViewModel)
+        factoryOf(::EditGradeViewModel)
     }

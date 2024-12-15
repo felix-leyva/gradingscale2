@@ -28,8 +28,8 @@ val entitiesModule =
         // Use cases
         single<GetAllGradeScalesUseCase> { GetAllGradeScalesUseCaseImpl(get(), get()) }
         single<GetGradeScaleByIdUseCase> { GetGradeScaleByIdUseCaseImpl(get()) }
-        single<UpsertGradeScaleUseCase> { UpsertGradeScaleUseCaseImpl() }
-        single<DeleteGradeScaleUseCase> { DeleteGradeScaleUseCaseImpl() }
+        single<UpsertGradeScaleUseCase> { UpsertGradeScaleUseCaseImpl(get()) }
+        single<DeleteGradeScaleUseCase> { DeleteGradeScaleUseCaseImpl(get()) }
         single<DeleteGradeUseCase> { DeleteGradeUseCaseImpl(get()) }
         single<UpsertGradeUseCase> { UpsertGradeUseCaseImpl(get()) }
     }

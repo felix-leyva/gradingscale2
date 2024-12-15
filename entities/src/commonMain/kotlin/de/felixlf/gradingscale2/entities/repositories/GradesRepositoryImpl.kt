@@ -17,11 +17,8 @@ internal class GradesRepositoryImpl(
             .shareIn(scope = scope, started = SharingStarted.Lazily, replay = 1)
     }
 
-    override suspend fun upsertGrade(
-        grade: Grade,
-        scaleId: String,
-    ): Result<Unit> {
-        return gradesDao.upsertGrade(grade, scaleId)
+    override suspend fun upsertGrade(grade: Grade): Result<Unit> {
+        return gradesDao.upsertGrade(grade)
     }
 
     override suspend fun deleteGrade(gradeId: String): Result<Unit> {

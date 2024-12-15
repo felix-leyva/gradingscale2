@@ -15,7 +15,7 @@ data class GradeScale(
     val id: String,
     val gradeScaleName: String,
     val totalPoints: Double,
-    private val grades: ImmutableList<Grade>,
+    val grades: ImmutableList<Grade>,
 ) {
     init {
         require(totalPoints > 0) { "Total points must be greater than 0" }

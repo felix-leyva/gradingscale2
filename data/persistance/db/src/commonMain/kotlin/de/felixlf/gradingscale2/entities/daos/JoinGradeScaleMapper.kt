@@ -34,6 +34,7 @@ internal class JoinGradeScaleMapper {
                             Grade(
                                 namedGrade = grade.namedGrade,
                                 percentage = grade.percentage,
+                                idOfGradeScale = grade.scaleId,
                                 nameOfScale = grade.gradeScaleName,
                                 uuid = grade.gradeUuid,
                             )
