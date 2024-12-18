@@ -1,12 +1,6 @@
 package de.felixlf.gradingscale2.features.gradescalecalculator.editgradedialog
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.uimodel.UIStateFactory
 import kotlinx.collections.immutable.toImmutableSet
@@ -26,25 +20,18 @@ class EditGradeUIFactory(
         val gradeNameFlowAsState = gradeName.asState()
         val percentageFlowAsState = percentage.asState()
 
-        var gradeNameState by remember(grade) { mutableStateOf(grade?.namedGrade ?: "") }
-        var percentageState by remember(grade) { mutableStateOf(grade?.percentage?.times(100)?.toString() ?: "") }
+        val gradeNameField = gradeNameFlowAsState ?: grade?.namedGrade
+        val gradePercentageField = percentageFlowAsState ?: grade?.percentage?.times(100)?.toString()
 
-        LaunchedEffect(gradeNameFlowAsState) { gradeNameFlowAsState?.let { gradeNameState = it } }
-        LaunchedEffect(percentageFlowAsState) { percentageFlowAsState?.let { percentageState = it } }
-
-        val errors by remember(gradeNameState, percentageState) {
-            derivedStateOf {
-                buildSet {
-                    if (gradeNameState.isBlank()) add(EditGradeUIState.Error.INVALID_NAME)
-                    if ((percentageState.toDoubleOrNull() ?: -1.0) !in 0.0..100.0) add(EditGradeUIState.Error.INVALID_PERCENTAGE)
-                }
-            }
+        val errors = buildSet {
+            if (gradeNameField?.isBlank() == true) add(EditGradeUIState.Error.INVALID_NAME)
+            if ((gradePercentageField?.toDoubleOrNull() ?: -1.0) !in 0.0..100.0) add(EditGradeUIState.Error.INVALID_PERCENTAGE)
         }
 
         return EditGradeUIState(
             grade = grade,
-            percentage = percentageState,
-            name = gradeNameState,
+            percentage = gradePercentageField,
+            name = gradeNameField,
             error = errors.toImmutableSet(),
         )
     }

@@ -1,7 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-// import org.jetbrains.compose.reload.ComposeHotRun
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+// import org.jetbrains.compose.reload.ComposeHotRun
 
 plugins {
     id(
@@ -45,6 +46,12 @@ kotlin {
         browser {
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
+            }
+            testTask {
+                onlyIf { !System.getenv().containsKey("CI") }
+                useKarma {
+                    useFirefox()
+                }
             }
         }
         binaries.executable()

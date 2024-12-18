@@ -41,7 +41,7 @@ kotlin {
         }
 
         jsMain.dependencies {
-            implementation("app.cash.sqldelight:web-worker-driver:2.0.2")
+            implementation(libs2.web.worker.driver)
             implementation(devNpm("copy-webpack-plugin", "9.1.0"))
             implementation(npm("sql.js", "1.6.2"))
         }

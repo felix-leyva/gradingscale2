@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * A vertical divider that can be used in a [Row] to separate elements.
+ * A vertical divider that can be used in a Row to separate elements.
  * To make sure the divider is always the full height of the parent, give to the row the modifier Modifier.height(IntrinsicSize.Min)
  * @param modifier The modifier for the divider.
  * @param width The width of the divider.

@@ -15,6 +15,7 @@ kotlin {
     }
 
     jvm()
+    jvmToolchain(libs.versions.java.toInt())
 
     listOf(
         iosX64(),

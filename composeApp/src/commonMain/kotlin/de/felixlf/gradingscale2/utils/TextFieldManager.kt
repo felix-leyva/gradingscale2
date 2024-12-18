@@ -2,7 +2,7 @@ package de.felixlf.gradingscale2.utils
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.text.input.setTextAndSelectAll
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import kotlinx.coroutines.delay
@@ -32,9 +32,9 @@ fun textFieldManager(
         }
     }
 
-    LaunchedEffect(externalFieldValue, onChangeExternalFieldValue) {
+    LaunchedEffect(externalFieldValue) {
         if (externalFieldValue != textFieldState.text) {
-            textFieldState.setTextAndSelectAll(externalFieldValue)
+            textFieldState.setTextAndPlaceCursorAtEnd(externalFieldValue)
         }
     }
 

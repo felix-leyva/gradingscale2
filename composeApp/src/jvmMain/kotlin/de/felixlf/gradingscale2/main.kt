@@ -6,8 +6,9 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import de.felixlf.gradingscale2.di.koinSetup
 import kotlinx.coroutines.runBlocking
-// import org.jetbrains.compose.reload.DevelopmentEntryPoint
 import org.koin.java.KoinJavaComponent.inject
+
+// import org.jetbrains.compose.reload.DevelopmentEntryPoint
 
 fun main() {
     initJvmApp()

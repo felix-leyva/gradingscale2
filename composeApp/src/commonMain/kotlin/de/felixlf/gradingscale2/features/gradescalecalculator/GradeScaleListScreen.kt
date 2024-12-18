@@ -1,13 +1,19 @@
 package de.felixlf.gradingscale2.features.gradescalecalculator
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenuItem
@@ -25,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.models.PointedGrade
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.features.gradescalecalculator.editgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.uicomponents.VerticalDivider
 import de.felixlf.gradingscale2.utils.stringWithDecimals
 import de.felixlf.gradingscale2.utils.textFieldManager
@@ -38,11 +45,21 @@ import org.koin.compose.viewmodel.koinViewModel
 fun GradeScaleListScreen() {
     val viewModel: GradeScaleListViewModel = koinViewModel()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    var activeEditGradeUUID by remember { mutableStateOf<String?>(null) }
+
     GradeScaleListScreen(
         uiState = uiState.value,
-        onSelectGradeScale = viewModel::selectGradeScale,
-        onSetTotalPoints = viewModel::setTotalPoints,
+        onSelectGradeScale = { viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScale(it)) },
+        onSetTotalPoints = { viewModel.onEvent(GradeScaleListUIEvent.SetTotalPoints(it)) },
+        onEditGrade = { activeEditGradeUUID = it },
     )
+
+    activeEditGradeUUID?.let {
+        EditGradeDialog(
+            uuid = it,
+            onDismiss = { activeEditGradeUUID = null },
+        )
+    }
 }
 
 @Composable
@@ -50,8 +67,12 @@ private fun GradeScaleListScreen(
     uiState: GradeScaleListUIState,
     onSelectGradeScale: (String) -> Unit = {},
     onSetTotalPoints: (Double) -> Unit = {},
+    onEditGrade: (String) -> Unit = {},
 ) {
-    Column {
+    val gradeScale = remember(uiState.selectedGradeScale) { uiState.selectedGradeScale }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+    ) {
         Row {
             val textFieldValue = textFieldManager(uiState.selectedGradeScale?.totalPoints?.stringWithDecimals() ?: "") {
                 onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
@@ -63,15 +84,45 @@ private fun GradeScaleListScreen(
             )
         }
         Divider()
-        LazyColumn {
-            uiState.selectedGradeScale?.let { gradeScale ->
-                items(
-                    count = gradeScale.sortedPointedGrades.size,
-                    key = { gradeScale.sortedPointedGrades[it].uuid },
+        if (gradeScale == null) {
+            Text(text = "No grade scale selected")
+            return
+        }
+        println("gradeScale: ${gradeScale.gradeScaleName}")
+        // TODO: Change to LazyColumn when bug is fixed
+        // Using column, due a bug in CMP where on overscrolling the list, the list is not more clickable
+        val listState = rememberLazyListState()
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            state = listState,
+        ) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .height(16.dp)
+                        .fillMaxWidth(),
+
+                    )
+            }
+            itemsIndexed(gradeScale.sortedPointedGrades) { _, grade ->
+                Column(
+                    modifier = Modifier.clickable(
+                        onClick = { onEditGrade(grade.uuid) },
+                    ),
                 ) {
-                    ListItem(grade = gradeScale.sortedPointedGrades[it])
-                    Divider()
+                    ListItem(grade = grade)
+                    Divider(
+                        modifier = Modifier.padding(vertical = 10.dp),
+                    )
                 }
+            }
+            item {
+                Box(
+                    modifier = Modifier
+                        .height(16.dp)
+                        .fillMaxWidth(),
+                )
             }
         }
     }
@@ -119,9 +170,12 @@ private fun RowScope.GradeScaleDropboxSelector(
 }
 
 @Composable
-private fun ListItem(grade: PointedGrade) {
+private fun ListItem(
+    grade: PointedGrade,
+    modifier: Modifier = Modifier,
+) {
     Row(
-        modifier = Modifier.height(IntrinsicSize.Min),
+        modifier = modifier.height(IntrinsicSize.Min),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -131,7 +185,7 @@ private fun ListItem(grade: PointedGrade) {
         VerticalDivider()
         Text(
             modifier = Modifier.weight(1f).padding(8.dp),
-            text = grade.percentage.stringWithDecimals(),
+            text = "${(grade.percentage * 100).stringWithDecimals()} %",
         )
         VerticalDivider()
         Text(
@@ -147,8 +201,7 @@ private fun CalculatorScreenPreview() {
     GradeScaleListScreen(
         GradeScaleListUIState(
             selectedGradeScale = MockGradeScalesGenerator().gradeScales.first(),
-            gradeScalesNamesWithId =
-            MockGradeScalesGenerator()
+            gradeScalesNamesWithId = MockGradeScalesGenerator()
                 .gradeScales
                 .map {
                     GradeScaleListUIState.GradeScaleNameWithId(

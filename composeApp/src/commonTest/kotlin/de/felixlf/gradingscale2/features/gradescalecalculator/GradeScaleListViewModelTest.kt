@@ -1,8 +1,9 @@
+package de.felixlf.gradingscale2.features.gradescalecalculator
+
 import app.cash.turbine.test
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
-import de.felixlf.gradingscale2.features.gradescalecalculator.GradeScaleListViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,7 +59,7 @@ class GradeScaleListViewModelTest {
 
         viewModel.uiState.test {
             skipItems(2)
-            viewModel.selectGradeScale(mockGradeScales[0].gradeScaleName)
+            viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScale(mockGradeScales[0].gradeScaleName))
             val state = awaitItem()
             assertEquals(mockGradeScales[0], state.selectedGradeScale)
             assertEquals(gradeScaleIds, state.gradeScalesNamesWithId.map { it.gradeScaleId })
@@ -71,9 +72,9 @@ class GradeScaleListViewModelTest {
 
         viewModel.uiState.test {
             skipItems(2)
-            viewModel.selectGradeScale(mockGradeScales[0].gradeScaleName)
+            viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScale(mockGradeScales[0].gradeScaleName))
             awaitItem()
-            viewModel.setTotalPoints(20.0)
+            viewModel.onEvent(GradeScaleListUIEvent.SetTotalPoints(20.0))
             val state = awaitItem()
             assertEquals(20.0, state.selectedGradeScale?.totalPoints)
             assertEquals(gradeScaleIds, state.gradeScalesNamesWithId.map { it.gradeScaleId })
