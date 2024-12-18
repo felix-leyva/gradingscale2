@@ -2,7 +2,7 @@ package de.felixlf.gradingscale2.uicomponents
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 fun VerticalDivider(
     modifier: Modifier = Modifier.fillMaxHeight(),
     width: Dp = 1.dp,
-    color: Color = MaterialTheme.colors.onSurface.copy(alpha = DividerAlpha),
+    color: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = DividerAlpha),
 ) {
     Canvas(modifier = modifier) {
         val canvasHeight = size.height

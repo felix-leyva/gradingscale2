@@ -1,14 +1,8 @@
 package de.felixlf.gradingscale2
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import de.felixlf.gradingscale2.features.gradescalecalculator.GradeScaleListScreen
+import de.felixlf.gradingscale2.navigation.MainNavHost
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
 
@@ -17,15 +11,7 @@ import org.koin.compose.KoinContext
 internal fun App() {
     KoinContext {
         MaterialTheme {
-            Column(
-                Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text("Compose: ")
-                Scaffold {
-                    GradeScaleListScreen()
-                }
-            }
+            MainNavHost()
         }
     }
 }

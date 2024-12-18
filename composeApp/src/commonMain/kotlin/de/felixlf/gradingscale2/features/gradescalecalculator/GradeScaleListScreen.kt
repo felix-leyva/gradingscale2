@@ -15,12 +15,20 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.Divider
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ExposedDropdownMenuBox
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -83,7 +91,7 @@ private fun GradeScaleListScreen(
                 state = textFieldValue,
             )
         }
-        Divider()
+        HorizontalDivider()
         if (gradeScale == null) {
             Text(text = "No grade scale selected")
             return
@@ -112,9 +120,7 @@ private fun GradeScaleListScreen(
                     ),
                 ) {
                     ListItem(grade = grade)
-                    Divider(
-                        modifier = Modifier.padding(vertical = 10.dp),
-                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
                 }
             }
             item {
@@ -128,27 +134,32 @@ private fun GradeScaleListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RowScope.GradeScaleDropboxSelector(
     uiState: GradeScaleListUIState,
     onSelectGradeScale: (String) -> Unit,
 ) {
     var expandedDropdown by remember { mutableStateOf(false) }
+    val textFieldState = rememberTextFieldState()
+
+    LaunchedEffect(uiState.selectedGradeScale) {
+        uiState.selectedGradeScale?.gradeScaleName?.let(textFieldState::setTextAndPlaceCursorAtEnd)
+    }
+
     ExposedDropdownMenuBox(
         modifier = Modifier.weight(1f),
         expanded = expandedDropdown,
         onExpandedChange = { expandedDropdown = !expandedDropdown },
     ) {
-        DropdownMenuItem(
-            onClick = { },
-            content = {
-                Text(
-                    text =
-                        uiState.selectedGradeScale?.gradeScaleName
-                            ?: stringResource(Res.string.gradescale_list_select_grade_scale),
-                )
-            },
+        TextField(
+            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
+            state = textFieldState,
+            readOnly = true,
+            lineLimits = TextFieldLineLimits.SingleLine,
+            label = { Text(stringResource(Res.string.gradescale_list_select_grade_scale)) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedDropdown) },
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
         )
         ExposedDropdownMenu(
             expanded = expandedDropdown,
@@ -160,9 +171,10 @@ private fun RowScope.GradeScaleDropboxSelector(
                         expandedDropdown = false
                         onSelectGradeScale(string)
                     },
-                    content = {
+                    text = {
                         Text(text = string)
                     },
+                    colors = MenuDefaults.itemColors(),
                 )
             }
         }

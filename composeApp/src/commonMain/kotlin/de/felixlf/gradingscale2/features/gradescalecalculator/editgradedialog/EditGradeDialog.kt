@@ -11,12 +11,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.material.Button
-import androidx.compose.material.Card
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -97,7 +97,7 @@ private fun EditGradeDialog(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditGradeTextField(
     value: String,
@@ -113,8 +113,8 @@ private fun EditGradeTextField(
         state = textFieldValue,
         lineLimits = TextFieldLineLimits.SingleLine,
         keyboardOptions = keyboardOptions,
-        decorator = { textField ->
-            TextFieldDefaults.OutlinedTextFieldDecorationBox(
+        decorator = @Composable { textField ->
+            OutlinedTextFieldDefaults.DecorationBox(
                 value = textFieldValue.text.toString(),
                 label = { Text(label) },
                 innerTextField = textField,
