@@ -1,5 +1,6 @@
 [versions]
 # Project specific
+material3AdaptiveNavigationSuite = "1.7.3"
 moleculeRuntime = "2.0.0"
 napier = "2.7.1"
 navigationCompose = "2.8.0-alpha10"
@@ -55,12 +56,12 @@ firebase-kotlin = "2.1.0"
 google-services = "4.4.2"
 firebaseCrashlyticsBuildtools = "3.0.2"
 foundationAndroid = "1.7.6"
-material3Android = "1.3.1"
 
 
 [libraries]
 # Tests
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
+material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" } # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html#sample-project
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelightVersion" }
@@ -82,7 +83,6 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar"}
 # Compose
-androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidx-material" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 compose-preview-tooling = { group = "org.jetbrains.compose.ui", name= "ui-tooling", version.ref = "compose-plugin" }
@@ -137,7 +137,6 @@ gradle-firebase-crashlytics-buildtools = { group = "com.google.firebase", name =
 gradle-sqldelight = { group = "app.cash.sqldelight", name = "app.cash.sqldelight.gradle.plugin", version.ref = "sqlDelightPlugin" } # https://oss.sonatype.org/#nexus-search;quick~sqldelight
 gradle-hotreload = { group = "org.jetbrains.compose-hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload"}
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
-androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3Android" }
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelightVersion" }
 
 [plugins]

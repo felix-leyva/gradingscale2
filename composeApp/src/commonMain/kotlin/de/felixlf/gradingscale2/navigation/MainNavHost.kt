@@ -1,39 +1,40 @@
 package de.felixlf.gradingscale2.navigation
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import de.felixlf.gradingscale2.features.gradescalecalculator.GradeScaleListScreen
-import kotlinx.serialization.Serializable
-import org.koin.compose.koinInject
 
 @Composable
-fun MainNavHost() {
-    val navController = rememberNavController()
-    val appNavController: AppNavController = koinInject()
-    appNavController.setNavController(navController)
-
+fun MainNavHost(appNavController: AppNavController) {
     NavHost(
-        navController = navController,
-        startDestination = Destinations.GradeScaleList,
+        navController = appNavController.controller,
+        startDestination = Destinations.GradeScaleList.name,
     ) {
-        composable<Destinations.GradeScaleList> {
-            GradeScaleListScreen()
+        composable(Destinations.GradeScaleList.name) {
+            Column {
+                Button(
+                    onClick = {
+                        appNavController.controller.navigate(Destinations.GradeScaleDetail.name)
+                    },
+                ) {
+                    Text(text = "GOTO")
+                }
+                GradeScaleListScreen()
+            }
+        }
+
+        composable(Destinations.GradeScaleDetail.name) {
+            Button(
+                onClick = {
+                    appNavController.controller.navigate(Destinations.GradeScaleList.name)
+                },
+            ) {
+                Text(text = "GOTO")
+            }
         }
     }
-}
-
-sealed interface Destinations {
-    @Serializable
-    data object GradeScaleList : Destinations
-
-    @Serializable
-    data object GradeScaleDetail : Destinations
-
-    @Serializable
-    data object WeightedGradeCalculator : Destinations
-
-    @Serializable
-    data object GradeImporter : Destinations
 }

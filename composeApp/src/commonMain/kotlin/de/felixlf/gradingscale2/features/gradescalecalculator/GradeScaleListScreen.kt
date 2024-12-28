@@ -111,7 +111,7 @@ private fun GradeScaleListScreen(
                         .height(16.dp)
                         .fillMaxWidth(),
 
-                    )
+                )
             }
             itemsIndexed(gradeScale.sortedPointedGrades) { _, grade ->
                 Column(

@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.di
 
+import androidx.navigation.NavHostController
 import de.felixlf.gradingscale2.Initializer
 import de.felixlf.gradingscale2.InitializerImpl
 import de.felixlf.gradingscale2.dbModule
@@ -29,4 +30,5 @@ val mainModule =
         factoryOf(::GradeScaleListViewModel)
         factoryOf(::EditGradeViewModel)
         singleOf(::AppNavControllerImpl).bind<AppNavController>()
+        single<AppNavController> { (controller: NavHostController) -> AppNavControllerImpl(controller) }
     }
