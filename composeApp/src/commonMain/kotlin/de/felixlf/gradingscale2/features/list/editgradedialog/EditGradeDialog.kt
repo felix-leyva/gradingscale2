@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.gradescalecalculator.editgradedialog
+package de.felixlf.gradingscale2.features.list.editgradedialog
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -15,12 +15,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -111,6 +113,7 @@ private fun EditGradeTextField(
     BasicTextField(
         modifier = modifier,
         state = textFieldValue,
+        textStyle = TextStyle.Default.copy(color = MaterialTheme.colorScheme.primary),
         lineLimits = TextFieldLineLimits.SingleLine,
         keyboardOptions = keyboardOptions,
         decorator = @Composable { textField ->

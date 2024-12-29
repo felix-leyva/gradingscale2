@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.gradescalecalculator.editgradedialog
+package de.felixlf.gradingscale2.features.list.editgradedialog
 
 import app.cash.turbine.test
 import de.felixlf.gradingscale2.entities.models.GradeScale

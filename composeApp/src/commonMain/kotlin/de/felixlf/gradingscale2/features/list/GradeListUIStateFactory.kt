@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.gradescalecalculator
+package de.felixlf.gradingscale2.features.list
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -6,8 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.features.gradescalecalculator.GradeScaleListUIEvent.SelectGradeScale
-import de.felixlf.gradingscale2.features.gradescalecalculator.GradeScaleListUIEvent.SetTotalPoints
+import de.felixlf.gradingscale2.features.list.GradeScaleListUIEvent.SelectGradeScale
+import de.felixlf.gradingscale2.features.list.GradeScaleListUIEvent.SetTotalPoints
 import de.felixlf.gradingscale2.uimodel.MoleculePresenter
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList

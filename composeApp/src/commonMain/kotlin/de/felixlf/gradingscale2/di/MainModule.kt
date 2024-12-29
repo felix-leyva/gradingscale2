@@ -5,9 +5,11 @@ import de.felixlf.gradingscale2.Initializer
 import de.felixlf.gradingscale2.InitializerImpl
 import de.felixlf.gradingscale2.dbModule
 import de.felixlf.gradingscale2.entities.entitiesModule
-import de.felixlf.gradingscale2.features.gradescalecalculator.GradeListUIStateFactory
-import de.felixlf.gradingscale2.features.gradescalecalculator.GradeScaleListViewModel
-import de.felixlf.gradingscale2.features.gradescalecalculator.editgradedialog.EditGradeViewModel
+import de.felixlf.gradingscale2.features.calculator.CalculatorUIStateFactory
+import de.felixlf.gradingscale2.features.calculator.CalculatorViewModel
+import de.felixlf.gradingscale2.features.list.GradeListUIStateFactory
+import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
+import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeViewModel
 import de.felixlf.gradingscale2.navigation.AppNavController
 import de.felixlf.gradingscale2.navigation.AppNavControllerImpl
 import de.felixlf.gradingscale2.network.di.networkModule
@@ -29,6 +31,8 @@ val mainModule =
         factoryOf(::GradeListUIStateFactory)
         factoryOf(::GradeScaleListViewModel)
         factoryOf(::EditGradeViewModel)
+        factoryOf(::CalculatorViewModel)
+        factoryOf(::CalculatorUIStateFactory)
         singleOf(::AppNavControllerImpl).bind<AppNavController>()
         single<AppNavController> { (controller: NavHostController) -> AppNavControllerImpl(controller) }
     }

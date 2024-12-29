@@ -1,7 +1,7 @@
 package de.felixlf.gradingscale2.entities.models
 
 data class PointedGrade(
-    private val grade: Grade,
+    val grade: Grade,
     val points: Double,
 ) {
     val namedGrade: String = grade.namedGrade

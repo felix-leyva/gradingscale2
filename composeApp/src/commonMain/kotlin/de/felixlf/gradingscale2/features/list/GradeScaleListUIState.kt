@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.gradescalecalculator
+package de.felixlf.gradingscale2.features.list
 
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import kotlinx.collections.immutable.ImmutableList

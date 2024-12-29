@@ -21,7 +21,7 @@ data class GradeScale(
         require(totalPoints > 0) { "Total points must be greater than 0" }
     }
 
-    private val sortedGrades = grades.sortedByDescending { it.percentage }.toImmutableList()
+    val sortedGrades = grades.sortedByDescending { it.percentage }.toImmutableList()
     val sortedPointedGrades: ImmutableList<PointedGrade> =
         sortedGrades.map { it.toPointedGrade(totalPoints) }.toImmutableList()
 

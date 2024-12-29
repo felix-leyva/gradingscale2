@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.gradescalecalculator.editgradedialog
+package de.felixlf.gradingscale2.features.list.editgradedialog
 
 import androidx.compose.runtime.Composable
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase

@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.gradescalecalculator
+package de.felixlf.gradingscale2.features.list
 
 import app.cash.turbine.test
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
