@@ -43,7 +43,7 @@ internal fun RowScope.GradeScaleDropboxSelector(
         onExpandedChange = { expandedDropdown = !expandedDropdown },
     ) {
         TextField(
-            modifier = Modifier.Companion.menuAnchor(MenuAnchorType.Companion.PrimaryNotEditable),
+            modifier = Modifier.Companion.menuAnchor(MenuAnchorType.PrimaryNotEditable),
             state = textFieldState,
             readOnly = true,
             lineLimits = TextFieldLineLimits.SingleLine,
