@@ -21,7 +21,7 @@ enum class Destinations(
 ) {
     GradeScaleList(Res.string.destinations_menu_grade_scale_list, Icons.Default.List),
 
-    GradeScaleDetail(Res.string.destinations_menu_grade_scale_detail, Icons.Default.Edit),
+    GradeScaleCalculator(Res.string.destinations_menu_grade_scale_detail, Icons.Default.Edit),
 
     WeightedGradeCalculator(Res.string.destinations_menu_weighted_grade_calculator, Icons.Default.AddCircle),
 

@@ -68,7 +68,12 @@ private fun GradeScaleListScreen(
             val textFieldValue = textFieldManager(uiState.selectedGradeScale?.totalPoints?.stringWithDecimals() ?: "") {
                 onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
             }
-            GradeScaleDropboxSelector(uiState = uiState, onSelectGradeScale = onSelectGradeScale)
+            GradeScaleDropboxSelector(
+                gradeScalesNames = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
+                selectedGradeScaleName = uiState.selectedGradeScale?.gradeScaleName,
+                onSelectGradeScale = onSelectGradeScale,
+                modifier = Modifier.weight(1f),
+            )
             BasicTextField(
                 modifier = Modifier.weight(1f).padding(16.dp),
                 state = textFieldValue,
@@ -79,8 +84,6 @@ private fun GradeScaleListScreen(
             Text(text = "No grade scale selected")
             return
         }
-        println("gradeScale: ${gradeScale.gradeScaleName}")
-        // TODO: Change to LazyColumn when bug is fixed
         // Using column, due a bug in CMP where on overscrolling the list, the list is not more clickable
         val listState = rememberLazyListState()
 

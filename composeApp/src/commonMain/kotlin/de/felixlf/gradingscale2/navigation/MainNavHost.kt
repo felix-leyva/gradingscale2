@@ -4,6 +4,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import de.felixlf.gradingscale2.features.calculator.GradeScaleCalculatorScreen
 import de.felixlf.gradingscale2.features.list.GradeScaleListScreen
 
 @Composable
@@ -15,8 +16,8 @@ fun MainNavHost(appNavController: AppNavController) {
         composable(Destinations.GradeScaleList.name) {
             GradeScaleListScreen()
         }
-        composable(Destinations.GradeScaleDetail.name) {
-            Text(text = "${it.destination.route}")
+        composable(Destinations.GradeScaleCalculator.name) {
+            GradeScaleCalculatorScreen()
         }
         composable(Destinations.WeightedGradeCalculator.name) {
             Text(text = "${it.destination.route}")

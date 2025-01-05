@@ -58,7 +58,7 @@ internal class CalculatorUIStateFactory(
             }
 
             is CalculatorUIEvent.SetPoints -> if (event.points in 0.0..totalPoints) {
-                state?.selectedGradeScale?.gradeByPoints(event.points)?.percentage?.let { percentage = it }
+                 percentage = event.points / totalPoints 
             }
 
             is CalculatorUIEvent.SetGradeName -> {
