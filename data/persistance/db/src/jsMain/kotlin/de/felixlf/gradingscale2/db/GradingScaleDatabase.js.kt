@@ -15,7 +15,5 @@ actual class DriverFactory {
                 ),
             ),
         )
-        // Create the schema on start for the js version
-        // .also { Database.Schema.create(it).await() }
     }
 }

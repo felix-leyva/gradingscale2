@@ -72,7 +72,14 @@ kotlin {
 //                    }
 //                }
 //            }
+//            testTask {
+//                onlyIf { !System.getenv().containsKey("CI") }
+//                useKarma {
+//                    useFirefox()
+//                }
+//            }
 //        }
+//        useCommonJs()
 //        binaries.executable()
 //    }
 
@@ -117,10 +124,8 @@ kotlin {
             implementation(libs2.napier)
             implementation(libs2.androidx.lifecycle.viewmodel)
             implementation(libs2.androidx.lifecycle.runtime.compose)
-            implementation(libs2.ktor.client.core)
-            implementation(libs2.ktor.client.content.negotiation)
-            implementation(libs2.ktor.serialization.kotlinx.json)
             implementation(libs2.koin.core)
+            implementation(libs2.ktor.serialization.kotlinx.json)
             implementation(libs2.koin.compose)
             implementation(libs2.koin.compose.viewmodel)
             implementation(libs2.koin.compose.viewmodel.nav)

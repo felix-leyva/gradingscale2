@@ -19,6 +19,7 @@ kotlin {
                 }
             }
         }
+        useCommonJs()
     }
     sourceSets {
         androidMain.dependencies {
@@ -41,9 +42,11 @@ kotlin {
         }
 
         jsMain.dependencies {
+            implementation ("app.cash.sqldelight:sqljs-driver:2.0.0-alpha04")
+            implementation(npm("sql.js", "1.6.2"))
             implementation(libs2.web.worker.driver)
             implementation(devNpm("copy-webpack-plugin", "9.1.0"))
-            implementation(npm("sql.js", "1.6.2"))
+            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.2"))
         }
     }
 }
