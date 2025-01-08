@@ -3,11 +3,13 @@
 package de.felixlf.gradingscale2.di
 
 
+import de.felixlf.gradingscale2.AuthInitializer
+import de.felixlf.gradingscale2.AuthInitializerImpl
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 internal actual fun authPlatformModule(): Module =
     module {
-//        singleOf<AnalyticsProvider>(::AnalyticsProviderBaseImpl)
+        singleOf<AuthInitializer>(::AuthInitializerImpl)
     }
