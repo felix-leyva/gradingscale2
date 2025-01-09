@@ -13,7 +13,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,7 +31,11 @@ import de.felixlf.gradingscale2.features.list.components.GradeScaleListItem
 import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.utils.stringWithDecimals
 import de.felixlf.gradingscale2.utils.textFieldManager
+import gradingscale2.composeapp.generated.resources.Res
+import gradingscale2.composeapp.generated.resources.gradescale_list_select_grade_scale
 import kotlinx.collections.immutable.toImmutableList
+import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -53,6 +59,7 @@ fun GradeScaleListScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun GradeScaleListScreen(
     uiState: GradeScaleListUIState,
@@ -73,11 +80,17 @@ private fun GradeScaleListScreen(
                 selectedGradeScaleName = uiState.selectedGradeScale?.gradeScaleName,
                 onSelectGradeScale = onSelectGradeScale,
                 modifier = Modifier.weight(1f),
+                defaultText = stringResource(Res.string.gradescale_list_select_grade_scale)
             )
-            BasicTextField(
-                modifier = Modifier.weight(1f).padding(16.dp),
-                state = textFieldValue,
-            )
+
+                BasicTextField(
+                    modifier = Modifier.weight(1f).padding(16.dp),
+                    state = textFieldValue,
+                    textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+
+                    
+                )
+            
         }
         HorizontalDivider()
         if (gradeScale == null) {

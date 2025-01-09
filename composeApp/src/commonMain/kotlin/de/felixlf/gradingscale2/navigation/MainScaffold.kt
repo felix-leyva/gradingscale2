@@ -33,9 +33,6 @@ fun MainScaffold() {
     val navController = rememberNavController()
     val appNavController: AppNavController = koinInject { parametersOf(navController) }
     val currentDestination = appNavController.controller.currentBackStackEntryAsState()
-    Scaffold {
-
-    }
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {

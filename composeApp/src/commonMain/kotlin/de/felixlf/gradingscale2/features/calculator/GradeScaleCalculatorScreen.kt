@@ -20,7 +20,10 @@ import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.list.components.GradeScaleDropboxSelector
 import de.felixlf.gradingscale2.utils.stringWithDecimals
 import de.felixlf.gradingscale2.utils.textFieldManager
+import gradingscale2.composeapp.generated.resources.Res
+import gradingscale2.composeapp.generated.resources.gradescale_list_select_grade_scale
 import kotlinx.collections.immutable.toImmutableList
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -56,7 +59,8 @@ private fun GradeScaleCalculatorScreen(
             gradeScalesNames = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
             selectedGradeScaleName = uiState.selectedGradeScale?.gradeScaleName,
             onSelectGradeScale = onSelectGradeScale,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            defaultText = stringResource(Res.string.gradescale_list_select_grade_scale)
         )        
       
             val totalPointsState = textFieldManager(uiState.totalPoints?.stringWithDecimals() ?: "") {
