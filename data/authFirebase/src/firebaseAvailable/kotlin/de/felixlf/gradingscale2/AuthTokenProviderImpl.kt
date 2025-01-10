@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 
-
 internal class AuthTokenProviderImpl(
     private val auth: FirebaseAuth = Firebase.auth,
     scope: CoroutineScope,

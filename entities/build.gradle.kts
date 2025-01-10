@@ -1,5 +1,6 @@
 plugins {
     id("multiplatform-plugin")
+    id(libs2.plugins.kotlinxSerialization.get().pluginId)
 }
 
 kotlin {
@@ -16,6 +17,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs2.kotlinx.collections.immutable)
+            implementation(libs2.kotlinx.serialization)
         }
     }
 }

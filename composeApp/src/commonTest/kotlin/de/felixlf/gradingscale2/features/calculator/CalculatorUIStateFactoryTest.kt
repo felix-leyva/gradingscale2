@@ -47,7 +47,7 @@ class CalculatorUIStateFactoryTest {
             assertEquals(gradeScaleIds, state.gradeScalesNamesWithId.map { it.gradeScaleId })
         }
     }
-    
+
     @Test
     fun `selectGradeScale sets selectedGradeScaleId`() = moleculeTest {
         launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
@@ -61,13 +61,13 @@ class CalculatorUIStateFactoryTest {
             // Then
             val newState = awaitItem()
             assertEquals(mockGradeScales.first(), newState.selectedGradeScale)
-            
+
             // When
             factory.sendEvent(CalculatorUIEvent.SelectGradeScale(newState.gradeScalesNames.last()))
             assertEquals(mockGradeScales.last(), awaitItem().selectedGradeScale)
         }
     }
-    
+
     @Test
     fun `setTotalPoints sets totalPoints`() = moleculeTest {
         launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
@@ -82,7 +82,7 @@ class CalculatorUIStateFactoryTest {
             assertEquals(20.0, awaitItem().totalPoints)
         }
     }
-    
+
     @Test
     fun `setPercentage sets percentage`() = moleculeTest {
         launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
@@ -102,7 +102,7 @@ class CalculatorUIStateFactoryTest {
             }
         }
     }
-    
+
     @Test
     fun `setPoints sets points`() = moleculeTest {
         launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
@@ -122,8 +122,7 @@ class CalculatorUIStateFactoryTest {
             }
         }
     }
-    
-    
+
     @Test
     fun `setGradeName sets grade name`() = moleculeTest {
         launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {

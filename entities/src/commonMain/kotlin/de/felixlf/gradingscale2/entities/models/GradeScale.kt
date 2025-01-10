@@ -2,6 +2,7 @@ package de.felixlf.gradingscale2.entities.models
 
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.serialization.Serializable
 
 /**
  * Represents a grade scale with a list of grades.
@@ -11,6 +12,7 @@ import kotlinx.collections.immutable.toImmutableList
  * @param grades The list of [Grade] in the grade scale.
  * @property sortedPointedGrades The list of [PointedGrade] sorted by percentage.
  */
+@Serializable
 data class GradeScale(
     val id: String,
     val gradeScaleName: String,

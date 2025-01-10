@@ -3,6 +3,7 @@
 package de.felixlf.gradingscale2
 
 import app.cash.sqldelight.db.SqlDriver
+import de.felixlf.gradingscale2.db.DriverFactory
 import de.felixlf.gradingscale2.entities.daos.GradeScaleDao
 import de.felixlf.gradingscale2.entities.daos.GradeScaleDaoImpl
 import de.felixlf.gradingscale2.entities.daos.GradesDao
@@ -20,11 +21,19 @@ class DatabaseSchemaInitializer(
     }
 }
 
-val dbModule = module {
-    includes(getDbPlatformModule())
+/**
+ * The default implementation of the SQL DAOs.
+ * In JS we cannot use SQLDelight's, so our DAOs are implemented using KStore.
+ */
+internal val sqlDaoModule = module {
     single { DatabaseSchemaInitializer(get()) }
     single { Database(get()) }
+    single<SqlDriver> { get<DriverFactory>().createDriver() }
     single<GradeScaleQueries> { get<Database>().gradeScaleQueries }
     single<GradeScaleDao> { GradeScaleDaoImpl(get()) }
     single<GradesDao> { GradesDaoImpl(gradeScaleQueries = get(), driver = get()) }
+}
+
+val dbModule = module {
+    includes(getDbPlatformModule())
 }

@@ -50,6 +50,8 @@ ksp = "2.1.0-1.0.29"
 sqlite = "2.5.0-SNAPSHOT"
 
 sqlDelightPlugin = "2.0.2"
+kstore = "0.9.1"
+kotlinxSerialization = "1.8.0"
 
 #Firebase
 firebase-kotlin = "2.1.0"
@@ -59,7 +61,6 @@ foundationAndroid = "1.7.6"
 
 
 [libraries]
-# Tests
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
 material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
@@ -70,6 +71,9 @@ firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-common-ktx = { module = "com.google.firebase:firebase-common-ktx" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlinx-serialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+# Tests
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -99,6 +103,8 @@ multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings
 native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "nativeDriver" }
 sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqliteDriver" }
 sqljs-driver = { module = "app.cash.sqldelight:sqljs-driver", version.ref = "sqliteDriver" }
+kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
+kstore-storage = { module = "io.github.xxfast:kstore-storage", version.ref = "kstore" }
 
 # Firebase
 firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase-kotlin" }

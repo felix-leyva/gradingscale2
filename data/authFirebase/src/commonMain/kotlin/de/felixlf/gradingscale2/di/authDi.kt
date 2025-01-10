@@ -10,5 +10,4 @@ internal expect fun authPlatformModule(): Module
 val authModule =
     module {
         includes(authPlatformModule())
-        
     }

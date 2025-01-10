@@ -4,7 +4,6 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
@@ -53,59 +52,57 @@ private fun GradeScaleCalculatorScreen(
     val gradeScale = remember(uiState.selectedGradeScale) { uiState.selectedGradeScale }
     Column(
         modifier = Modifier.fillMaxSize().background(color = MaterialTheme.colorScheme.onPrimary),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         GradeScaleDropboxSelector(
             gradeScalesNames = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
             selectedGradeScaleName = uiState.selectedGradeScale?.gradeScaleName,
             onSelectGradeScale = onSelectGradeScale,
             modifier = Modifier.weight(1f),
-            defaultText = stringResource(Res.string.gradescale_list_select_grade_scale)
-        )        
-      
-            val totalPointsState = textFieldManager(uiState.totalPoints?.stringWithDecimals() ?: "") {
-                onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
-            }
+            defaultText = stringResource(Res.string.gradescale_list_select_grade_scale),
+        )
 
-            BasicTextField(
-                modifier = Modifier.weight(1f).padding(16.dp),
-                state = totalPointsState,
-            )
-            
-            val pointState = textFieldManager(uiState.currentGrade?.points?.stringWithDecimals() ?: "") {
-                onSetPoints(it.toDoubleOrNull() ?: 0.0)
-            }
-            
-            BasicTextField(
-                modifier = Modifier.weight(1f).padding(16.dp),
-                state = pointState,
-            )
-            
-            val percentageState = textFieldManager(uiState.currentPercentage?.stringWithDecimals() ?: "") {
-                onSetPercentage(it.toDoubleOrNull() ?: 0.0)
-            }
-            
-            BasicTextField(
-                modifier = Modifier.weight(1f).padding(16.dp),
-                state = percentageState,
-            )
-            
-            val gradeNameState = textFieldManager(uiState.currentGrade?.namedGrade ?: "") {
-                onSelectGradeName(it)
-            }
-            
-            BasicTextField(
-                modifier = Modifier.weight(1f).padding(16.dp),
-                state = gradeNameState,
-            )
-            
+        val totalPointsState = textFieldManager(uiState.totalPoints?.stringWithDecimals() ?: "") {
+            onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
         }
-        HorizontalDivider()
-        if (gradeScale == null) {
-            Text(text = "No grade scale selected")
-            return
+
+        BasicTextField(
+            modifier = Modifier.weight(1f).padding(16.dp),
+            state = totalPointsState,
+        )
+
+        val pointState = textFieldManager(uiState.currentGrade?.points?.stringWithDecimals() ?: "") {
+            onSetPoints(it.toDoubleOrNull() ?: 0.0)
         }
-    
+
+        BasicTextField(
+            modifier = Modifier.weight(1f).padding(16.dp),
+            state = pointState,
+        )
+
+        val percentageState = textFieldManager(uiState.currentPercentage?.stringWithDecimals() ?: "") {
+            onSetPercentage(it.toDoubleOrNull() ?: 0.0)
+        }
+
+        BasicTextField(
+            modifier = Modifier.weight(1f).padding(16.dp),
+            state = percentageState,
+        )
+
+        val gradeNameState = textFieldManager(uiState.currentGrade?.namedGrade ?: "") {
+            onSelectGradeName(it)
+        }
+
+        BasicTextField(
+            modifier = Modifier.weight(1f).padding(16.dp),
+            state = gradeNameState,
+        )
+    }
+    HorizontalDivider()
+    if (gradeScale == null) {
+        Text(text = "No grade scale selected")
+        return
+    }
 }
 
 @Preview

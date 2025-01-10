@@ -1,5 +1,8 @@
 package de.felixlf.gradingscale2.entities.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Grade(
     val namedGrade: String = "",
     val percentage: Double = 0.0,

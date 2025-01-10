@@ -34,7 +34,6 @@ import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.composeapp.generated.resources.Res
 import gradingscale2.composeapp.generated.resources.gradescale_list_select_grade_scale
 import kotlinx.collections.immutable.toImmutableList
-import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -80,17 +79,15 @@ private fun GradeScaleListScreen(
                 selectedGradeScaleName = uiState.selectedGradeScale?.gradeScaleName,
                 onSelectGradeScale = onSelectGradeScale,
                 modifier = Modifier.weight(1f),
-                defaultText = stringResource(Res.string.gradescale_list_select_grade_scale)
+                defaultText = stringResource(Res.string.gradescale_list_select_grade_scale),
             )
 
-                BasicTextField(
-                    modifier = Modifier.weight(1f).padding(16.dp),
-                    state = textFieldValue,
-                    textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+            BasicTextField(
+                modifier = Modifier.weight(1f).padding(16.dp),
+                state = textFieldValue,
+                textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
 
-                    
-                )
-            
+            )
         }
         HorizontalDivider()
         if (gradeScale == null) {

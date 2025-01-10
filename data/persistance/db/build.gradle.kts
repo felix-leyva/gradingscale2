@@ -35,6 +35,7 @@ kotlin {
             implementation(libs2.kotlinx.collections.immutable)
             implementation(libs2.coroutines.extensions)
             implementation(libs2.sqldelight.runtime)
+            implementation(libs2.kotlinx.serialization)
         }
 
         jvmMain.dependencies {
@@ -42,11 +43,9 @@ kotlin {
         }
 
         jsMain.dependencies {
-            implementation ("app.cash.sqldelight:sqljs-driver:2.0.0-alpha04")
-            implementation(npm("sql.js", "1.6.2"))
-            implementation(libs2.web.worker.driver)
             implementation(devNpm("copy-webpack-plugin", "9.1.0"))
-            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.2"))
+            implementation(libs2.kstore)
+            implementation(libs2.kstore.storage)
         }
     }
 }

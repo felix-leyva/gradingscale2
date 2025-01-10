@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -59,10 +58,10 @@ fun MainScaffold() {
             )
             Surface(
                 modifier =
-                    Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets ->
-                        // Exclude currently consumed window insets from user provided contentWindowInsets
-                        safeInsets.insets = contentWindowInsets.exclude(consumedWindowInsets)
-                    },
+                Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets ->
+                    // Exclude currently consumed window insets from user provided contentWindowInsets
+                    safeInsets.insets = contentWindowInsets.exclude(consumedWindowInsets)
+                },
             ) {
                 Box(
                     modifier = Modifier.padding(innerPadding),

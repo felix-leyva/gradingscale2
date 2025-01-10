@@ -21,8 +21,8 @@ kotlin {
                 implementation(libs2.firebase.auth)
                 implementation(libs2.firebase.analytics)
             }
-        }        
-        
+        }
+
         androidMain {
             dependsOn(firebaseAvailable)
             dependencies {
@@ -30,19 +30,16 @@ kotlin {
                 implementation(project.dependencies.platform(libs2.firebase.bom))
                 implementation(libs2.firebase.common.ktx)
                 implementation(libs2.firebase.auth.ktx)
-    //            implementation(libs2.firebase.crashlytics)
+                //            implementation(libs2.firebase.crashlytics)
             }
         }
 
-
         commonMain {
-
         }
 
         jsMain.dependencies {
 //            implementation(npm("@gitliveapp/firebase-auth", "1.5.19-beta"))
 //            implementation(npm("@gitliveapp/firebase-common", "1.5.19-beta"))
-
         }
         iosMain {
             dependsOn(firebaseAvailable)

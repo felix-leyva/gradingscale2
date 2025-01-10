@@ -7,7 +7,6 @@ import de.felixlf.gradingscale2.AuthInitializer
 import de.felixlf.gradingscale2.AuthInitializerImpl
 import de.felixlf.gradingscale2.AuthTokenProvider
 import de.felixlf.gradingscale2.AuthTokenProviderImpl
-import de.felixlf.gradingscale2.CommonAuthInitializerImpl
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import kotlinx.coroutines.CoroutineName

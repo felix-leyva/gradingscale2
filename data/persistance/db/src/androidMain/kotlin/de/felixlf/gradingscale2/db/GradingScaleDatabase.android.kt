@@ -8,10 +8,10 @@ import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import de.felixlf.gradingscale2.Database
 
-actual class DriverFactory(
+internal class AndroidDriverFactory(
     private val context: Context,
-) {
-    actual fun createDriver(): SqlDriver =
+) : DriverFactory {
+    override fun createDriver(): SqlDriver =
         AndroidSqliteDriver(
             schema = Database.Schema.synchronous(),
             context = context,
