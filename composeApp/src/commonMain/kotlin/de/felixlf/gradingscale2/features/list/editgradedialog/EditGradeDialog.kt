@@ -37,6 +37,9 @@ import gradingscale2.composeapp.generated.resources.edit_grade_save_button
 import kotlinx.collections.immutable.persistentSetOf
 import org.jetbrains.compose.resources.stringResource
 
+/**
+ * The Edit Grade Dialog is a dialog that allows the user to edit a grade.
+ */
 @Composable
 fun EditGradeDialog(uuid: String, onDismiss: () -> Unit) {
     val viewModel = dialogScopedViewModel<EditGradeViewModel>()

@@ -3,9 +3,11 @@ package de.felixlf.gradingscale2.features.calculator
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -14,15 +16,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
-import de.felixlf.gradingscale2.features.list.components.GradeScaleDropboxSelector
+import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.stringWithDecimals
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.composeapp.generated.resources.Res
+import gradingscale2.composeapp.generated.resources.calculator_screen_grade_name_dropbox_default
+import gradingscale2.composeapp.generated.resources.calculator_screen_percentage_input
+import gradingscale2.composeapp.generated.resources.calculator_screen_points_input
+import gradingscale2.composeapp.generated.resources.calculator_screen_total_points_input
 import gradingscale2.composeapp.generated.resources.gradescale_list_select_grade_scale
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * The Calculator Screen is the main screen of the calculator feature. It allows the user to calculate the grade of a student based on the
+ * selected grade scale.
+ */
 @Composable
 fun GradeScaleCalculatorScreen() {
     val viewModel: CalculatorViewModel = koinViewModel()
@@ -49,64 +60,70 @@ private fun GradeScaleCalculatorScreen(
 ) {
     val gradeScale = remember(uiState.selectedGradeScale) { uiState.selectedGradeScale }
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(16.dp),
     ) {
-        GradeScaleDropboxSelector(
-            gradeScalesNames = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
-            selectedGradeScaleName = uiState.selectedGradeScale?.gradeScaleName,
-            onSelectGradeScale = onSelectGradeScale,
+        DropboxSelector(
+            elements = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
+            selectedElement = uiState.selectedGradeScale?.gradeScaleName,
+            onSelectElement = onSelectGradeScale,
             modifier = Modifier.fillMaxWidth(),
             defaultText = stringResource(Res.string.gradescale_list_select_grade_scale),
         )
 
         HorizontalDivider()
         if (gradeScale == null) {
-            // TODO: modify this text to be a string resource
-            Text(text = "No grade scale selected")
+            Text(text = stringResource(Res.string.gradescale_list_select_grade_scale))
         } else {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.wrapContentWidth(),
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
-                val totalPointsState = textFieldManager(uiState.totalPoints?.stringWithDecimals() ?: "") {
-                    onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    val totalPointsState = textFieldManager(uiState.totalPoints?.stringWithDecimals() ?: "") {
+                        onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
+                    }
+
+                    CalculatorTextField(
+                        modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                        state = totalPointsState,
+                        label = stringResource(Res.string.calculator_screen_total_points_input),
+                    )
+
+                    val pointState = textFieldManager(uiState.currentGrade?.points?.stringWithDecimals() ?: "") {
+                        onSetPoints(it.toDoubleOrNull() ?: 0.0)
+                    }
+
+                    CalculatorTextField(
+                        modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                        state = pointState,
+                        label = stringResource(Res.string.calculator_screen_points_input),
+                    )
                 }
 
-                CalculatorTextField(
-                    modifier = Modifier.padding(16.dp),
-                    state = totalPointsState,
-                    label = "Total Points",
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    val percentageState = textFieldManager((uiState.currentPercentage)?.times(100)?.stringWithDecimals() ?: "") {
+                        onSetPercentage((it.toDoubleOrNull()?.div(100)) ?: 0.0)
+                    }
 
-                val pointState = textFieldManager(uiState.currentGrade?.points?.stringWithDecimals() ?: "") {
-                    onSetPoints(it.toDoubleOrNull() ?: 0.0)
+                    CalculatorTextField(
+                        modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                        state = percentageState,
+                        label = stringResource(Res.string.calculator_screen_percentage_input),
+                    )
+
+                    DropboxSelector(
+                        elements = uiState.selectedGradeScale?.sortedGrades?.map { it.namedGrade }?.toImmutableList() ?: persistentListOf(),
+                        selectedElement = uiState.currentGrade?.namedGrade,
+                        onSelectElement = onSelectGradeName,
+                        defaultText = stringResource(Res.string.calculator_screen_grade_name_dropbox_default),
+                        label = stringResource(Res.string.calculator_screen_grade_name_dropbox_default),
+                        modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                    )
                 }
-
-                CalculatorTextField(
-                    modifier = Modifier.padding(16.dp),
-                    state = pointState,
-                    label = "Points",
-                )
-
-                val percentageState = textFieldManager((uiState.currentPercentage)?.times(100)?.stringWithDecimals() ?: "") {
-                    onSetPercentage((it.toDoubleOrNull()?.div(100)) ?: 0.0)
-                }
-
-                CalculatorTextField(
-                    modifier = Modifier.padding(16.dp),
-                    state = percentageState,
-                    label = "Percentage",
-                )
-
-                val gradeNameState = textFieldManager(uiState.currentGrade?.namedGrade ?: "") {
-                    onSelectGradeName(it)
-                }
-
-                CalculatorTextField(
-                    modifier = Modifier.padding(16.dp),
-                    state = gradeNameState,
-                    label = "Grade Name",
-                )
             }
         }
     }

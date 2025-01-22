@@ -10,6 +10,11 @@ import de.felixlf.gradingscale2.uimodel.MoleculePresenter
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
+/**
+ * This class is responsible for managing the UI state of the calculator screen.
+ * @param allGradeScalesUseCase UseCase for getting all grade scales.
+ * @param getGradeScaleByIdUseCase UseCase for getting a grade scale by its ID.
+ */
 internal class CalculatorUIStateFactory(
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,

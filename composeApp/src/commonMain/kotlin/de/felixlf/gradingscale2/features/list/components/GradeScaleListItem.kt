@@ -13,6 +13,9 @@ import de.felixlf.gradingscale2.entities.models.PointedGrade
 import de.felixlf.gradingscale2.uicomponents.VerticalDivider
 import de.felixlf.gradingscale2.utils.stringWithDecimals
 
+/**
+ * A list item that displays a grade with its name, percentage and points.
+ */
 @Composable
 internal fun GradeScaleListItem(
     grade: PointedGrade,

@@ -3,7 +3,6 @@ package de.felixlf.gradingscale2.features.calculator
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.toPointedGrade
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 data class GradeScaleCalculatorUIState(
@@ -19,8 +18,6 @@ data class GradeScaleCalculatorUIState(
 
         else -> null
     }
-
-    val gradesList: ImmutableList<String> = selectedGradeScale?.gradesNamesList ?: persistentListOf()
 
     val gradeScalesNames: ImmutableList<String> = gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList()
 

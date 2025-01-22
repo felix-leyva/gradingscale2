@@ -6,6 +6,9 @@ import de.felixlf.gradingscale2.uimodel.UIStateFactory
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.flow.StateFlow
 
+/**
+ * This class is responsible for managing the UI state of the edit grade dialog.
+ */
 class EditGradeUIFactory(
     private val getGradeByUUIDUseCase: GetGradeByUUIDUseCase,
     private val gradeUUID: StateFlow<String?>,

@@ -12,6 +12,9 @@ import de.felixlf.gradingscale2.uimodel.MoleculePresenter
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
+/**
+ * This class is responsible for managing the UI state of the grade scale list screen.
+ */
 internal class GradeListUIStateFactory(
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,

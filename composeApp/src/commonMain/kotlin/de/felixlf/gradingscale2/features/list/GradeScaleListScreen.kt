@@ -26,17 +26,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
-import de.felixlf.gradingscale2.features.list.components.GradeScaleDropboxSelector
 import de.felixlf.gradingscale2.features.list.components.GradeScaleListItem
 import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeDialog
+import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.stringWithDecimals
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.composeapp.generated.resources.Res
+import gradingscale2.composeapp.generated.resources.gradescale_list_no_grade_scale_selected
 import gradingscale2.composeapp.generated.resources.gradescale_list_select_grade_scale
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
+/**
+ * The Grade Scale List Screen is the main screen of the grade scale list feature. It allows the user to view and edit the grades of a grade scale.
+ */
 @Composable
 fun GradeScaleListScreen() {
     val viewModel: GradeScaleListViewModel = koinViewModel()
@@ -74,10 +78,10 @@ private fun GradeScaleListScreen(
             val textFieldValue = textFieldManager(uiState.selectedGradeScale?.totalPoints?.stringWithDecimals() ?: "") {
                 onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
             }
-            GradeScaleDropboxSelector(
-                gradeScalesNames = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
-                selectedGradeScaleName = uiState.selectedGradeScale?.gradeScaleName,
-                onSelectGradeScale = onSelectGradeScale,
+            DropboxSelector(
+                elements = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
+                selectedElement = uiState.selectedGradeScale?.gradeScaleName,
+                onSelectElement = onSelectGradeScale,
                 modifier = Modifier.weight(1f),
                 defaultText = stringResource(Res.string.gradescale_list_select_grade_scale),
             )
@@ -91,7 +95,7 @@ private fun GradeScaleListScreen(
         }
         HorizontalDivider()
         if (gradeScale == null) {
-            Text(text = "No grade scale selected")
+            Text(text = stringResource(Res.string.gradescale_list_no_grade_scale_selected))
             return
         }
         // Using column, due a bug in CMP where on overscrolling the list, the list is not more clickable
