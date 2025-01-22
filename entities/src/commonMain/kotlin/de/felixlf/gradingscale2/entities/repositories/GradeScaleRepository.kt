@@ -19,9 +19,9 @@ internal interface GradeScaleRepository {
     fun getGradeScales(): SharedFlow<ImmutableList<GradeScale>>
 
     /**
-     * Insert or update a [GradeScale].
+     * Insert or update a [GradeScale] and return its id.
      */
-    suspend fun upsertGradeScale(gradeScale: GradeScale): Result<Unit>
+    suspend fun upsertGradeScale(gradeScale: GradeScale): Result<String>
 
     /**
      * Delete a [GradeScale].

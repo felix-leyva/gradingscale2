@@ -25,9 +25,10 @@ internal class GradeScaleRepositoryImpl(
             replay = 1,
         )
 
-    override suspend fun upsertGradeScale(gradeScale: GradeScale): Result<Unit> =
-        gradeScaleDao.upsertGradeScale(gradeScale)
-
+    override suspend fun upsertGradeScale(gradeScale: GradeScale): Result<String> = runCatching {
+        gradeScaleDao.upsertGradeScale(gradeScale).getOrThrow()
+        gradeScale.id
+    }
     override suspend fun deleteGradeScale(gradeScaleId: String): Result<Unit> =
         gradeScaleDao.deleteGradeScale(gradeScaleId)
 }
