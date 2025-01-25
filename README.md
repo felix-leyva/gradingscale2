@@ -13,6 +13,7 @@ The projects is WIP and is not yet ready for production use.
 - Kotlin Multiplatform
 - Jetbrains Compose Multiplatform
 - Adaptive Material3
+- CashApp Molecule
 - Ktor
 - SQLDelight
 - Koin
