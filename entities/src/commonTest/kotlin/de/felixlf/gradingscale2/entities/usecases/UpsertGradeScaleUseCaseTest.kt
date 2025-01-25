@@ -6,6 +6,7 @@ import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class UpsertGradeScaleUseCaseTest {
@@ -22,29 +23,28 @@ class UpsertGradeScaleUseCaseTest {
     }
 
     @Test
-    fun `upsertGradeScale should return success`() = runTest {
+    fun `upsertGradeScale should return success with the id of the new gradeScale which was added`() = runTest {
         // Given
         val gradeScaleName = "Test"
-        val gradeScaleId = "1"
         val defaultGradeName = "A"
 
         // When
-        val result = upsertGradeScaleUseCase(gradeScaleName, gradeScaleId, defaultGradeName)
+        val result = upsertGradeScaleUseCase(gradeScaleName = gradeScaleName, defaultGradeName = defaultGradeName)
 
         // Then
         assertTrue(result.isSuccess)
+        assertEquals("2", result.getOrNull())
     }
 
     @Test
     fun `upsertGradeScale should return failure`() = runTest {
         // Given
         val gradeScaleName = "Test"
-        val gradeScaleId = "1"
         val defaultGradeName = "A"
         dao.success = false
 
         // When
-        val result = upsertGradeScaleUseCase(gradeScaleName, gradeScaleId, defaultGradeName)
+        val result = upsertGradeScaleUseCase(gradeScaleName = gradeScaleName, defaultGradeName = defaultGradeName)
 
         // Then
         assertTrue(result.isFailure)

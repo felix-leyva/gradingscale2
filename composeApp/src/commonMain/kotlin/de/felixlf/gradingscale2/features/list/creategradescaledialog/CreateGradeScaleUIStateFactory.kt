@@ -19,7 +19,7 @@ class CreateGradeScaleUIStateFactory(
     private val scope: CoroutineScope,
 ) : MoleculePresenter<CreateGradeScaleUIState, CreateGradeScaleUIEvent> {
     private var newGradeScaleName by mutableStateOf("")
-    private var state by mutableStateOf<State?>(State.Loading)
+    private var uiSaveState by mutableStateOf<State?>(null)
 
     @Composable
     override fun produceUI(): CreateGradeScaleUIState {
@@ -33,26 +33,22 @@ class CreateGradeScaleUIStateFactory(
         return CreateGradeScaleUIState(
             existingGradeScaleNames = existingGradeScaleNames,
             newName = newGradeScaleName,
-            state = state,
+            saveState = uiSaveState,
         )
     }
 
     override fun sendEvent(event: CreateGradeScaleUIEvent) {
         when (event) {
-            CreateGradeScaleUIEvent.Cancel -> state = State.Cancel
             is CreateGradeScaleUIEvent.SetNewName -> newGradeScaleName = event.name
             is CreateGradeScaleUIEvent.Save -> {
-                state = State.Loading
+                uiSaveState = State.Loading
                 scope.launch {
                     upsertGradeScaleUseCase(
                         gradeScaleName = newGradeScaleName,
-                        gradeScaleId = TODO(
-                            "Check which kind of IDs we are using in the Db. Maybe best is that the use case generates it.",
-                        ),
                         defaultGradeName = event.defaultGradeName,
                     )
-                        .onSuccess { state = State.Success(it) }
-                        .onFailure { state = State.Error }
+                        .onSuccess { uiSaveState = State.Success(it) }
+                        .onFailure { uiSaveState = State.Error }
                 }
             }
         }
@@ -62,5 +58,4 @@ class CreateGradeScaleUIStateFactory(
 sealed interface CreateGradeScaleUIEvent {
     data class SetNewName(val name: String) : CreateGradeScaleUIEvent
     data class Save(val defaultGradeName: String) : CreateGradeScaleUIEvent
-    object Cancel : CreateGradeScaleUIEvent
 }

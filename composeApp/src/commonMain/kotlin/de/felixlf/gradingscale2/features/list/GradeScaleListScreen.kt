@@ -5,10 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -22,10 +24,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.features.list.components.GradeScaleListItem
 import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
@@ -34,6 +38,7 @@ import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.composeapp.generated.resources.Res
 import gradingscale2.composeapp.generated.resources.gradescale_list_no_grade_scale_selected
 import gradingscale2.composeapp.generated.resources.gradescale_list_select_grade_scale
+import gradingscale2.composeapp.generated.resources.gradescale_list_total_points
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -74,7 +79,10 @@ private fun GradeScaleListScreen(
     Column(
         modifier = Modifier.fillMaxSize(),
     ) {
-        Row {
+        Row(
+            modifier = Modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             val textFieldValue = textFieldManager(uiState.selectedGradeScale?.totalPoints?.stringWithDecimals() ?: "") {
                 onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
             }
@@ -82,16 +90,19 @@ private fun GradeScaleListScreen(
                 elements = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
                 selectedElement = uiState.selectedGradeScale?.gradeScaleName,
                 onSelectElement = onSelectGradeScale,
-                modifier = Modifier.weight(1f),
-                defaultText = stringResource(Res.string.gradescale_list_select_grade_scale),
+                modifier = Modifier.weight(0.5f),
+                label = stringResource(Res.string.gradescale_list_select_grade_scale),
             )
+            if (gradeScale != null) {
+                Spacer(modifier = Modifier.width(8.dp))
+                CalculatorTextField(
+                    modifier = Modifier.weight(0.5f),
+                    state = textFieldValue,
+                    textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                    label = stringResource(Res.string.gradescale_list_total_points),
+                )
+            }
 
-            BasicTextField(
-                modifier = Modifier.weight(1f).padding(16.dp),
-                state = textFieldValue,
-                textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-
-            )
         }
         HorizontalDivider()
         if (gradeScale == null) {

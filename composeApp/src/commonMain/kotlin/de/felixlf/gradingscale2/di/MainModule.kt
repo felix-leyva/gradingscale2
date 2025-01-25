@@ -9,12 +9,14 @@ import de.felixlf.gradingscale2.features.calculator.CalculatorUIStateFactory
 import de.felixlf.gradingscale2.features.calculator.CalculatorViewModel
 import de.felixlf.gradingscale2.features.list.GradeListUIStateFactory
 import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
+import de.felixlf.gradingscale2.features.list.creategradescaledialog.CreateGradeScaleViewModel
 import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeViewModel
 import de.felixlf.gradingscale2.navigation.AppNavController
 import de.felixlf.gradingscale2.navigation.AppNavControllerImpl
 import de.felixlf.gradingscale2.network.di.networkModule
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
@@ -29,10 +31,11 @@ val mainModule =
         )
         singleOf(::InitializerImpl).bind<Initializer>()
         factoryOf(::GradeListUIStateFactory)
-        factoryOf(::GradeScaleListViewModel)
-        factoryOf(::EditGradeViewModel)
-        factoryOf(::CalculatorViewModel)
+        viewModelOf(::GradeScaleListViewModel)
+        viewModelOf(::EditGradeViewModel)
+        viewModelOf(::CalculatorViewModel)
         factoryOf(::CalculatorUIStateFactory)
+        viewModelOf(::CreateGradeScaleViewModel)
         singleOf(::AppNavControllerImpl).bind<AppNavController>()
         single<AppNavController> { (controller: NavHostController) -> AppNavControllerImpl(controller) }
     }

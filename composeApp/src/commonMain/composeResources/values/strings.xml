@@ -1,6 +1,7 @@
 <resources>
     <string name="gradescale_list_select_grade_scale">Select a grade scale</string>
     <string name="gradescale_list_no_grade_scale_selected">No grade scales selected</string>
+    <string name="gradescale_list_total_points">Total Points</string>
     <string name="edit_grade_name">Name of the grade</string>
     <string name="edit_grade_percentage">Percentage of the grade</string>
     <string name="edit_grade_save_button">Save changes</string>

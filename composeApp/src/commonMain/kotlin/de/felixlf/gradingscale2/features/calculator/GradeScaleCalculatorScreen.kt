@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -67,7 +68,7 @@ private fun GradeScaleCalculatorScreen(
             selectedElement = uiState.selectedGradeScale?.gradeScaleName,
             onSelectElement = onSelectGradeScale,
             modifier = Modifier.fillMaxWidth(),
-            defaultText = stringResource(Res.string.gradescale_list_select_grade_scale),
+            label = stringResource(Res.string.gradescale_list_select_grade_scale),
         )
 
         HorizontalDivider()
@@ -122,6 +123,7 @@ private fun GradeScaleCalculatorScreen(
                         defaultText = stringResource(Res.string.calculator_screen_grade_name_dropbox_default),
                         label = stringResource(Res.string.calculator_screen_grade_name_dropbox_default),
                         modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                        textStyle = MaterialTheme.typography. titleLarge. copy(color = MaterialTheme. colorScheme. onSurface)
                     )
                 }
             }
