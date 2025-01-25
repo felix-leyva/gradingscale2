@@ -9,14 +9,22 @@ import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.moleculeTest
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class CreateGradeScaleUIStateFactoryTest {
+    private val testDispatcher = StandardTestDispatcher()
     private val mockGradeScales = MockGradeScalesGenerator().gradeScales
     private val getAllGradeScalesUseCase = GetAllGradeScalesUseCase {
         flowOf(mockGradeScales.toImmutableList())
@@ -52,10 +60,18 @@ class CreateGradeScaleUIStateFactoryTest {
             factory.produceUI()
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest
     fun setup() {
+        Dispatchers.setMain(testDispatcher)
         savedName = ""
         savedDefaultGradeName = ""
+    }
+
+    @AfterTest
+    fun tearDown() {
+        Dispatchers.resetMain()
+        testDispatcher.cancelChildren()
     }
 
     @Test
