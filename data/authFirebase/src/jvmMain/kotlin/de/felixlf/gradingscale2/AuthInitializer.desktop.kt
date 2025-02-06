@@ -38,9 +38,9 @@ internal actual class AuthInitializerImpl : AuthInitializer {
 
         val firebaseOptions =
             FirebaseOptions(
-                projectId = "gradingscale-9380c",
-                applicationId = "1:950128411615:android:2fd0fa5f1848b055193a6a",
-                apiKey = "AIzaSyDVIRALTJYVFyGJTZmNDJ9Qk2x-Rx3gl8A",
+                projectId = BuildResources.FIREBASE_PROJECT_ID,
+                applicationId = BuildResources.FIREBASE_APP_ID,
+                apiKey = BuildResources.FIREBASE_API_KEY,
             )
         Firebase.initialize(Application(), firebaseOptions)
         CoroutineScope(Dispatchers.IO).launch {
@@ -48,11 +48,6 @@ internal actual class AuthInitializerImpl : AuthInitializer {
         }
     }
 }
-
-private fun AuthResult.readable() =
-    user?.apply {
-        "User: $displayName, $email, $phoneNumber, $photoURL }"
-    } ?: "null"
 
 private suspend fun testAuth(): String {
     val result = Firebase.auth.signInAnonymously()

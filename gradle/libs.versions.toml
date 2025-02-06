@@ -39,7 +39,7 @@ kotlinx-dateTime = "0.6.0"
 koin = "4.0.0"
 ktor = "2.3.12"
 ktlintGradle = "12.1.1" # https://github.com/JLLeitschuh/ktlint-gradle/releases
-gmazzoBuildConfig = "5.4.0" # https://github.com/gmazzo/gradle-buildconfig-plugin
+gmazzoBuildConfig = "5.5.1" # https://github.com/gmazzo/gradle-buildconfig-plugin
 aboutLibraries = "11.1.4" # https://github.com/mikepenz/AboutLibraries/releases
 sonarqubeGradlePlugin = "5.1.0.4882"
 turbineVersion = "1.2.0" # https://mvnrepository.com/artifact/app.cash.turbine/turbine
@@ -144,6 +144,7 @@ gradle-sqldelight = { group = "app.cash.sqldelight", name = "app.cash.sqldelight
 gradle-hotreload = { group = "org.jetbrains.compose-hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload"}
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelightVersion" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
