@@ -41,13 +41,13 @@ import org.jetbrains.compose.resources.stringResource
  * The Edit Grade Dialog is a dialog that allows the user to edit a grade.
  */
 @Composable
-fun EditGradeDialog(uuid: String, onDismiss: () -> Unit) {
+fun UpsertGradeDialog(uuid: String, onDismiss: () -> Unit) {
     val viewModel = dialogScopedViewModel<EditGradeViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(uuid) { viewModel.setGradeUUID(uuid) }
 
     Dialog(onDismissRequest = onDismiss) {
-        EditGradeDialog(
+        UpsertGradeDialog(
             uiState = uiState.value,
             onSetPercentage = viewModel::setPercentage,
             onSetName = viewModel::setGradeName,
@@ -60,7 +60,7 @@ fun EditGradeDialog(uuid: String, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun EditGradeDialog(
+private fun UpsertGradeDialog(
     uiState: EditGradeUIState,
     onSetPercentage: (String) -> Unit = {},
     onSetName: (String) -> Unit = {},
@@ -137,7 +137,7 @@ private fun EditGradeTextField(
 @Preview
 @Composable
 private fun EditGradeDialogPreview() {
-    EditGradeDialog(
+    UpsertGradeDialog(
         uiState = EditGradeUIState(
             name = "Test",
             percentage = "50",

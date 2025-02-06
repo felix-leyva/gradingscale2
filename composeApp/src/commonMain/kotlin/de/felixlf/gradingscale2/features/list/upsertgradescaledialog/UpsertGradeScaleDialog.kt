@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.list.creategradescaledialog
+package de.felixlf.gradingscale2.features.list.upsertgradescaledialog
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
@@ -12,6 +12,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -25,19 +26,27 @@ import de.felixlf.gradingscale2.utils.textFieldManager
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-internal fun CreateNewGradeScaleDialog(
-    viewModel: CreateGradeScaleViewModel = dialogScopedViewModel<CreateGradeScaleViewModel>(),
+internal fun UpsertGradeScaleDialog(
+    viewModel: UpsertGradeScaleViewModel = dialogScopedViewModel<UpsertGradeScaleViewModel>(),
     onDismiss: () -> Unit = {},
+    currentGradeScaleId: String? = null,
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(currentGradeScaleId) {
+        if (currentGradeScaleId != null) {
+            viewModel.onEvent(UpserGradeScaleUIEvent.SetCurrentGradeScaleId(currentGradeScaleId))
+        }
+    }
+
     // TODO: add into resources
     val defaultGradeName = "new grade"
     Dialog(onDismissRequest = onDismiss) {
-        CreateNewGradeScaleDialog(
+        UpsertGradeScaleDialog(
             uiState = uiState.value,
-            onSetNewName = { viewModel.onEvent(CreateGradeScaleUIEvent.SetNewName(it)) },
+            onSetNewName = { viewModel.onEvent(UpserGradeScaleUIEvent.SetNewName(it)) },
             onSave = {
-                viewModel.onEvent(CreateGradeScaleUIEvent.Save(defaultGradeName))
+                viewModel.onEvent(UpserGradeScaleUIEvent.Save(defaultGradeName))
                 onDismiss()
             },
             onDismiss = onDismiss,
@@ -46,8 +55,8 @@ internal fun CreateNewGradeScaleDialog(
 }
 
 @Composable
-private fun CreateNewGradeScaleDialog(
-    uiState: CreateGradeScaleUIState,
+private fun UpsertGradeScaleDialog(
+    uiState: UpsertGradeScaleUIState,
     onSetNewName: (String) -> Unit = {},
     onSave: () -> Unit = {},
     onDismiss: () -> Unit = {},
@@ -58,7 +67,7 @@ private fun CreateNewGradeScaleDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            if (uiState.saveState == CreateGradeScaleUIState.State.Loading) {
+            if (uiState.saveState == UpsertGradeScaleUIState.State.Loading) {
                 CircularProgressIndicator()
             } else {
                 val textFieldState = textFieldManager(uiState.newName ?: "") {
@@ -83,14 +92,13 @@ private fun CreateNewGradeScaleDialog(
     }
 }
 
-
 @Preview
 @Composable
 fun CreateNewGradeScaleDialogPreview() = AppTheme {
-    CreateNewGradeScaleDialog(
-        uiState = CreateGradeScaleUIState(
+    UpsertGradeScaleDialog(
+        uiState = UpsertGradeScaleUIState(
             existingGradeScaleNames = MockGradeScalesGenerator().gradeScales.map { gradeScale ->
-                CreateGradeScaleUIState.GradeScaleNameAndId(
+                UpsertGradeScaleUIState.GradeScaleNameAndId(
                     name = gradeScale.gradeScaleName,
                     id = gradeScale.id,
                 )

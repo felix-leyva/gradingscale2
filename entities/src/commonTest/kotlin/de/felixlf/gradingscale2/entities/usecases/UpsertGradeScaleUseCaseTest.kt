@@ -12,14 +12,14 @@ import kotlin.test.assertTrue
 class UpsertGradeScaleUseCaseTest {
     private val dao: MockGradeScaleDao = MockGradeScaleDao()
     private lateinit var repo: GradeScaleRepositoryImpl
-    private lateinit var upsertGradeScaleUseCase: UpsertGradeScaleUseCaseImpl
+    private lateinit var upsertGradeScaleUseCase: InsertGradeScaleUseCaseImpl
 
     @BeforeTest
     fun setup() {
         dao.success = true
         dao.gradeScales.value = MockGradeScalesGenerator().gradeScales
         repo = GradeScaleRepositoryImpl(gradeScaleDao = dao)
-        upsertGradeScaleUseCase = UpsertGradeScaleUseCaseImpl(gradeScaleRepository = repo)
+        upsertGradeScaleUseCase = InsertGradeScaleUseCaseImpl(gradeScaleRepository = repo)
     }
 
     @Test

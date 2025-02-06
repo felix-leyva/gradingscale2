@@ -8,11 +8,11 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-fun interface UpsertGradeScaleUseCase {
+fun interface InsertGradeScaleUseCase {
     suspend operator fun invoke(gradeScaleName: String, defaultGradeName: String): Result<String>
 }
 
-internal class UpsertGradeScaleUseCaseImpl(val gradeScaleRepository: GradeScaleRepository) : UpsertGradeScaleUseCase {
+internal class InsertGradeScaleUseCaseImpl(val gradeScaleRepository: GradeScaleRepository) : InsertGradeScaleUseCase {
     @OptIn(ExperimentalUuidApi::class)
     override suspend operator fun invoke(gradeScaleName: String, defaultGradeName: String): Result<String> =
         runCatching {

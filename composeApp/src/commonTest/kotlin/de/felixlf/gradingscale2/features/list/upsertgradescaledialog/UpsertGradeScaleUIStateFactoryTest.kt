@@ -1,10 +1,11 @@
-package de.felixlf.gradingscale2.features.list.creategradescaledialog
+package de.felixlf.gradingscale2.features.list.upsertgradescaledialog
 
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.test
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
-import de.felixlf.gradingscale2.entities.usecases.UpsertGradeScaleUseCase
+import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
+import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.moleculeTest
 import kotlinx.collections.immutable.persistentListOf
@@ -23,7 +24,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class CreateGradeScaleUIStateFactoryTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class UpsertGradeScaleUIStateFactoryTest {
     private val testDispatcher = StandardTestDispatcher()
     private val mockGradeScales = MockGradeScalesGenerator().gradeScales
     private val getAllGradeScalesUseCase = GetAllGradeScalesUseCase {
@@ -32,7 +34,7 @@ class CreateGradeScaleUIStateFactoryTest {
     private val defaultUpsertId = "2"
     private lateinit var savedName: String
     private lateinit var savedDefaultGradeName: String
-    private val defaultUpsertGradeScaleUseCase = UpsertGradeScaleUseCase { gradeScaleName, gradeName ->
+    private val defaultInsertGradeScaleUseCase = InsertGradeScaleUseCase { gradeScaleName, gradeName ->
         delay(1)
         savedName = gradeScaleName
         savedDefaultGradeName = gradeName
@@ -40,22 +42,29 @@ class CreateGradeScaleUIStateFactoryTest {
         Result.success(defaultUpsertId)
     }
 
+    private val defaultUpdateGradeScaleUseCase = UpdateGradeScaleUseCase { _, _, _ ->
+        delay(1)
+        Result.success(defaultUpsertId)
+    }
+
     private val existingGradeScaleNames = mockGradeScales.map {
-        CreateGradeScaleUIState.GradeScaleNameAndId(
+        UpsertGradeScaleUIState.GradeScaleNameAndId(
             name = it.gradeScaleName,
             id = it.id,
         )
     }.toImmutableList()
 
     private fun TestScope.setUseCase(
-        upsertGradeScaleUseCase: UpsertGradeScaleUseCase = defaultUpsertGradeScaleUseCase,
-    ) = CreateGradeScaleUIStateFactory(
+        insertGradeScaleUseCase: InsertGradeScaleUseCase = defaultInsertGradeScaleUseCase,
+        updateGradeScaleUseCase: UpdateGradeScaleUseCase = defaultUpdateGradeScaleUseCase,
+    ) = UpsertGradeScaleUIStateFactory(
         getAllGradeScalesUseCase = getAllGradeScalesUseCase,
-        upsertGradeScaleUseCase = upsertGradeScaleUseCase,
+        insertGradeScaleUseCase = insertGradeScaleUseCase,
+        updateGradeScaleUseCase = updateGradeScaleUseCase,
         scope = this,
     )
 
-    private fun TestScope.getUIState(factory: CreateGradeScaleUIStateFactory) =
+    private fun TestScope.getUIState(factory: UpsertGradeScaleUIStateFactory) =
         launchMolecule(mode = RecompositionMode.Immediate) {
             factory.produceUI()
         }
@@ -78,7 +87,7 @@ class CreateGradeScaleUIStateFactoryTest {
     fun `should return initial state and then the list of gradeScale names`() = moleculeTest {
         getUIState(setUseCase()).test {
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = persistentListOf(),
                     newName = "",
                     saveState = null,
@@ -87,7 +96,7 @@ class CreateGradeScaleUIStateFactoryTest {
             )
 
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = "",
                     saveState = null,
@@ -102,9 +111,9 @@ class CreateGradeScaleUIStateFactoryTest {
         val useCase = setUseCase()
         getUIState(useCase).test {
             skipItems(2)
-            useCase.sendEvent(CreateGradeScaleUIEvent.SetNewName("newName"))
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetNewName("newName"))
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = "newName",
                     saveState = null,
@@ -112,9 +121,9 @@ class CreateGradeScaleUIStateFactoryTest {
                 awaitItem(),
             )
 
-            useCase.sendEvent(CreateGradeScaleUIEvent.SetNewName("newName2"))
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetNewName("newName2"))
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = "newName2",
                     saveState = null,
@@ -131,9 +140,9 @@ class CreateGradeScaleUIStateFactoryTest {
             skipItems(2)
             val gradeScaleName = "scale"
             val defaultGradeName = "grade"
-            useCase.sendEvent(CreateGradeScaleUIEvent.SetNewName(gradeScaleName))
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetNewName(gradeScaleName))
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = gradeScaleName,
                     saveState = null,
@@ -141,22 +150,22 @@ class CreateGradeScaleUIStateFactoryTest {
                 awaitItem(),
             )
 
-            useCase.sendEvent(CreateGradeScaleUIEvent.Save(defaultGradeName))
+            useCase.sendEvent(UpserGradeScaleUIEvent.Save(defaultGradeName))
 
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = gradeScaleName,
-                    saveState = CreateGradeScaleUIState.State.Loading,
+                    saveState = UpsertGradeScaleUIState.State.Loading,
                 ),
                 awaitItem(),
             )
 
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = gradeScaleName,
-                    saveState = CreateGradeScaleUIState.State.Success(defaultUpsertId),
+                    saveState = UpsertGradeScaleUIState.State.Success(defaultUpsertId),
                 ),
                 awaitItem(),
             )
@@ -168,7 +177,7 @@ class CreateGradeScaleUIStateFactoryTest {
     @Test
     fun `should set save state to loading and then to error`() = moleculeTest {
         val useCase = setUseCase(
-            upsertGradeScaleUseCase = UpsertGradeScaleUseCase { _, _ ->
+            insertGradeScaleUseCase = InsertGradeScaleUseCase { _, _ ->
                 delay(1)
                 Result.failure(Exception())
             },
@@ -177,9 +186,9 @@ class CreateGradeScaleUIStateFactoryTest {
             skipItems(2)
             val gradeScaleName = "scale"
             val defaultGradeName = "grade"
-            useCase.sendEvent(CreateGradeScaleUIEvent.SetNewName(gradeScaleName))
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetNewName(gradeScaleName))
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = gradeScaleName,
                     saveState = null,
@@ -187,22 +196,40 @@ class CreateGradeScaleUIStateFactoryTest {
                 awaitItem(),
             )
 
-            useCase.sendEvent(CreateGradeScaleUIEvent.Save(defaultGradeName))
+            useCase.sendEvent(UpserGradeScaleUIEvent.Save(defaultGradeName))
 
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = gradeScaleName,
-                    saveState = CreateGradeScaleUIState.State.Loading,
+                    saveState = UpsertGradeScaleUIState.State.Loading,
                 ),
                 awaitItem(),
             )
 
             assertEquals(
-                CreateGradeScaleUIState(
+                UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = gradeScaleName,
-                    saveState = CreateGradeScaleUIState.State.Error,
+                    saveState = UpsertGradeScaleUIState.State.Error,
+                ),
+                awaitItem(),
+            )
+        }
+    }
+
+    @Test
+    fun `should set current grade scale id`() = moleculeTest {
+        val useCase = setUseCase()
+        getUIState(useCase).test {
+            skipItems(2)
+            val gradeScaleId = mockGradeScales[2].id
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetCurrentGradeScaleId(gradeScaleId))
+            assertEquals(
+                UpsertGradeScaleUIState(
+                    existingGradeScaleNames = existingGradeScaleNames,
+                    newName = mockGradeScales[2].gradeScaleName,
+                    saveState = null,
                 ),
                 awaitItem(),
             )

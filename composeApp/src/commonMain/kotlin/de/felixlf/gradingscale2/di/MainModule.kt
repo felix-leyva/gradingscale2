@@ -9,8 +9,8 @@ import de.felixlf.gradingscale2.features.calculator.CalculatorUIStateFactory
 import de.felixlf.gradingscale2.features.calculator.CalculatorViewModel
 import de.felixlf.gradingscale2.features.list.GradeListUIStateFactory
 import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
-import de.felixlf.gradingscale2.features.list.creategradescaledialog.CreateGradeScaleViewModel
 import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeViewModel
+import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleViewModel
 import de.felixlf.gradingscale2.navigation.AppNavController
 import de.felixlf.gradingscale2.navigation.AppNavControllerImpl
 import de.felixlf.gradingscale2.network.di.networkModule
@@ -35,7 +35,7 @@ val mainModule =
         viewModelOf(::EditGradeViewModel)
         viewModelOf(::CalculatorViewModel)
         factoryOf(::CalculatorUIStateFactory)
-        viewModelOf(::CreateGradeScaleViewModel)
+        viewModelOf(::UpsertGradeScaleViewModel)
         singleOf(::AppNavControllerImpl).bind<AppNavController>()
         single<AppNavController> { (controller: NavHostController) -> AppNavControllerImpl(controller) }
     }
