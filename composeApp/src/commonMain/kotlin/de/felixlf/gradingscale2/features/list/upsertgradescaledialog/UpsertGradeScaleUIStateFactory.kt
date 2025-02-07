@@ -56,7 +56,7 @@ class UpsertGradeScaleUIStateFactory(
     override fun sendEvent(event: UpserGradeScaleUIEvent) {
         when (event) {
             is UpserGradeScaleUIEvent.SetNewName -> newGradeScaleName = event.name
-            is UpserGradeScaleUIEvent.Save -> ::save
+            is UpserGradeScaleUIEvent.Save -> save(event)
             is UpserGradeScaleUIEvent.SetCurrentGradeScaleId -> currentGradeScaleId = event.gradeScaleId
         }
     }

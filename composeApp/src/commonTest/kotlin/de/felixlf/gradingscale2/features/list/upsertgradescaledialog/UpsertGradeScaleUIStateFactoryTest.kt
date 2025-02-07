@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
@@ -35,7 +36,7 @@ class UpsertGradeScaleUIStateFactoryTest {
     private lateinit var savedName: String
     private lateinit var savedDefaultGradeName: String
     private val defaultInsertGradeScaleUseCase = InsertGradeScaleUseCase { gradeScaleName, gradeName ->
-        delay(1)
+        delay(10)
         savedName = gradeScaleName
         savedDefaultGradeName = gradeName
 
@@ -43,7 +44,7 @@ class UpsertGradeScaleUIStateFactoryTest {
     }
 
     private val defaultUpdateGradeScaleUseCase = UpdateGradeScaleUseCase { _, _, _ ->
-        delay(1)
+        delay(10)
         Result.success(defaultUpsertId)
     }
 
