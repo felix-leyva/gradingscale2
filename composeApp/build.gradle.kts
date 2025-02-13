@@ -139,6 +139,10 @@ kotlin {
             implementation(libs2.kotlinx.collections.immutable)
             implementation(libs2.molecule.runtime)
 
+            // Arrow
+            implementation(libs2.arrow.core)
+            implementation(libs2.arrow.optics)
+
             implementation(project(":entities"))
             implementation(project(":data:authFirebase"))
             implementation(project(":data:network"))
@@ -212,4 +216,7 @@ tasks.register("checkAndCreateGoogleServices") {
 
 tasks.named("preBuild") {
     dependsOn("checkAndCreateGoogleServices")
+}
+dependencies {
+    ksp(libs2.arrow.optics.ksp.plugin)
 }
