@@ -76,7 +76,7 @@ class UpsertGradeScaleUIStateFactory(
                     gradeScaleName = newGradeScaleName,
                     defaultGradeName = event.defaultGradeName,
                 )
-            }.onSuccess { uiSaveState = Success(it) }.onFailure { uiSaveState = Error }
+            }.onSome { uiSaveState = Success(it) }.onNone { uiSaveState = Error }
         }
     }
 }

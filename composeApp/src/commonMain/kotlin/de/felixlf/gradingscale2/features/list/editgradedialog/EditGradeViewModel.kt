@@ -51,6 +51,6 @@ class EditGradeViewModel(
                 ?: throw IllegalArgumentException("Grade percentage cannot be null before saving"),
         ) ?: throw IllegalArgumentException("Grade cannot be null before saving")
 
-        viewModelScope.launch { upsertGradeUseCase(modifiedGrade).onFailure { Napier.e("Error updating grade", it) } }
+        viewModelScope.launch { upsertGradeUseCase(modifiedGrade).onNone { Napier.e("Error updating grade") } }
     }
 }

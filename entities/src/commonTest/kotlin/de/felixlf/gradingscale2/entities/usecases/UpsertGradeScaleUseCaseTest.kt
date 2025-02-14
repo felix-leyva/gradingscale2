@@ -32,7 +32,7 @@ class UpsertGradeScaleUseCaseTest {
         val result = upsertGradeScaleUseCase(gradeScaleName = gradeScaleName, defaultGradeName = defaultGradeName)
 
         // Then
-        assertTrue(result.isSuccess)
+        assertTrue(result.isSome())
         assertEquals("2", result.getOrNull())
     }
 
@@ -47,6 +47,6 @@ class UpsertGradeScaleUseCaseTest {
         val result = upsertGradeScaleUseCase(gradeScaleName = gradeScaleName, defaultGradeName = defaultGradeName)
 
         // Then
-        assertTrue(result.isFailure)
+        assertTrue(result.isNone())
     }
 }

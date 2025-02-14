@@ -1,6 +1,7 @@
 package de.felixlf.gradingscale2.features.list.editgradedialog
 
 import app.cash.turbine.test
+import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
@@ -33,7 +34,7 @@ class EditGradeViewModelTest {
     }
 
     private val updateSingleGradeUseCase = UpsertGradeUseCase { grade ->
-        runCatching {
+        option {
             gradeScales.update {
                 val modifiedGradeScale = it.find { gradeScale -> gradeScale.id == grade.idOfGradeScale }
                     ?: throw IllegalArgumentException("GradeScale not found")

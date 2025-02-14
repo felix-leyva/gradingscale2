@@ -1,5 +1,7 @@
 package de.felixlf.gradingscale2.entities.usecases
 
+import arrow.core.Option
+import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepository
@@ -9,15 +11,15 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 fun interface InsertGradeScaleUseCase {
-    suspend operator fun invoke(gradeScaleName: String, defaultGradeName: String): Result<String>
+    suspend operator fun invoke(gradeScaleName: String, defaultGradeName: String): Option<String>
 }
 
 internal class InsertGradeScaleUseCaseImpl(val gradeScaleRepository: GradeScaleRepository) : InsertGradeScaleUseCase {
     @OptIn(ExperimentalUuidApi::class)
-    override suspend operator fun invoke(gradeScaleName: String, defaultGradeName: String): Result<String> =
-        runCatching {
+    override suspend operator fun invoke(gradeScaleName: String, defaultGradeName: String): Option<String> =
+        option {
             val maxAvailableId = gradeScaleRepository.getGradeScales().firstOrNull()?.mapNotNull { it.id.toIntOrNull() }?.maxOrNull()
-                ?: throw IllegalStateException("No grade scales found")
+                ?: raise()
             val initialGrade = Grade(
                 namedGrade = defaultGradeName,
                 percentage = 0.5,
@@ -31,6 +33,6 @@ internal class InsertGradeScaleUseCaseImpl(val gradeScaleRepository: GradeScaleR
                 totalPoints = 10.0,
                 grades = persistentListOf(initialGrade),
             )
-            gradeScaleRepository.upsertGradeScale(initialGradeScale).getOrThrow()
+            gradeScaleRepository.upsertGradeScale(initialGradeScale).bind()
         }
 }

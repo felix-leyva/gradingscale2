@@ -3,6 +3,8 @@ package de.felixlf.gradingscale2.features.list.upsertgradescaledialog
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.test
+import arrow.core.None
+import arrow.core.Option
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
@@ -17,7 +19,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
@@ -40,12 +41,12 @@ class UpsertGradeScaleUIStateFactoryTest {
         savedName = gradeScaleName
         savedDefaultGradeName = gradeName
 
-        Result.success(defaultUpsertId)
+        Option.invoke(defaultUpsertId)
     }
 
     private val defaultUpdateGradeScaleUseCase = UpdateGradeScaleUseCase { _, _, _ ->
         delay(10)
-        Result.success(defaultUpsertId)
+        Option.invoke(defaultUpsertId)
     }
 
     private val existingGradeScaleNames = mockGradeScales.map {
@@ -180,7 +181,7 @@ class UpsertGradeScaleUIStateFactoryTest {
         val useCase = setUseCase(
             insertGradeScaleUseCase = InsertGradeScaleUseCase { _, _ ->
                 delay(1)
-                Result.failure(Exception())
+                None
             },
         )
         getUIState(useCase).test {

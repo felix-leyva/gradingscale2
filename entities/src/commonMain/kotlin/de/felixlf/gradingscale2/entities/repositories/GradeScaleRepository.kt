@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.entities.repositories
 
+import arrow.core.Option
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.SharedFlow
@@ -21,10 +22,10 @@ internal interface GradeScaleRepository {
     /**
      * Insert or update a [GradeScale] and return its id.
      */
-    suspend fun upsertGradeScale(gradeScale: GradeScale): Result<String>
+    suspend fun upsertGradeScale(gradeScale: GradeScale): Option<String>
 
     /**
      * Delete a [GradeScale].
      */
-    suspend fun deleteGradeScale(gradeScaleId: String): Result<Unit>
+    suspend fun deleteGradeScale(gradeScaleId: String): Option<Unit>
 }
