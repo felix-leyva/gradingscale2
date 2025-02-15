@@ -10,6 +10,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 internal class GradesDaoStoreImpl(private val gradeScaleStoreProvider: GradeScaleStoreProvider) : GradesDao {
+    override fun getAllGradesFromGradeScale(gradeScaleId: String): Flow<List<Grade>> {
+        return gradeScaleStoreProvider.flow.map { gradeScales ->
+            gradeScales.firstOrNull { it.id == gradeScaleId }?.grades ?: emptyList()
+        }
+    }
+
     override fun getGradeById(gradeId: String): Flow<Grade?> {
         return gradeScaleStoreProvider.flow.map { gradeScales ->
             gradeScales.flatMap { it.grades }
