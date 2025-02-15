@@ -39,6 +39,14 @@ FROM grade
 JOIN grade_scale ON grade.scale_id = grade_scale.id
 WHERE grade_scale.grade_scale_name = ?;
 
+-- Get all grades from a grade scale id
+getAllGradesByGradeScaleId:
+SELECT grade_scale.grade_scale_name, grade.*
+FROM grade_scale
+INNER JOIN grade ON grade_scale.id = grade.scale_id
+WHERE grade_scale.id = ?;
+
+
 -- Get a grade scale with all its associated grades (1-to-many)
 getGradeScaleWithGrades:
 SELECT grade_scale.id AS grade_scale_id, grade_scale.grade_scale_name, grade.uuid AS grade_uuid, grade.named_grade, grade.percentage, grade.scale_id

@@ -18,8 +18,9 @@ internal class InsertGradeScaleUseCaseImpl(val gradeScaleRepository: GradeScaleR
     @OptIn(ExperimentalUuidApi::class)
     override suspend operator fun invoke(gradeScaleName: String, defaultGradeName: String): Option<String> =
         option {
-            val maxAvailableId = gradeScaleRepository.getGradeScales().firstOrNull()?.mapNotNull { it.id.toIntOrNull() }?.maxOrNull()
-                ?: raise()
+            val maxAvailableId =
+                ensureNotNull(gradeScaleRepository.getGradeScales().firstOrNull()?.mapNotNull { it.id.toIntOrNull() }?.maxOrNull())
+
             val initialGrade = Grade(
                 namedGrade = defaultGradeName,
                 percentage = 0.5,

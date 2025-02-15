@@ -1,6 +1,7 @@
 package de.felixlf.gradingscale2.entities.daos
 
 import app.cash.sqldelight.coroutines.asFlow
+import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import app.cash.sqldelight.db.SqlDriver
 import arrow.core.Option
@@ -10,6 +11,7 @@ import de.felixlf.gradingscale2.entities.models.Grade
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 
 internal class GradesDaoImpl(
     private val gradeScaleQueries: GradeScaleQueries,
@@ -17,6 +19,12 @@ internal class GradesDaoImpl(
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val mapper: GradeMapper = GradeMapper(),
 ) : GradesDao {
+    override fun getAllGradesFromGradeScale(gradeScaleId: String): Flow<List<Grade>> {
+        return gradeScaleQueries.getAllGradesByGradeScaleId(gradeScaleId, mapper::mapToGrade).asFlow()
+            .mapToList(dispatcher)
+            .flowOn(dispatcher)
+    }
+
     override fun getGradeById(gradeId: String): Flow<Grade?> {
         return gradeScaleQueries.getGradeByUuid(gradeId, mapper::mapToGrade).asFlow()
             .mapToOneOrNull(dispatcher)

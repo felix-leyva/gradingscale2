@@ -13,6 +13,11 @@ internal class GradesRepositoryImpl(
     private val gradesDao: GradesDao,
     private val scope: CoroutineScope = CoroutineScope(CoroutineName("GradesRepositoryImpl")),
 ) : GradesRepository {
+    override fun getAllGradesFromGradeScale(gradeScaleId: String): SharedFlow<List<Grade>> {
+        return gradesDao.getAllGradesFromGradeScale(gradeScaleId)
+            .shareIn(scope = scope, started = SharingStarted.Lazily, replay = 1)
+    }
+
     override fun getGradeById(gradeId: String): SharedFlow<Grade?> {
         return gradesDao.getGradeById(gradeId)
             .shareIn(scope = scope, started = SharingStarted.Lazily, replay = 1)

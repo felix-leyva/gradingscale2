@@ -13,8 +13,7 @@ fun interface UpdateGradeScaleUseCase {
 internal class UpdateGradeScaleUseCaseImpl(val gradeScaleRepository: GradeScaleRepository) : UpdateGradeScaleUseCase {
     override suspend operator fun invoke(gradeScaleName: String, gradeScaleId: String, defaultGradeName: String): Option<String> =
         option {
-            val grades = gradeScaleRepository.getGradeScaleById(gradeScaleId).firstOrNull()?.grades
-                ?: raise()
+            val grades = ensureNotNull(gradeScaleRepository.getGradeScaleById(gradeScaleId).firstOrNull()?.grades)
 
             val initialGradeScale = GradeScale(
                 gradeScaleName = gradeScaleName,
