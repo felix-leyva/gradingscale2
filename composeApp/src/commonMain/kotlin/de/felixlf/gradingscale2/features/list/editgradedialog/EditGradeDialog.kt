@@ -44,15 +44,15 @@ import org.jetbrains.compose.resources.stringResource
 fun UpsertGradeDialog(uuid: String, onDismiss: () -> Unit) {
     val viewModel = dialogScopedViewModel<EditGradeViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(uuid) { viewModel.setGradeUUID(uuid) }
+    LaunchedEffect(uuid) { viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid)) }
 
     Dialog(onDismissRequest = onDismiss) {
         UpsertGradeDialog(
             uiState = uiState.value,
-            onSetPercentage = viewModel::setPercentage,
-            onSetName = viewModel::setGradeName,
+            onSetPercentage = { viewModel.onEvent(EditGradeUIEvent.SetPercentage(it)) },
+            onSetName = { viewModel.onEvent(EditGradeUIEvent.SetGradeName(it)) },
             onSave = {
-                viewModel.updateGrade()
+                viewModel.onEvent(EditGradeUIEvent.Save)
                 onDismiss()
             },
         )
@@ -82,16 +82,25 @@ private fun UpsertGradeDialog(
                 value = uiState.name ?: "",
                 onValueChange = onSetName,
                 label = stringResource(Res.string.edit_grade_name),
-                error = uiState.error.contains(EditGradeUIState.Error.INVALID_NAME),
+                error = uiState.error.any { it == EditGradeUIState.Error.INVALID_NAME || it == EditGradeUIState.Error.DUPLICATE_NAME },
             )
             EditGradeTextField(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 value = uiState.percentage ?: "",
                 onValueChange = onSetPercentage,
                 label = stringResource(Res.string.edit_grade_percentage),
-                error = uiState.error.contains(EditGradeUIState.Error.INVALID_PERCENTAGE),
+                error = uiState.error.any { it == EditGradeUIState.Error.INVALID_PERCENTAGE || it == EditGradeUIState.Error.DUPLICATE_PERCENTAGE },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             )
+            // TODO: update with a fixed space between the buttons and replace the text with a string resource
+            uiState.error.joinToString { it.name }.ifBlank { null }?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                )
+            }
             Button(
                 onClick = onSave,
                 enabled = uiState.isSaveButtonEnabled,

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-interface InsertGradeUseCase {
+fun interface InsertGradeUseCase {
     suspend operator fun invoke(gradeScaleId: String, percentage: Double, namedGrade: String): Either<InsertGradeUseCaseError, Unit>
 }
 

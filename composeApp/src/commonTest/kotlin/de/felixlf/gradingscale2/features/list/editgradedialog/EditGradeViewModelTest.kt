@@ -1,9 +1,15 @@
 package de.felixlf.gradingscale2.features.list.editgradedialog
 
 import app.cash.turbine.test
+import arrow.core.raise.either
+import arrow.core.raise.ensureNotNull
 import arrow.core.raise.option
+import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
+import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCaseError
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import kotlinx.collections.immutable.persistentSetOf
@@ -14,12 +20,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -33,11 +41,28 @@ class EditGradeViewModelTest {
         }
     }
 
+    private val insertGradeUseCase = InsertGradeUseCase { gradeScaleId, percentage, namedGrade ->
+        either {
+            gradeScales.update {
+                val selectedGradeScale = ensureNotNull(it.firstOrNull { gradeScale -> gradeScale.id == gradeScaleId }) {
+                    InsertGradeUseCaseError.GradeScaleIdNotFound
+                }
+                val newGrade = Grade(
+                    namedGrade = namedGrade,
+                    percentage = percentage,
+                    idOfGradeScale = gradeScaleId,
+                    nameOfScale = selectedGradeScale.gradeScaleName,
+                    uuid = "1234",
+                )
+                it.map { gradeScale -> if (gradeScale.id == gradeScaleId) gradeScale.copy(grades = (gradeScale.grades + newGrade).toImmutableList()) else gradeScale }
+            }
+        }
+    }
+
     private val updateSingleGradeUseCase = UpsertGradeUseCase { grade ->
         option {
             gradeScales.update {
-                val modifiedGradeScale = it.find { gradeScale -> gradeScale.id == grade.idOfGradeScale }
-                    ?: throw IllegalArgumentException("GradeScale not found")
+                val modifiedGradeScale = ensureNotNull(it.find { gradeScale -> gradeScale.id == grade.idOfGradeScale })
                 val newGradeScale = GradeScale(
                     id = modifiedGradeScale.id,
                     gradeScaleName = modifiedGradeScale.gradeScaleName,
@@ -51,13 +76,20 @@ class EditGradeViewModelTest {
         }
     }
 
+    private val getGradeScaleByIdUseCase = GetGradeScaleByIdUseCase { id ->
+        gradeScales.map { gradeScaleList ->
+            gradeScaleList.firstOrNull { it.id == id }
+        }
+    }
+
     private lateinit var viewModel: EditGradeViewModel
 
     @BeforeTest
     fun setup() {
-        Dispatchers.setMain(StandardTestDispatcher())
+        val testDispatcher = StandardTestDispatcher()
+        Dispatchers.setMain(testDispatcher)
         gradeScales = MutableStateFlow(MockGradeScalesGenerator().gradeScales)
-        viewModel = EditGradeViewModel(getGradeByUUIDUseCase, updateSingleGradeUseCase)
+        viewModel = EditGradeViewModel(getGradeByUUIDUseCase, updateSingleGradeUseCase, insertGradeUseCase, getGradeScaleByIdUseCase)
     }
 
     @AfterTest
@@ -74,7 +106,7 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.setGradeUUID(uuid)
+            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
             assertEquals(grade, awaitItem().grade)
         }
     }
@@ -89,9 +121,9 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.setGradeUUID(uuid)
+            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
             assertEquals(grade, awaitItem().grade)
-            viewModel.setGradeName(newNameGrade)
+            viewModel.onEvent(EditGradeUIEvent.SetGradeName(newNameGrade))
             val state = awaitItem()
             assertEquals(newNameGrade, state.name)
             assertEquals(persistentSetOf(), state.error)
@@ -108,9 +140,9 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.setGradeUUID(uuid)
+            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
             awaitItem()
-            viewModel.setGradeName(newNameGrade)
+            viewModel.onEvent(EditGradeUIEvent.SetGradeName(newNameGrade))
             val state = awaitItem()
             assertEquals(newNameGrade, state.name)
             assertEquals(EditGradeUIState.Error.INVALID_NAME, state.error.first())
@@ -127,9 +159,9 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.setGradeUUID(uuid)
+            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
             awaitItem()
-            viewModel.setPercentage(newPercentage.toString())
+            viewModel.onEvent(EditGradeUIEvent.SetPercentage(newPercentage.toString()))
             val state = awaitItem()
             assertEquals(newPercentage.toString(), state.percentage)
             assertEquals(EditGradeUIState.Error.INVALID_PERCENTAGE, state.error.first())
@@ -146,16 +178,38 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.setGradeUUID(uuid)
+            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
             awaitItem()
-            viewModel.setGradeName(newNameGrade)
+            viewModel.onEvent(EditGradeUIEvent.SetGradeName(newNameGrade))
             val state = awaitItem()
             assertEquals(newNameGrade, state.name)
             assertEquals(persistentSetOf(), state.error)
-            viewModel.updateGrade()
+            viewModel.onEvent(EditGradeUIEvent.Save)
             awaitItem()
             // Check if the grade was updated
             assertEquals(newNameGrade, gradeScales.value[1].grades[3].namedGrade)
+        }
+    }
+
+    @Test
+    fun `updateGradeModel creates a new grade`() = runTest {
+        // Given
+        val gradeScaleId = gradeScales.value[1].id
+        val newNameGrade = "New Grade Name"
+        val newPercentage = 0.5123
+
+        // When, Then
+        viewModel.uiState.test {
+            awaitItem()
+            viewModel.onEvent(EditGradeUIEvent.SetGradeScaleId(gradeScaleId))
+            viewModel.onEvent(EditGradeUIEvent.SetGradeName(newNameGrade))
+            awaitItem()
+            viewModel.onEvent(EditGradeUIEvent.SetPercentage(newPercentage.toString()))
+            awaitItem()
+            viewModel.onEvent(EditGradeUIEvent.Save)
+            advanceUntilIdle()
+            // Check if the grade was created
+            assertContains(gradeScales.value[1].grades.map { it.namedGrade }, newNameGrade)
         }
     }
 }

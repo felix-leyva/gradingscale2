@@ -37,12 +37,12 @@ internal class GradesDaoImpl(
             percentage = grade.percentage,
             scale_id = grade.idOfGradeScale,
         )
-
-        ensure(driver.execute(null, "SELECT changes() AS affected_rows", 0).await() == 0L)
+        //        TODO: Select changes() is not being supported anymore
+        //        ensure(driver.execute(null, "SELECT changes() AS affected_rows", 0).await() == 0L)
     }
 
     override suspend fun deleteGrade(gradeId: String): Option<Unit> = option {
         gradeScaleQueries.deleteGradesByUuid(gradeId)
-        ensure(driver.execute(null, "SELECT changes() AS affected_rows", 0).await() == 0L)
+//        ensure(driver.execute(null, "SELECT changes() AS affected_rows", 0).await() == 0L)
     }
 }

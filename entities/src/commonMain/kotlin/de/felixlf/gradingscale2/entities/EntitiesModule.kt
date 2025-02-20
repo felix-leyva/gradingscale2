@@ -16,6 +16,8 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
+import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
@@ -38,4 +40,5 @@ val entitiesModule =
         single<DeleteGradeUseCase> { DeleteGradeUseCaseImpl(get()) }
         single<UpsertGradeUseCase> { UpsertGradeUseCaseImpl(get()) }
         single<GetGradeByUUIDUseCase> { GetGradeByUUIDUseCaseImpl(get()) }
+        single<InsertGradeUseCase> { InsertGradeUseCaseImpl(get(), get()) }
     }
