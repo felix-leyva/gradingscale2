@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.list.editgradedialog
+package de.felixlf.gradingscale2.features.list.upsertgradedialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,10 +12,10 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
-import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeUIState.Error.DUPLICATE_NAME
-import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeUIState.Error.DUPLICATE_PERCENTAGE
-import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeUIState.Error.INVALID_NAME
-import de.felixlf.gradingscale2.features.list.editgradedialog.EditGradeUIState.Error.INVALID_PERCENTAGE
+import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeUIState.Error.DUPLICATE_NAME
+import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeUIState.Error.DUPLICATE_PERCENTAGE
+import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeUIState.Error.INVALID_NAME
+import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeUIState.Error.INVALID_PERCENTAGE
 import de.felixlf.gradingscale2.uimodel.MoleculePresenter
 import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CoroutineScope
@@ -25,13 +25,13 @@ import kotlinx.coroutines.launch
 /**
  * This class is responsible for managing the UI state of the edit grade dialog.
  */
-class EditGradeUIFactory(
+class UpsertGradeUIFactory(
     private val getGradeByUUIDUseCase: GetGradeByUUIDUseCase,
     private val insertGradeUseCase: InsertGradeUseCase,
     private val upsertGradeUseCase: UpsertGradeUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
     private val viewModelScope: CoroutineScope,
-) : MoleculePresenter<EditGradeUIState, EditGradeUIEvent> {
+) : MoleculePresenter<UpsertGradeUIState, UpsertGradeUIEvent> {
 
     private var gradeScaleId by mutableStateOf<String?>(null)
     private var currentGradeScale by mutableStateOf<GradeScale?>(null)
@@ -44,13 +44,13 @@ class EditGradeUIFactory(
 
     private var gradeName by mutableStateOf<String?>(null)
     private var percentage by mutableStateOf<String?>(null)
-    private var percentageFieldErrors by mutableStateOf<EditGradeUIState.Error?>(null)
-    private var nameFieldErrors by mutableStateOf<EditGradeUIState.Error?>(null)
+    private var percentageFieldErrors by mutableStateOf<UpsertGradeUIState.Error?>(null)
+    private var nameFieldErrors by mutableStateOf<UpsertGradeUIState.Error?>(null)
 
     @Composable
-    override fun produceUI(): EditGradeUIState {
+    override fun produceUI(): UpsertGradeUIState {
         initUi()
-        return EditGradeUIState(
+        return UpsertGradeUIState(
             grade = selectedGrade,
             percentage = percentage,
             name = gradeName,
@@ -76,13 +76,13 @@ class EditGradeUIFactory(
         }
     }
 
-    override fun sendEvent(event: EditGradeUIEvent) {
+    override fun sendEvent(event: UpsertGradeUIEvent) {
         when (event) {
-            is EditGradeUIEvent.SetGradeScaleId -> gradeScaleId = event.id
-            is EditGradeUIEvent.SetGradeUUID -> gradeUUID = event.uuid
-            is EditGradeUIEvent.SetGradeName -> updateGradeName(event)
-            is EditGradeUIEvent.SetPercentage -> upgradePercentage(event)
-            is EditGradeUIEvent.Save -> save()
+            is UpsertGradeUIEvent.SetGradeScaleId -> gradeScaleId = event.id
+            is UpsertGradeUIEvent.SetGradeUUID -> gradeUUID = event.uuid
+            is UpsertGradeUIEvent.SetGradeName -> updateGradeName(event)
+            is UpsertGradeUIEvent.SetPercentage -> upgradePercentage(event)
+            is UpsertGradeUIEvent.Save -> save()
         }
     }
 
@@ -112,7 +112,7 @@ class EditGradeUIFactory(
         }
     }
 
-    private fun upgradePercentage(event: EditGradeUIEvent.SetPercentage) = event.percentage.let { updatedPercentage ->
+    private fun upgradePercentage(event: UpsertGradeUIEvent.SetPercentage) = event.percentage.let { updatedPercentage ->
         percentage = updatedPercentage
         val newPercentage = updatedPercentage.toDoubleOrNull()?.div(100)
         percentageFieldErrors = when {
@@ -123,7 +123,7 @@ class EditGradeUIFactory(
     }
 
     private fun updateGradeName(
-        event: EditGradeUIEvent.SetGradeName
+        event: UpsertGradeUIEvent.SetGradeName
     ) = with(event) {
         gradeName = name
         nameFieldErrors = when {
@@ -135,10 +135,10 @@ class EditGradeUIFactory(
 
 }
 
-sealed interface EditGradeUIEvent {
-    data class SetGradeScaleId(val id: String) : EditGradeUIEvent
-    data class SetGradeUUID(val uuid: String) : EditGradeUIEvent
-    data class SetGradeName(val name: String) : EditGradeUIEvent
-    data class SetPercentage(val percentage: String) : EditGradeUIEvent
-    data object Save : EditGradeUIEvent
+sealed interface UpsertGradeUIEvent {
+    data class SetGradeScaleId(val id: String) : UpsertGradeUIEvent
+    data class SetGradeUUID(val uuid: String) : UpsertGradeUIEvent
+    data class SetGradeName(val name: String) : UpsertGradeUIEvent
+    data class SetPercentage(val percentage: String) : UpsertGradeUIEvent
+    data object Save : UpsertGradeUIEvent
 }

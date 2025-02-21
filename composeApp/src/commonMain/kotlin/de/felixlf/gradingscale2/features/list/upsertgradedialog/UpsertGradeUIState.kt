@@ -1,10 +1,10 @@
-package de.felixlf.gradingscale2.features.list.editgradedialog
+package de.felixlf.gradingscale2.features.list.upsertgradedialog
 
 import de.felixlf.gradingscale2.entities.models.Grade
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.persistentSetOf
 
-data class EditGradeUIState(
+data class UpsertGradeUIState(
     val name: String?,
     val percentage: String?,
     val grade: Grade?,

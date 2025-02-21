@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.list.editgradedialog
+package de.felixlf.gradingscale2.features.list.upsertgradedialog
 
 import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
@@ -38,21 +39,38 @@ import kotlinx.collections.immutable.persistentSetOf
 import org.jetbrains.compose.resources.stringResource
 
 /**
+ * The Insert Grade Dialog is a dialog that allows the user to insert a new grade.
+ */
+@Composable
+fun InsertGradeDialog(gradeScaleId: String, onDismiss: () -> Unit) {
+    val viewModel = dialogScopedViewModel<UpsertGradeViewModel>()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(gradeScaleId) { viewModel.onEvent(UpsertGradeUIEvent.SetGradeScaleId(gradeScaleId)) }
+    UpsertGradeDialog(onDismiss = onDismiss, uiState = uiState, viewModel = viewModel)
+}
+
+/**
  * The Edit Grade Dialog is a dialog that allows the user to edit a grade.
  */
 @Composable
-fun UpsertGradeDialog(uuid: String, onDismiss: () -> Unit) {
-    val viewModel = dialogScopedViewModel<EditGradeViewModel>()
+fun EditGradeDialog(uuid: String, onDismiss: () -> Unit) {
+    val viewModel = dialogScopedViewModel<UpsertGradeViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(uuid) { viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid)) }
+    LaunchedEffect(uuid) { viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid)) }
+    UpsertGradeDialog(onDismiss = onDismiss, uiState = uiState, viewModel = viewModel)
+}
 
+@Composable
+private fun UpsertGradeDialog(
+    onDismiss: () -> Unit, uiState: State<UpsertGradeUIState>, viewModel: UpsertGradeViewModel
+) {
     Dialog(onDismissRequest = onDismiss) {
         UpsertGradeDialog(
             uiState = uiState.value,
-            onSetPercentage = { viewModel.onEvent(EditGradeUIEvent.SetPercentage(it)) },
-            onSetName = { viewModel.onEvent(EditGradeUIEvent.SetGradeName(it)) },
+            onSetPercentage = { viewModel.onEvent(UpsertGradeUIEvent.SetPercentage(it)) },
+            onSetName = { viewModel.onEvent(UpsertGradeUIEvent.SetGradeName(it)) },
             onSave = {
-                viewModel.onEvent(EditGradeUIEvent.Save)
+                viewModel.onEvent(UpsertGradeUIEvent.Save)
                 onDismiss()
             },
         )
@@ -61,7 +79,7 @@ fun UpsertGradeDialog(uuid: String, onDismiss: () -> Unit) {
 
 @Composable
 private fun UpsertGradeDialog(
-    uiState: EditGradeUIState,
+    uiState: UpsertGradeUIState,
     onSetPercentage: (String) -> Unit = {},
     onSetName: (String) -> Unit = {},
     onSave: () -> Unit = {},
@@ -82,14 +100,14 @@ private fun UpsertGradeDialog(
                 value = uiState.name ?: "",
                 onValueChange = onSetName,
                 label = stringResource(Res.string.edit_grade_name),
-                error = uiState.error.any { it == EditGradeUIState.Error.INVALID_NAME || it == EditGradeUIState.Error.DUPLICATE_NAME },
+                error = uiState.error.any { it == UpsertGradeUIState.Error.INVALID_NAME || it == UpsertGradeUIState.Error.DUPLICATE_NAME },
             )
             EditGradeTextField(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 value = uiState.percentage ?: "",
                 onValueChange = onSetPercentage,
                 label = stringResource(Res.string.edit_grade_percentage),
-                error = uiState.error.any { it == EditGradeUIState.Error.INVALID_PERCENTAGE || it == EditGradeUIState.Error.DUPLICATE_PERCENTAGE },
+                error = uiState.error.any { it == UpsertGradeUIState.Error.INVALID_PERCENTAGE || it == UpsertGradeUIState.Error.DUPLICATE_PERCENTAGE },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             )
             // TODO: update with a fixed space between the buttons and replace the text with a string resource
@@ -147,7 +165,7 @@ private fun EditGradeTextField(
 @Composable
 private fun EditGradeDialogPreview() {
     UpsertGradeDialog(
-        uiState = EditGradeUIState(
+        uiState = UpsertGradeUIState(
             name = "Test",
             percentage = "50",
             error = persistentSetOf(),

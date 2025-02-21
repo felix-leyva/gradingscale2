@@ -29,7 +29,7 @@ import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.features.list.components.DialogActionsMenu
 import de.felixlf.gradingscale2.features.list.components.GradeScaleListItem
-import de.felixlf.gradingscale2.features.list.editgradedialog.UpsertGradeDialog
+import de.felixlf.gradingscale2.features.list.upsertgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleDialog
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.stringWithDecimals
@@ -60,7 +60,7 @@ fun GradeScaleListScreen() {
 
     activeDialogCommand?.let { command ->
         when (command) {
-            is GradeScaleListDialogCommand.EditCurrentGrade -> UpsertGradeDialog(
+            is GradeScaleListDialogCommand.EditCurrentGrade -> EditGradeDialog(
                 uuid = command.gradeId,
                 onDismiss = { activeDialogCommand = null },
             )

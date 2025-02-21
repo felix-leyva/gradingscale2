@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.list.editgradedialog
+package de.felixlf.gradingscale2.features.list.upsertgradedialog
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,13 +15,13 @@ import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
  * This ViewModel uses a molecule UI pattern to manage the state of the UI. In this case the Molecule is used as a Flow.combine operator
  * to ease the uiState creation.
  */
-class EditGradeViewModel(
+class UpsertGradeViewModel(
     getGradeByUUIDUseCase: GetGradeByUUIDUseCase,
     upsertGradeUseCase: UpsertGradeUseCase,
     insertGradeUseCase: InsertGradeUseCase,
     getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
-) : ViewModel(), MoleculeViewModelHelper<EditGradeUIState, EditGradeUIEvent> {
-    override val factory = EditGradeUIFactory(
+) : ViewModel(), MoleculeViewModelHelper<UpsertGradeUIState, UpsertGradeUIEvent> {
+    override val factory = UpsertGradeUIFactory(
         getGradeByUUIDUseCase = getGradeByUUIDUseCase,
         insertGradeUseCase = insertGradeUseCase,
         upsertGradeUseCase = upsertGradeUseCase,

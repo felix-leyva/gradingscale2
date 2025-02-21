@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.list.editgradedialog
+package de.felixlf.gradingscale2.features.list.upsertgradedialog
 
 import app.cash.turbine.test
 import arrow.core.raise.either
@@ -82,14 +82,14 @@ class EditGradeViewModelTest {
         }
     }
 
-    private lateinit var viewModel: EditGradeViewModel
+    private lateinit var viewModel: UpsertGradeViewModel
 
     @BeforeTest
     fun setup() {
         val testDispatcher = StandardTestDispatcher()
         Dispatchers.setMain(testDispatcher)
         gradeScales = MutableStateFlow(MockGradeScalesGenerator().gradeScales)
-        viewModel = EditGradeViewModel(getGradeByUUIDUseCase, updateSingleGradeUseCase, insertGradeUseCase, getGradeScaleByIdUseCase)
+        viewModel = UpsertGradeViewModel(getGradeByUUIDUseCase, updateSingleGradeUseCase, insertGradeUseCase, getGradeScaleByIdUseCase)
     }
 
     @AfterTest
@@ -106,7 +106,7 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid))
             assertEquals(grade, awaitItem().grade)
         }
     }
@@ -121,9 +121,9 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid))
             assertEquals(grade, awaitItem().grade)
-            viewModel.onEvent(EditGradeUIEvent.SetGradeName(newNameGrade))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeName(newNameGrade))
             val state = awaitItem()
             assertEquals(newNameGrade, state.name)
             assertEquals(persistentSetOf(), state.error)
@@ -140,12 +140,12 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid))
             awaitItem()
-            viewModel.onEvent(EditGradeUIEvent.SetGradeName(newNameGrade))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeName(newNameGrade))
             val state = awaitItem()
             assertEquals(newNameGrade, state.name)
-            assertEquals(EditGradeUIState.Error.INVALID_NAME, state.error.first())
+            assertEquals(UpsertGradeUIState.Error.INVALID_NAME, state.error.first())
         }
     }
 
@@ -159,12 +159,12 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid))
             awaitItem()
-            viewModel.onEvent(EditGradeUIEvent.SetPercentage(newPercentage.toString()))
+            viewModel.onEvent(UpsertGradeUIEvent.SetPercentage(newPercentage.toString()))
             val state = awaitItem()
             assertEquals(newPercentage.toString(), state.percentage)
-            assertEquals(EditGradeUIState.Error.INVALID_PERCENTAGE, state.error.first())
+            assertEquals(UpsertGradeUIState.Error.INVALID_PERCENTAGE, state.error.first())
         }
     }
 
@@ -178,13 +178,13 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
-            viewModel.onEvent(EditGradeUIEvent.SetGradeUUID(uuid))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid))
             awaitItem()
-            viewModel.onEvent(EditGradeUIEvent.SetGradeName(newNameGrade))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeName(newNameGrade))
             val state = awaitItem()
             assertEquals(newNameGrade, state.name)
             assertEquals(persistentSetOf(), state.error)
-            viewModel.onEvent(EditGradeUIEvent.Save)
+            viewModel.onEvent(UpsertGradeUIEvent.Save)
             awaitItem()
             // Check if the grade was updated
             assertEquals(newNameGrade, gradeScales.value[1].grades[3].namedGrade)
@@ -201,12 +201,12 @@ class EditGradeViewModelTest {
         // When, Then
         viewModel.uiState.test {
             awaitItem()
-            viewModel.onEvent(EditGradeUIEvent.SetGradeScaleId(gradeScaleId))
-            viewModel.onEvent(EditGradeUIEvent.SetGradeName(newNameGrade))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeScaleId(gradeScaleId))
+            viewModel.onEvent(UpsertGradeUIEvent.SetGradeName(newNameGrade))
             awaitItem()
-            viewModel.onEvent(EditGradeUIEvent.SetPercentage(newPercentage.toString()))
+            viewModel.onEvent(UpsertGradeUIEvent.SetPercentage(newPercentage.toString()))
             awaitItem()
-            viewModel.onEvent(EditGradeUIEvent.Save)
+            viewModel.onEvent(UpsertGradeUIEvent.Save)
             advanceUntilIdle()
             // Check if the grade was created
             assertContains(gradeScales.value[1].grades.map { it.namedGrade }, newNameGrade)
