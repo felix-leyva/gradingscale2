@@ -34,7 +34,7 @@ compose-plugin = "1.7.3"
 junit = "4.13.2"
 kotlin = "2.1.20-RC"
 kotlin-compiler = "2.1.20-RC"
-compose-reload = "1.0.0-dev.31.3"
+compose-reload = "1.0.0-dev-62"
 kotlinx-coroutines = "1.9.0"
 kotlinx-dateTime = "0.6.0"
 koin = "4.0.0"
@@ -89,11 +89,11 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
-android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar"}
+android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar" }
 # Compose
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-compose-preview-tooling = { group = "org.jetbrains.compose.ui", name= "ui-tooling", version.ref = "compose-plugin" }
+compose-preview-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", version.ref = "compose-plugin" }
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "moleculeRuntime" }
 
 # ViewModel & Coroutines
@@ -145,7 +145,7 @@ gradle-aboutLibraries = { module = "com.mikepenz.aboutlibraries.plugin:aboutlibr
 gradle-sonarqube = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin", version.ref = "sonarqubeGradlePlugin" } # https://plugins.gradle.org/plugin/org.sonarqube
 gradle-firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" } # https://maven.google.com/web/index.html#com.google.firebase:firebase-crashlytics-buildtools
 gradle-sqldelight = { group = "app.cash.sqldelight", name = "app.cash.sqldelight.gradle.plugin", version.ref = "sqlDelightPlugin" } # https://oss.sonatype.org/#nexus-search;quick~sqldelight
-gradle-hotreload = { group = "org.jetbrains.compose-hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload"}
+gradle-hotreload = { group = "org.jetbrains.compose-hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelightVersion" }
 
@@ -159,10 +159,10 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 room = { id = "androidx.room", version.ref = "room" }#
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsBuildtools"}
+crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsBuildtools" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 gmazzoBuildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "gmazzoBuildConfig" }
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqubeGradlePlugin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightPlugin" }
-hot-reload = { id = "org.jetbrains.compose-hot-reload", version.ref = "compose-reload"}
+hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-reload" }

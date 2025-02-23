@@ -13,7 +13,7 @@ kotlin {
     applyDefaultHierarchyTemplate()
 
     js {
-        moduleName = "authfirebase"
+        outputModuleName = "authfirebase"
         browser()
     }
     sourceSets {
@@ -79,7 +79,7 @@ val generateResourcesConstants by tasks.registering {
                 .first().asJsonObject.get("current_key").asString
             projectId = json.getAsJsonObject("project_info").get("project_id").asString
         }
-        buildResources.apply { 
+        buildResources.apply {
             packageName("de.felixlf.gradingscale2")
             buildConfigField("String", "FIREBASE_APP_ID", "\"$appId\"")
             buildConfigField("String", "FIREBASE_PROJECT_ID", "\"$projectId\"")

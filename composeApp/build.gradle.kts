@@ -6,8 +6,6 @@ import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
-// import org.jetbrains.compose.reload.ComposeHotRun
-
 plugins {
     id(
         libs2.plugins.kotlinMultiplatform.get().pluginId,
@@ -29,12 +27,12 @@ plugins {
         libs2.plugins.kotlinxSerialization.get().pluginId,
     )
     // We add here alias, due that we do not add this buildSrc, as the Kotlin version would be enforced also there to 2.1
-    // alias(libs2.plugins.hot.reload)
+    alias(libs2.plugins.hot.reload)
 }
 
 kotlin {
     js {
-        moduleName = "composeApp"
+        outputModuleName = "composeApp"
         browser {
             commonWebpackConfig {
                 outputFileName = "composeApp.js"

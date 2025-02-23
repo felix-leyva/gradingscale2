@@ -15,7 +15,7 @@ plugins {
 kotlin {
 
     js {
-        moduleName = "network"
+        outputModuleName = "network"
         browser {
             testTask {
                 onlyIf { !System.getenv().containsKey("CI") }
