@@ -72,7 +72,10 @@ fun GradeScaleListScreen() {
             )
 
             GradeScaleListDialogCommand.AddNewGradeScale -> UpsertGradeScaleDialog(
-                onDismiss = { activeDialogCommand = null },
+                onDismiss = {
+                    activeDialogCommand = null
+                    it?.let { viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScaleById(it)) }
+                },
             )
 
             is GradeScaleListDialogCommand.EditGradeScale -> UpsertGradeScaleDialog(

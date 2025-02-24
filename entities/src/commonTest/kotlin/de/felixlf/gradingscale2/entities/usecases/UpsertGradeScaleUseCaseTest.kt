@@ -33,7 +33,7 @@ class UpsertGradeScaleUseCaseTest {
 
         // Then
         assertTrue(result.isSome())
-        assertEquals("2", result.getOrNull())
+        assertEquals("3", result.getOrNull())
     }
 
     @Test

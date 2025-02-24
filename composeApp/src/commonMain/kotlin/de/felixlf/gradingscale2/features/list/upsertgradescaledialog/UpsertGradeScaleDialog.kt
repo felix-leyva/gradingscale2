@@ -28,7 +28,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun UpsertGradeScaleDialog(
     viewModel: UpsertGradeScaleViewModel = dialogScopedViewModel<UpsertGradeScaleViewModel>(),
-    onDismiss: () -> Unit = {},
+    onDismiss: (gradeScaleId: String?) -> Unit = {},
     currentGradeScaleId: String? = null,
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -39,17 +39,18 @@ internal fun UpsertGradeScaleDialog(
         }
     }
 
+    LaunchedEffect(uiState.value.state) {
+        (uiState.value.state as? UpsertGradeScaleUIState.State.Success)?.gradeScaleId?.let { onDismiss(it) }
+    }
+
     // TODO: add into resources
     val defaultGradeName = "new grade"
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = { onDismiss(null) }) {
         UpsertGradeScaleDialog(
             uiState = uiState.value,
             onSetNewName = { viewModel.onEvent(UpserGradeScaleUIEvent.SetNewName(it)) },
-            onSave = {
-                viewModel.onEvent(UpserGradeScaleUIEvent.Save(defaultGradeName))
-                onDismiss()
-            },
-            onDismiss = onDismiss,
+            onSave = { viewModel.onEvent(UpserGradeScaleUIEvent.Save(defaultGradeName)) },
+            onDismiss = { onDismiss(null) },
         )
     }
 }
