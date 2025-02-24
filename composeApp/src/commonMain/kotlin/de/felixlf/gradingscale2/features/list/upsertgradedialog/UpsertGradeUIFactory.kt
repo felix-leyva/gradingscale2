@@ -54,6 +54,7 @@ class UpsertGradeUIFactory(
             grade = selectedGrade,
             percentage = percentage,
             name = gradeName,
+            gradeScale = currentGradeScale,
             error = setOfNotNull(percentageFieldErrors, nameFieldErrors).toPersistentSet(),
         )
     }

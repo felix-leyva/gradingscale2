@@ -15,4 +15,8 @@
     <string name="calculator_screen_percentage_input">Percentage</string>
     <string name="calculator_screen_grade_name_dropbox_label">Grade Name</string>
     <string name="calculator_screen_grade_name_dropbox_default">Select Grade</string>
+    <string name="gradescale_list_menu_add_new_grade_scale">Add New Grade Scale</string>
+    <string name="gradescale_list_menu_add_new_grade">Add New Grade</string>
+    <string name="gradescale_list_menu_edit_grade_scale">Edit Grade Scale</string>
+    <string name="gradescale_list_menu_help">Help</string>"
 </resources>

@@ -208,6 +208,7 @@ class EditGradeViewModelTest {
             awaitItem()
             viewModel.onEvent(UpsertGradeUIEvent.Save)
             advanceUntilIdle()
+            awaitItem()
             // Check if the grade was created
             assertContains(gradeScales.value[1].grades.map { it.namedGrade }, newNameGrade)
         }

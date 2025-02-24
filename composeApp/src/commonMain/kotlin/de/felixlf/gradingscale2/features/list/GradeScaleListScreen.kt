@@ -30,6 +30,7 @@ import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.features.list.components.DialogActionsMenu
 import de.felixlf.gradingscale2.features.list.components.GradeScaleListItem
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.EditGradeDialog
+import de.felixlf.gradingscale2.features.list.upsertgradedialog.InsertGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleDialog
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.stringWithDecimals
@@ -65,7 +66,10 @@ fun GradeScaleListScreen() {
                 onDismiss = { activeDialogCommand = null },
             )
 
-            is GradeScaleListDialogCommand.AddNewGradeInCurrentGradeScale -> TODO()
+            is GradeScaleListDialogCommand.AddNewGradeInCurrentGradeScale -> InsertGradeDialog(
+                gradeScaleId = command.gradeScaleId,
+                onDismiss = { activeDialogCommand = null },
+            )
 
             GradeScaleListDialogCommand.AddNewGradeScale -> UpsertGradeScaleDialog(
                 onDismiss = { activeDialogCommand = null },
@@ -73,8 +77,10 @@ fun GradeScaleListScreen() {
 
             is GradeScaleListDialogCommand.EditGradeScale -> UpsertGradeScaleDialog(
                 onDismiss = { activeDialogCommand = null },
-                currentGradeScaleId = command.id,
+                currentGradeScaleId = command.gradeScaleId,
             )
+
+            GradeScaleListDialogCommand.Help -> TODO()
         }
     }
 }
@@ -116,7 +122,7 @@ private fun GradeScaleListScreen(
                         textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                         label = stringResource(Res.string.gradescale_list_total_points),
                     )
-                    DialogActionsMenu()
+                    DialogActionsMenu(gradeScaleId = gradeScale.id, onAction = onOpenDialog)
                 }
             }
         }
@@ -138,7 +144,7 @@ private fun GradeScaleListScreen(
                         .height(16.dp)
                         .fillMaxWidth(),
 
-                )
+                    )
             }
             itemsIndexed(gradeScale.sortedPointedGrades) { _, grade ->
                 Column(

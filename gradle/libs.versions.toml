@@ -17,7 +17,7 @@ versionCode = "1"
 versionName = "1.0"
 java = "17"
 
-agp = "8.7.3"
+agp = "8.8.1"
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
@@ -66,6 +66,7 @@ android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = 
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowCore" }
 arrow-optics = { module = "io.arrow-kt:arrow-optics", version.ref = "arrowCore" }
 arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrowCore" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" } # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html#sample-project

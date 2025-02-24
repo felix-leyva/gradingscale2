@@ -32,6 +32,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.utils.dialogScopedViewModel
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.composeapp.generated.resources.Res
@@ -177,7 +178,14 @@ private fun EditGradeDialogPreview() {
             name = "Test",
             percentage = "50",
             error = persistentSetOf(),
-            grade = null,
+            grade = Grade(
+                namedGrade = "A",
+                percentage = 0.5,
+                idOfGradeScale = "GradeScaleId",
+                nameOfScale = "Test",
+                uuid = "GradeUUID",
+            ),
+            gradeScale = null,
         ),
     )
 }

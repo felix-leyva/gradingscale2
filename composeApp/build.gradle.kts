@@ -181,10 +181,6 @@ compose.desktop {
 composeCompiler {
     featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
-// // build.gradle.kts
-// tasks.register<ComposeHotRun>("runHot") {
-//    mainClass.set("de.felixlf.gradingscale2.MainKt")
-// }
 
 tasks.register("checkAndCreateGoogleServices") {
     val googleServicesFile = layout.projectDirectory.file("google-services.json")
