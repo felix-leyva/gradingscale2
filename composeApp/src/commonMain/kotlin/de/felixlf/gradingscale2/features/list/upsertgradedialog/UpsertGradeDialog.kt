@@ -39,7 +39,6 @@ import gradingscale2.composeapp.generated.resources.Res
 import gradingscale2.composeapp.generated.resources.edit_grade_name
 import gradingscale2.composeapp.generated.resources.edit_grade_percentage
 import gradingscale2.composeapp.generated.resources.edit_grade_save_button
-import kotlinx.collections.immutable.persistentSetOf
 import org.jetbrains.compose.resources.stringResource
 
 /**
@@ -77,6 +76,10 @@ private fun UpsertGradeDialog(
                 viewModel.onEvent(UpsertGradeUIEvent.Save)
                 onDismiss()
             },
+            onSaveNew = {
+                viewModel.onEvent(UpsertGradeUIEvent.SaveAsNew)
+                onDismiss()
+            },
         )
     }
 }
@@ -87,6 +90,7 @@ private fun UpsertGradeDialog(
     onSetPercentage: (String) -> Unit = {},
     onSetName: (String) -> Unit = {},
     onSave: () -> Unit = {},
+    onSaveNew: () -> Unit = {},
 ) {
     Card {
         Column(
@@ -128,11 +132,21 @@ private fun UpsertGradeDialog(
                 Spacer(modifier = Modifier.requiredHeight(MaterialTheme.typography.bodyMedium.lineHeight.toDp()).padding(bottom = 16.dp))
             }
 
+            uiState.selectedGrade?.let {
+                Button(
+                    onClick = onSave,
+                    enabled = uiState.isSaveButtonEnabled,
+                ) {
+                    Text(stringResource(Res.string.edit_grade_save_button))
+                }
+            }
+
+
             Button(
-                onClick = onSave,
-                enabled = uiState.isSaveButtonEnabled,
+                onClick = onSaveNew,
+                enabled = uiState.isSaveNewButtonEnabled,
             ) {
-                Text(stringResource(Res.string.edit_grade_save_button))
+                Text("Save as new")
             }
         }
     }
@@ -177,7 +191,6 @@ private fun EditGradeDialogPreview() {
         uiState = UpsertGradeUIState(
             name = "Test",
             percentage = "50",
-            error = persistentSetOf(),
             grade = Grade(
                 namedGrade = "A",
                 percentage = 0.5,
@@ -186,6 +199,7 @@ private fun EditGradeDialogPreview() {
                 uuid = "GradeUUID",
             ),
             gradeScale = null,
+            selectedGrade = null,
         ),
     )
 }

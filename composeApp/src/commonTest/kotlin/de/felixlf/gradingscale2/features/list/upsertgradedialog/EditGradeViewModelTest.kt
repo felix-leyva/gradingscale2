@@ -206,7 +206,7 @@ class EditGradeViewModelTest {
             awaitItem()
             viewModel.onEvent(UpsertGradeUIEvent.SetPercentage(newPercentage.toString()))
             awaitItem()
-            viewModel.onEvent(UpsertGradeUIEvent.Save)
+            viewModel.onEvent(UpsertGradeUIEvent.SaveAsNew)
             advanceUntilIdle()
             awaitItem()
             // Check if the grade was created
