@@ -36,6 +36,6 @@ val mainModule =
         viewModelOf(::CalculatorViewModel)
         factoryOf(::CalculatorUIStateFactory)
         viewModelOf(::UpsertGradeScaleViewModel)
-        singleOf(::AppNavControllerImpl).bind<AppNavController>()
         single<AppNavController> { (controller: NavHostController) -> AppNavControllerImpl(controller) }
+        singleOf(::AppNavControllerImpl).bind<AppNavController>()
     }

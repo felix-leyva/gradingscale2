@@ -1,4 +1,5 @@
 @file:Suppress("UnstableApiUsage")
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
@@ -52,6 +53,12 @@ kotlin {
         }
         binaries.executable()
         useEsModules()
+    }
+
+    jvm {
+        mainRun{
+            mainClass.set("de.felixlf.gradingscale2.MainKt")
+        }
     }
 
 //    wasmJs {
