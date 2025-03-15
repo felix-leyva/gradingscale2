@@ -38,6 +38,11 @@ dependencyResolutionManagement {
         maven("https://packages.jetbrains.team/maven/p/firework/dev")
     }
 }
+
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
+
 include(":composeApp")
 include(":data:network")
 include(":data:authFirebase")

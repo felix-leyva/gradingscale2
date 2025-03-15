@@ -1,17 +1,19 @@
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+import com.google.gson.Gson
+import com.google.gson.JsonObject
+
+
 plugins {
     id("multiplatform-plugin")
-    id(
-        libs.plugins.kotlinxSerialization
-            .get()
-            .pluginId,
-    )
+    id(libs2.plugins.kotlinxSerialization.get().pluginId)
+    id(libs2.plugins.gmazzoBuildConfig.get().pluginId)
 }
 
 kotlin {
     applyDefaultHierarchyTemplate()
 
     js {
-        moduleName = "authfirebase"
+        outputModuleName = "authfirebase"
         browser()
     }
     sourceSets {
@@ -54,3 +56,36 @@ kotlin {
 android {
     namespace = libs.versions.packagename + ".authfirebase"
 }
+
+buildConfig {
+
+
+}
+
+// Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration
+val buildResources = buildConfig.forClass("BuildResources")
+val generateResourcesConstants by tasks.registering {
+    val googleJson = rootProject.file("composeApp/google-services.json")
+
+    doFirst {
+        var appId = ""
+        var projectId = ""
+        var apiKey = ""
+
+        if (googleJson.exists()) {
+            val json = Gson().fromJson(googleJson.readText(), JsonObject::class.java)
+            appId = json.getAsJsonArray("client").first().asJsonObject.get("client_info").asJsonObject.get("mobilesdk_app_id").asString
+            apiKey = json.getAsJsonArray("client").first().asJsonObject.getAsJsonArray("api_key")
+                .first().asJsonObject.get("current_key").asString
+            projectId = json.getAsJsonObject("project_info").get("project_id").asString
+        }
+        buildResources.apply {
+            packageName("de.felixlf.gradingscale2")
+            buildConfigField("String", "FIREBASE_APP_ID", "\"$appId\"")
+            buildConfigField("String", "FIREBASE_PROJECT_ID", "\"$projectId\"")
+            buildConfigField("String", "FIREBASE_API_KEY", "\"$apiKey\"")
+        }
+    }
+}
+
+tasks.generateJvmMainNonAndroidBuildConfig.dependsOn(generateResourcesConstants)

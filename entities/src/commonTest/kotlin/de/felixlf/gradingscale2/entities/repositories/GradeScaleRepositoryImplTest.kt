@@ -46,7 +46,7 @@ class GradeScaleRepositoryImplTest {
         sut.getGradeScales().test {
             assertEquals(expectedScales, awaitItem())
 
-            sut.upsertGradeScale(expectedScales.first().copy(gradeScaleName = "Neew")).getOrThrow()
+            sut.upsertGradeScale(expectedScales.first().copy(gradeScaleName = "Neew"))
             assertTrue { awaitItem().map { it.gradeScaleName }.contains("Neew") }
             cancelAndConsumeRemainingEvents()
         }
@@ -107,7 +107,7 @@ class GradeScaleRepositoryImplTest {
         sut.getGradeScales().test {
             assertEquals(emptyList(), awaitItem())
             // When
-            sut.upsertGradeScale(gradeScale).getOrThrow()
+            sut.upsertGradeScale(gradeScale)
             // Then
             assertEquals(listOf(gradeScale), awaitItem())
             cancelAndConsumeRemainingEvents()
@@ -126,7 +126,7 @@ class GradeScaleRepositoryImplTest {
             // When
             val updated = gradeScales.first().copy(totalPoints = 25.0)
             val newScales = gradeScales.map { if (it.id == updated.id) updated else it }
-            sut.upsertGradeScale(updated).getOrThrow()
+            sut.upsertGradeScale(updated)
             assertEquals(newScales, awaitItem())
             cancelAndConsumeRemainingEvents()
         }
@@ -144,7 +144,7 @@ class GradeScaleRepositoryImplTest {
             // When
             val toDelete = gradeScales.first()
             val newScales = gradeScales.drop(1)
-            sut.deleteGradeScale(toDelete.id).getOrThrow()
+            sut.deleteGradeScale(toDelete.id)
             assertEquals(newScales, awaitItem())
             cancelAndConsumeRemainingEvents()
         }
@@ -161,7 +161,7 @@ class GradeScaleRepositoryImplTest {
             assertEquals(gradeScales, awaitItem())
             // When
             val result = sut.deleteGradeScale("non-existing-id")
-            assertTrue(result.isFailure)
+            assertTrue(result.isNone())
             cancelAndConsumeRemainingEvents()
         }
         coroutineContext.cancelChildren()

@@ -33,7 +33,7 @@ internal fun DropboxSelector(
     modifier: Modifier = Modifier,
     defaultText: String? = null,
     label: String? = null,
-    textStyle: TextStyle = MaterialTheme.typography.titleSmall. copy(color = MaterialTheme. colorScheme. onSurface),
+    textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(color = MaterialTheme.colorScheme.onSurface),
 ) {
     var expandedDropdown by remember { mutableStateOf(false) }
     val textFieldState = rememberTextFieldState(defaultText ?: selectedElement ?: "")

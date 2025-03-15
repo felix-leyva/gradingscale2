@@ -1,5 +1,7 @@
 package de.felixlf.gradingscale2.daosimpl
 
+import arrow.core.Option
+import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.daos.GradesDao
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.store.GradeScaleStoreProvider
@@ -8,6 +10,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 internal class GradesDaoStoreImpl(private val gradeScaleStoreProvider: GradeScaleStoreProvider) : GradesDao {
+    override fun getAllGradesFromGradeScale(gradeScaleId: String): Flow<List<Grade>> {
+        return gradeScaleStoreProvider.flow.map { gradeScales ->
+            gradeScales.firstOrNull { it.id == gradeScaleId }?.grades ?: emptyList()
+        }
+    }
+
     override fun getGradeById(gradeId: String): Flow<Grade?> {
         return gradeScaleStoreProvider.flow.map { gradeScales ->
             gradeScales.flatMap { it.grades }
@@ -15,7 +23,7 @@ internal class GradesDaoStoreImpl(private val gradeScaleStoreProvider: GradeScal
         }
     }
 
-    override suspend fun upsertGrade(grade: Grade): Result<Unit> = runCatching {
+    override suspend fun upsertGrade(grade: Grade): Option<Unit> = option {
         gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
             gradeScales?.map { gradeScale ->
                 if (gradeScale.id == grade.idOfGradeScale) {
@@ -28,7 +36,7 @@ internal class GradesDaoStoreImpl(private val gradeScaleStoreProvider: GradeScal
         }
     }
 
-    override suspend fun deleteGrade(gradeId: String): Result<Unit> = runCatching {
+    override suspend fun deleteGrade(gradeId: String): Option<Unit> = option {
         gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
             gradeScales?.map { gradeScale ->
                 if (gradeScale.grades.any { it.uuid == gradeId }) {

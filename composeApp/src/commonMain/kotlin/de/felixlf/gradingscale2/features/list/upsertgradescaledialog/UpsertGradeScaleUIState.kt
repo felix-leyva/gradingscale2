@@ -1,8 +1,8 @@
-package de.felixlf.gradingscale2.features.list.creategradescaledialog
+package de.felixlf.gradingscale2.features.list.upsertgradescaledialog
 
 import kotlinx.collections.immutable.ImmutableList
 
-data class CreateGradeScaleUIState(
+data class UpsertGradeScaleUIState(
     val existingGradeScaleNames: ImmutableList<GradeScaleNameAndId>,
     val newName: String?,
     val saveState: State?,

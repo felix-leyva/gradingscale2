@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.libraries.koinCore)
             implementation(libs.libraries.kotlinxCoroutinesCore)
+            implementation(libs.libraries.arrowCore)
         }
 
         commonTest.dependencies {

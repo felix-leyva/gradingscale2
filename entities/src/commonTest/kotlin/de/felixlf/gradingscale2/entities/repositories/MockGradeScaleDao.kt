@@ -1,5 +1,7 @@
 package de.felixlf.gradingscale2.entities.repositories
 
+import arrow.core.Option
+import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.daos.GradeScaleDao
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import kotlinx.collections.immutable.ImmutableList
@@ -24,10 +26,10 @@ class MockGradeScaleDao(
 
     override fun getGradeScales(): Flow<ImmutableList<GradeScale>> = gradeScales.asStateFlow()
 
-    override suspend fun upsertGradeScale(gradeScale: GradeScale): Result<Unit> {
-        if (!success) {
-            return Result.failure(Exception("Upsert failed"))
-        }
+    override suspend fun upsertGradeScale(gradeScale: GradeScale): Option<Unit> = option {
+        ensure(success)
+
+
         val gradeScaleToModify = gradeScales.value.find { it.id == gradeScale.id }
         val modifiedGradeScales =
             if (gradeScaleToModify != null) {
@@ -36,14 +38,10 @@ class MockGradeScaleDao(
                 gradeScales.value + gradeScale
             }.toImmutableList()
         gradeScales.value = modifiedGradeScales
-        return Result.success(Unit)
     }
 
-    override suspend fun deleteGradeScale(gradeScaleId: String): Result<Unit> {
-        if (gradeScales.value.none { it.id == gradeScaleId }) {
-            return Result.failure(Exception("GradeScale not found"))
-        }
+    override suspend fun deleteGradeScale(gradeScaleId: String): Option<Unit> = option {
+        ensure(!gradeScales.value.none { it.id == gradeScaleId })
         gradeScales.value = gradeScales.value.filter { it.id != gradeScaleId }.toImmutableList()
-        return Result.success(Unit)
     }
 }

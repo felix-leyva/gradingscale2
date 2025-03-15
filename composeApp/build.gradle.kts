@@ -1,51 +1,39 @@
 @file:Suppress("UnstableApiUsage")
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
-// import org.jetbrains.compose.reload.ComposeHotRun
-
 plugins {
     id(
-        libs2.plugins.kotlinMultiplatform
-            .get()
-            .pluginId,
+        libs2.plugins.kotlinMultiplatform.get().pluginId,
     )
     id("gs-android-app")
     id(
-        libs2.plugins.google.services
-            .get()
-            .pluginId,
+        libs2.plugins.google.services.get().pluginId,
     )
     id(
-        libs2.plugins.jetbrainsCompose
-            .get()
-            .pluginId,
+        libs2.plugins.jetbrainsCompose.get().pluginId,
     )
     id(
-        libs2.plugins.compose.compiler
-            .get()
-            .pluginId,
+        libs2.plugins.compose.compiler.get().pluginId,
     )
     id(
-        libs2.plugins.ksp
-            .get()
-            .pluginId,
+        libs2.plugins.ksp.get().pluginId,
     )
     id(
-        libs2.plugins.kotlinxSerialization
-            .get()
-            .pluginId,
+        libs2.plugins.kotlinxSerialization.get().pluginId,
     )
     // We add here alias, due that we do not add this buildSrc, as the Kotlin version would be enforced also there to 2.1
-    // alias(libs2.plugins.hot.reload)
+    alias(libs2.plugins.hot.reload)
 }
 
 kotlin {
     js {
-        moduleName = "composeApp"
+        outputModuleName = "composeApp"
         browser {
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
@@ -65,6 +53,12 @@ kotlin {
         }
         binaries.executable()
         useEsModules()
+    }
+
+    jvm {
+        mainRun{
+            mainClass.set("de.felixlf.gradingscale2.MainKt")
+        }
     }
 
 //    wasmJs {
@@ -96,7 +90,12 @@ kotlin {
         }
     }
 
-    jvm()
+    @OptIn(ExperimentalKotlinGradlePluginApi::class) jvm {
+        mainRun {
+            mainClass.set("de.felixlf.gradingscale2.MainKt")
+        }
+    }
+
     jvmToolchain(libs2.versions.java.get().toInt())
 
     listOf(
@@ -138,6 +137,9 @@ kotlin {
             implementation(libs2.koin.compose.viewmodel.nav)
             implementation(libs2.kotlinx.collections.immutable)
             implementation(libs2.molecule.runtime)
+
+            // Arrow
+            implementation(libs2.arrow.optics)
 
             implementation(project(":entities"))
             implementation(project(":data:authFirebase"))
@@ -186,10 +188,6 @@ compose.desktop {
 composeCompiler {
     featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
-// // build.gradle.kts
-// tasks.register<ComposeHotRun>("runHot") {
-//    mainClass.set("de.felixlf.gradingscale2.MainKt")
-// }
 
 tasks.register("checkAndCreateGoogleServices") {
     val googleServicesFile = layout.projectDirectory.file("google-services.json")
@@ -212,4 +210,7 @@ tasks.register("checkAndCreateGoogleServices") {
 
 tasks.named("preBuild") {
     dependsOn("checkAndCreateGoogleServices")
+}
+dependencies {
+    ksp(libs2.arrow.optics.ksp.plugin)
 }

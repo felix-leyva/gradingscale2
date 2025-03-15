@@ -55,12 +55,15 @@ internal class GradeListUIStateFactory(
                 if (event.points <= 0) return
                 totalPoints = event.points
             }
+
+            is GradeScaleListUIEvent.SelectGradeScaleById -> gradeScaleId = event.gradeScaleId
         }
     }
 }
 
 sealed interface GradeScaleListUIEvent {
     data class SelectGradeScale(val gradeScaleName: String) : GradeScaleListUIEvent
+    data class SelectGradeScaleById(val gradeScaleId: String) : GradeScaleListUIEvent
     data class SetTotalPoints(val points: Double) : GradeScaleListUIEvent
 }
 

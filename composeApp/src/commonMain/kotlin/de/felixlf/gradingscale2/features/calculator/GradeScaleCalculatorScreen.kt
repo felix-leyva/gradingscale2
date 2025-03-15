@@ -123,7 +123,7 @@ private fun GradeScaleCalculatorScreen(
                         defaultText = stringResource(Res.string.calculator_screen_grade_name_dropbox_default),
                         label = stringResource(Res.string.calculator_screen_grade_name_dropbox_default),
                         modifier = Modifier.padding(vertical = 16.dp).weight(1f),
-                        textStyle = MaterialTheme.typography. titleLarge. copy(color = MaterialTheme. colorScheme. onSurface)
+                        textStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                     )
                 }
             }

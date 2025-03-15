@@ -1,5 +1,7 @@
 package de.felixlf.gradingscale2.daosimpl
 
+import arrow.core.Option
+import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.daos.GradeScaleDao
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.store.GradeScaleStoreProvider
@@ -19,13 +21,13 @@ internal class GradeScaleDaoStoreImpl(private val gradeScaleStoreProvider: Grade
         return gradeScaleStoreProvider.flow
     }
 
-    override suspend fun upsertGradeScale(gradeScale: GradeScale): Result<Unit> = runCatching {
+    override suspend fun upsertGradeScale(gradeScale: GradeScale): Option<Unit> = option {
         gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
             gradeScales?.map { if (it.id == gradeScale.id) gradeScale else it }?.toImmutableList()
         }
     }
 
-    override suspend fun deleteGradeScale(gradeScaleId: String): Result<Unit> = runCatching {
+    override suspend fun deleteGradeScale(gradeScaleId: String): Option<Unit> = option {
         gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
             gradeScales?.filterNot { it.id == gradeScaleId }?.toImmutableList()
         }

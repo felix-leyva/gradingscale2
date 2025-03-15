@@ -1,5 +1,7 @@
 package de.felixlf.gradingscale2.entities.repositories
 
+import arrow.core.Option
+import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.daos.GradeScaleDao
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import kotlinx.collections.immutable.ImmutableList
@@ -25,10 +27,11 @@ internal class GradeScaleRepositoryImpl(
             replay = 1,
         )
 
-    override suspend fun upsertGradeScale(gradeScale: GradeScale): Result<String> = runCatching {
-        gradeScaleDao.upsertGradeScale(gradeScale).getOrThrow()
+    override suspend fun upsertGradeScale(gradeScale: GradeScale): Option<String> = option {
+        gradeScaleDao.upsertGradeScale(gradeScale).bind()
         gradeScale.id
     }
-    override suspend fun deleteGradeScale(gradeScaleId: String): Result<Unit> =
+
+    override suspend fun deleteGradeScale(gradeScaleId: String): Option<Unit> =
         gradeScaleDao.deleteGradeScale(gradeScaleId)
 }
