@@ -32,6 +32,7 @@ import de.felixlf.gradingscale2.features.list.components.GradeScaleListItem
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.InsertGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleDialog
+import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.stringWithDecimals
 import de.felixlf.gradingscale2.utils.textFieldManager
@@ -76,11 +77,12 @@ fun GradeScaleListScreen() {
                     activeDialogCommand = null
                     it?.let { viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScaleById(it)) }
                 },
+                operation = UpsertGradeScaleUIState.State.Operation.Insert,
             )
 
             is GradeScaleListDialogCommand.EditGradeScale -> UpsertGradeScaleDialog(
                 onDismiss = { activeDialogCommand = null },
-                currentGradeScaleId = command.gradeScaleId,
+                operation = UpsertGradeScaleUIState.State.Operation.Update(command.gradeScaleId),
             )
 
             GradeScaleListDialogCommand.Help -> TODO()

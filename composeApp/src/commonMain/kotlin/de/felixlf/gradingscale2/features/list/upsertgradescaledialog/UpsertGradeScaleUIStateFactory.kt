@@ -9,8 +9,9 @@ import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State
-import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Error
+import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Loaded
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Loading
+import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.SaveError
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Success
 import de.felixlf.gradingscale2.uimodel.MoleculePresenter
 import kotlinx.collections.immutable.persistentListOf
@@ -25,8 +26,8 @@ class UpsertGradeScaleUIStateFactory(
     private val scope: CoroutineScope,
 ) : MoleculePresenter<UpsertGradeScaleUIState, UpserGradeScaleUIEvent> {
     private var newGradeScaleName by mutableStateOf("")
-    private var uiSaveState by mutableStateOf<State?>(null)
-    private var currentGradeScaleId by mutableStateOf<String?>(null)
+    private var uiSaveState by mutableStateOf<State>(Loading)
+    private var operation by mutableStateOf<State.Operation?>(null)
 
     @Composable
     override fun produceUI(): UpsertGradeScaleUIState {
@@ -37,19 +38,18 @@ class UpsertGradeScaleUIStateFactory(
             )
         }.toImmutableList()
 
-        LaunchedEffect(existingGradeScaleNames, currentGradeScaleId) {
-            val gradeScaleId = currentGradeScaleId
-            if (gradeScaleId != null && existingGradeScaleNames.isNotEmpty()) {
-                existingGradeScaleNames.firstOrNull { it.id == gradeScaleId }?.name?.let {
-                    newGradeScaleName = it
-                }
+        LaunchedEffect(existingGradeScaleNames, operation) {
+            (operation as? State.Operation.Update)?.let { operation ->
+                val gradeScale = existingGradeScaleNames.find { it.id == operation.currentGradeScaleId }
+                newGradeScaleName = gradeScale?.name ?: ""
             }
+            operation?.let { uiSaveState = Loaded(it) }
         }
 
         return UpsertGradeScaleUIState(
             existingGradeScaleNames = existingGradeScaleNames,
             newName = newGradeScaleName,
-            saveState = uiSaveState,
+            state = uiSaveState,
         )
     }
 
@@ -57,14 +57,14 @@ class UpsertGradeScaleUIStateFactory(
         when (event) {
             is UpserGradeScaleUIEvent.SetNewName -> newGradeScaleName = event.name
             is UpserGradeScaleUIEvent.Save -> save(event)
-            is UpserGradeScaleUIEvent.SetCurrentGradeScaleId -> currentGradeScaleId = event.gradeScaleId
+            is UpserGradeScaleUIEvent.SetOperation -> operation = event.operation
         }
     }
 
     private fun save(event: UpserGradeScaleUIEvent.Save) {
         uiSaveState = Loading
         scope.launch {
-            val id = currentGradeScaleId
+            val id = (operation as? State.Operation.Update)?.currentGradeScaleId
             when {
                 id != null -> updateGradeScaleUseCase(
                     gradeScaleId = id,
@@ -76,7 +76,7 @@ class UpsertGradeScaleUIStateFactory(
                     gradeScaleName = newGradeScaleName,
                     defaultGradeName = event.defaultGradeName,
                 )
-            }.onSome { uiSaveState = Success(it) }.onNone { uiSaveState = Error }
+            }.onSome { uiSaveState = Success(it) }.onNone { uiSaveState = SaveError }
         }
     }
 }
@@ -89,7 +89,7 @@ sealed interface UpserGradeScaleUIEvent {
     /**
      * Set the current grade scale id, if the dialog is used to update a grade scale
      */
-    data class SetCurrentGradeScaleId(val gradeScaleId: String) : UpserGradeScaleUIEvent
+    data class SetOperation(val operation: State.Operation) : UpserGradeScaleUIEvent
 
     /**
      * Set the new name for the grade scale
