@@ -22,4 +22,6 @@
     <string name="gradescale_list_dialog_edit_save_new">Save new</string>
     <string name="gradescale_list_dialog_edit_save_changes">Save changes</string>
     <string name="gradescale_list_dialog_edit_cancel">Cancel</string>
+    <string name="gradescale_list_dialog_edit_error_duplicated_name">A grade scale with the same name already exists. Please use a different name</string>
+    <string name="gradescale_list_dialog_edit_error_invalid_name">Invalid name, please make sure the field is filled up</string>
 </resources>

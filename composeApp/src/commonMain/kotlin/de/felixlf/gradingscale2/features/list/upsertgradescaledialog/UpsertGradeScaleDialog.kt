@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -30,7 +29,6 @@ import gradingscale2.composeapp.generated.resources.gradescale_list_dialog_edit_
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 
 @Composable
@@ -83,11 +81,17 @@ private fun UpsertGradeScaleDialog(
                     CalculatorTextField(
                         state = textFieldState,
                     )
+                    uiState.error?.errorDescriptions?.let {
+                        Text(stringResource(it))
+                    }
                     Row(
                         modifier = Modifier.padding(8.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
-                        Button(onClick = onSave) {
+                        Button(
+                            onClick = onSave,
+                            enabled = uiState.isSaveEnabled,
+                        ) {
                             Text(stringResource(uiState.state.operation.button))
                         }
                         Button(onClick = onDismiss) {
@@ -96,8 +100,8 @@ private fun UpsertGradeScaleDialog(
                     }
                 }
 
-                UpsertGradeScaleUIState.State.SaveError -> TODO("Add the error message")
-                is UpsertGradeScaleUIState.State.Success -> Unit
+                UpsertGradeScaleUIState.State.SaveError -> Unit //TODO: Implement error message
+                is UpsertGradeScaleUIState.State.Success -> Unit // TODO: define if implement success message
             }
         }
     }

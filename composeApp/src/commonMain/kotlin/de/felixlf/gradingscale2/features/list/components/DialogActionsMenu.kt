@@ -26,7 +26,7 @@ fun DialogActionsMenu(
     onAction: (GradeScaleListDialogCommand) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val menuItems = remember {
+    val menuItems = remember(gradeScaleId) {
         listOf(
             GradeScaleListDialogCommand.AddNewGradeInCurrentGradeScale(gradeScaleId),
             GradeScaleListDialogCommand.EditGradeScale(gradeScaleId),
