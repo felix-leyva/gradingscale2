@@ -1,6 +1,5 @@
 package de.felixlf.gradingscale2.features.list
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +32,7 @@ import de.felixlf.gradingscale2.features.list.upsertgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.InsertGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleDialog
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState
+import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.stringWithDecimals
 import de.felixlf.gradingscale2.utils.textFieldManager
@@ -42,6 +42,7 @@ import gradingscale2.composeapp.generated.resources.gradescale_list_select_grade
 import gradingscale2.composeapp.generated.resources.gradescale_list_total_points
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
@@ -174,7 +175,7 @@ private fun GradeScaleListScreen(
 
 @Preview
 @Composable
-private fun CalculatorScreenPreview() {
+private fun CalculatorScreenPreview() = AppTheme {
     GradeScaleListScreen(
         GradeScaleListUIState(
             selectedGradeScale = MockGradeScalesGenerator().gradeScales.first(),

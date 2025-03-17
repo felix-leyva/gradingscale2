@@ -19,4 +19,7 @@
     <string name="gradescale_list_menu_add_new_grade">Add New Grade</string>
     <string name="gradescale_list_menu_edit_grade_scale">Edit Grade Scale</string>
     <string name="gradescale_list_menu_help">Help</string>"
+    <string name="gradescale_list_dialog_edit_save_new">Save new</string>
+    <string name="gradescale_list_dialog_edit_save_changes">Save changes</string>
+    <string name="gradescale_list_dialog_edit_cancel">Cancel</string>
 </resources>

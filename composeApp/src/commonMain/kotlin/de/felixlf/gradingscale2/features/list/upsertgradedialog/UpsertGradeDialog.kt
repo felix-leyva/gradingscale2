@@ -1,6 +1,5 @@
 package de.felixlf.gradingscale2.features.list.upsertgradedialog
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,6 +39,7 @@ import gradingscale2.composeapp.generated.resources.edit_grade_name
 import gradingscale2.composeapp.generated.resources.edit_grade_percentage
 import gradingscale2.composeapp.generated.resources.edit_grade_save_button
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 /**
  * The Insert Grade Dialog is a dialog that allows the user to insert a new grade.

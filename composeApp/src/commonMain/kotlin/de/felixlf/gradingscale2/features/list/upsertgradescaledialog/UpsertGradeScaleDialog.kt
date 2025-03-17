@@ -1,10 +1,11 @@
 package de.felixlf.gradingscale2.features.list.upsertgradescaledialog
 
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -24,7 +25,11 @@ import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGrade
 import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.utils.dialogScopedViewModel
 import de.felixlf.gradingscale2.utils.textFieldManager
+import gradingscale2.composeapp.generated.resources.Res
+import gradingscale2.composeapp.generated.resources.gradescale_list_dialog_edit_cancel
 import kotlinx.collections.immutable.toImmutableList
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameter
 import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
 
@@ -69,26 +74,30 @@ private fun UpsertGradeScaleDialog(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
-            if (uiState.state == UpsertGradeScaleUIState.State.Loading) {
-                CircularProgressIndicator()
-            } else {
-                val textFieldState = textFieldManager(uiState.newName ?: "") {
-                    onSetNewName(it)
-                }
-                CalculatorTextField(
-                    state = textFieldState,
-                )
-                Row(
-                    modifier = Modifier.padding(8.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    Button(onClick = onSave) {
-                        Text("Save")
+            when (uiState.state) {
+                UpsertGradeScaleUIState.State.Loading -> CircularProgressIndicator()
+                is UpsertGradeScaleUIState.State.Loaded -> {
+                    val textFieldState = textFieldManager(uiState.newName ?: "") {
+                        onSetNewName(it)
                     }
-                    Button(onClick = onDismiss) {
-                        Text("Cancel")
+                    CalculatorTextField(
+                        state = textFieldState,
+                    )
+                    Row(
+                        modifier = Modifier.padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                    ) {
+                        Button(onClick = onSave) {
+                            Text(stringResource(uiState.state.operation.button))
+                        }
+                        Button(onClick = onDismiss) {
+                            Text(stringResource(Res.string.gradescale_list_dialog_edit_cancel))
+                        }
                     }
                 }
+
+                UpsertGradeScaleUIState.State.SaveError -> TODO("Add the error message")
+                is UpsertGradeScaleUIState.State.Success -> Unit
             }
         }
     }
@@ -96,21 +105,28 @@ private fun UpsertGradeScaleDialog(
 
 @Preview
 @Composable
-fun CreateNewGradeScaleDialogPreview(@PreviewParameter(CreateNewGradeScaleDialogPreviewParameter::class) state: UpsertGradeScaleUIState.State) =
-    AppTheme {
-        UpsertGradeScaleDialog(
-            uiState = UpsertGradeScaleUIState(
-                existingGradeScaleNames = MockGradeScalesGenerator().gradeScales.map { gradeScale ->
-                    UpsertGradeScaleUIState.GradeScaleNameAndId(
-                        name = gradeScale.gradeScaleName,
-                        id = gradeScale.id,
-                    )
-                }.toImmutableList(),
-                newName = "new grade scale",
-                state = state,
-            ),
-        )
+fun CreateNewGradeScaleDialogPreview() = AppTheme {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        // Workaround for https://youtrack.jetbrains.com/issue/KTIJ-33358/K2-PreviewParameters-leads-to-render-issues-for-Preview-in-commonMain-source-set
+        CreateNewGradeScaleDialogPreviewParameter().values.forEach { state ->
+            UpsertGradeScaleDialog(
+                uiState = UpsertGradeScaleUIState(
+                    existingGradeScaleNames = MockGradeScalesGenerator().gradeScales.map { gradeScale ->
+                        UpsertGradeScaleUIState.GradeScaleNameAndId(
+                            name = gradeScale.gradeScaleName,
+                            id = gradeScale.id,
+                        )
+                    }.toImmutableList(),
+                    newName = "new grade scale",
+                    state = state,
+                ),
+            )
+        }
     }
+}
 
 
 class CreateNewGradeScaleDialogPreviewParameter(
