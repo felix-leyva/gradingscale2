@@ -58,8 +58,6 @@ android {
 }
 
 buildConfig {
-
-
 }
 
 // Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration

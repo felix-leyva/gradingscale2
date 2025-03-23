@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.list.upsertgradedialog
+package de.felixlf.gradingscale2.entities.features.list.upsertgradedialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -7,11 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
+import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
-import de.felixlf.gradingscale2.uimodel.MoleculePresenter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -113,7 +113,6 @@ class UpsertGradeUIFactory(
     private fun updateGradeName(event: UpsertGradeUIEvent.SetGradeName) {
         gradeName = event.name
     }
-
 }
 
 sealed interface UpsertGradeUIEvent {

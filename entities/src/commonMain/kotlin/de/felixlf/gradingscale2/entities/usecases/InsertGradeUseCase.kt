@@ -20,7 +20,8 @@ enum class InsertGradeUseCaseError {
 }
 
 internal class InsertGradeUseCaseImpl(
-    private val gradesRepository: GradesRepository, private val gradeScaleRepository: GradeScaleRepository
+    private val gradesRepository: GradesRepository,
+    private val gradeScaleRepository: GradeScaleRepository,
 ) : InsertGradeUseCase {
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun invoke(gradeScaleId: String, percentage: Double, namedGrade: String): Either<InsertGradeUseCaseError, Unit> =

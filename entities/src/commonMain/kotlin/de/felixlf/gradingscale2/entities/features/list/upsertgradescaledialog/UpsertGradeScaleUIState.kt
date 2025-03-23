@@ -1,11 +1,10 @@
-package de.felixlf.gradingscale2.features.list.upsertgradescaledialog
+package de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog
 
-import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation
-import gradingscale2.composeapp.generated.resources.Res
-import gradingscale2.composeapp.generated.resources.gradescale_list_dialog_edit_error_duplicated_name
-import gradingscale2.composeapp.generated.resources.gradescale_list_dialog_edit_error_invalid_name
-import gradingscale2.composeapp.generated.resources.gradescale_list_dialog_edit_save_changes
-import gradingscale2.composeapp.generated.resources.gradescale_list_dialog_edit_save_new
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_error_duplicated_name
+import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_error_invalid_name
+import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_save_changes
+import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_save_new
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.StringResource
 
@@ -15,7 +14,7 @@ data class UpsertGradeScaleUIState(
     val state: State,
 ) {
     private val currentGradeScaleNameAndId =
-        ((state as? State.Loaded)?.operation as? Operation.Update)?.currentGradeScaleId?.let { selectedId ->
+        ((state as? State.Loaded)?.operation as? State.Operation.Update)?.currentGradeScaleId?.let { selectedId ->
             existingGradeScaleNames.firstOrNull { it.id == selectedId }
         }
 

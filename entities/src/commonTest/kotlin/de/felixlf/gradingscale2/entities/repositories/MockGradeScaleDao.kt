@@ -29,7 +29,6 @@ class MockGradeScaleDao(
     override suspend fun upsertGradeScale(gradeScale: GradeScale): Option<Unit> = option {
         ensure(success)
 
-
         val gradeScaleToModify = gradeScales.value.find { it.id == gradeScale.id }
         val modifiedGradeScales =
             if (gradeScaleToModify != null) {

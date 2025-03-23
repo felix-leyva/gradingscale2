@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.calculator
+package de.felixlf.gradingscale2.entities.features.calculator
 
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.toPointedGrade

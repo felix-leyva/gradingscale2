@@ -5,9 +5,9 @@ import de.felixlf.gradingscale2.Initializer
 import de.felixlf.gradingscale2.InitializerImpl
 import de.felixlf.gradingscale2.dbModule
 import de.felixlf.gradingscale2.entities.entitiesModule
-import de.felixlf.gradingscale2.features.calculator.CalculatorUIStateFactory
+import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIStateFactory
+import de.felixlf.gradingscale2.entities.features.list.GradeListUIStateFactory
 import de.felixlf.gradingscale2.features.calculator.CalculatorViewModel
-import de.felixlf.gradingscale2.features.list.GradeListUIStateFactory
 import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeViewModel
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleViewModel

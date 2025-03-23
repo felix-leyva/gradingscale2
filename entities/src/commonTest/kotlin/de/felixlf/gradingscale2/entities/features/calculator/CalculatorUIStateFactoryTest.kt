@@ -1,12 +1,12 @@
-package de.felixlf.gradingscale2.features.calculator
+package de.felixlf.gradingscale2.entities.features.calculator
 
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.test
+import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
-import de.felixlf.gradingscale2.moleculeTest
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.flowOf
 import kotlin.test.BeforeTest

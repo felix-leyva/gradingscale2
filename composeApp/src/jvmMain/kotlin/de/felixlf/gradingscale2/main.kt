@@ -9,7 +9,6 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.reload.DevelopmentEntryPoint
 import org.koin.java.KoinJavaComponent.inject
 
-
 fun main() {
     initJvmApp()
     application {

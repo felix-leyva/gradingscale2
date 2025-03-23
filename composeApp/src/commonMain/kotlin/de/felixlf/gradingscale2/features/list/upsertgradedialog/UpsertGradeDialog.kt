@@ -31,6 +31,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIEvent
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIState
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.utils.dialogScopedViewModel
 import de.felixlf.gradingscale2.utils.textFieldManager
@@ -65,7 +67,9 @@ fun EditGradeDialog(uuid: String, onDismiss: () -> Unit) {
 
 @Composable
 private fun UpsertGradeDialog(
-    onDismiss: () -> Unit, uiState: State<UpsertGradeUIState>, viewModel: UpsertGradeViewModel
+    onDismiss: () -> Unit,
+    uiState: State<UpsertGradeUIState>,
+    viewModel: UpsertGradeViewModel,
 ) {
     Dialog(onDismissRequest = onDismiss) {
         UpsertGradeDialog(
@@ -140,7 +144,6 @@ private fun UpsertGradeDialog(
                     Text(stringResource(Res.string.edit_grade_save_button))
                 }
             }
-
 
             Button(
                 onClick = onSaveNew,

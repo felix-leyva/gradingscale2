@@ -30,7 +30,6 @@ class MockGradesDao(
     override suspend fun upsertGrade(grade: Grade): Option<Unit> = when (success) {
         true -> Option.invoke(Unit)
         false -> None
-
     }
 
     override suspend fun deleteGrade(gradeId: String): Option<Unit> = when {

@@ -1,12 +1,12 @@
-package de.felixlf.gradingscale2.features.calculator
+package de.felixlf.gradingscale2.entities.features.calculator
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.uimodel.MoleculePresenter
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
@@ -15,7 +15,7 @@ import kotlinx.collections.immutable.toImmutableList
  * @param allGradeScalesUseCase UseCase for getting all grade scales.
  * @param getGradeScaleByIdUseCase UseCase for getting a grade scale by its ID.
  */
-internal class CalculatorUIStateFactory(
+class CalculatorUIStateFactory(
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
 ) : MoleculePresenter<GradeScaleCalculatorUIState, CalculatorUIEvent> {

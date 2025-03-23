@@ -18,9 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpserGradeScaleUIEvent
+import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState
+import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
-import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation
 import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.utils.dialogScopedViewModel
 import de.felixlf.gradingscale2.utils.textFieldManager
@@ -92,7 +94,7 @@ private fun UpsertGradeScaleDialog(
                             onClick = onSave,
                             enabled = uiState.isSaveEnabled,
                         ) {
-                            Text(stringResource(uiState.state.operation.button))
+                            Text(stringResource((uiState.state as UpsertGradeScaleUIState.State.Loaded).operation.button))
                         }
                         Button(onClick = onDismiss) {
                             Text(stringResource(Res.string.gradescale_list_dialog_edit_cancel))
@@ -100,7 +102,7 @@ private fun UpsertGradeScaleDialog(
                     }
                 }
 
-                UpsertGradeScaleUIState.State.SaveError -> Unit //TODO: Implement error message
+                UpsertGradeScaleUIState.State.SaveError -> Unit // TODO: Implement error message
                 is UpsertGradeScaleUIState.State.Success -> Unit // TODO: define if implement success message
             }
         }
@@ -132,14 +134,12 @@ fun CreateNewGradeScaleDialogPreview() = AppTheme {
     }
 }
 
-
 class CreateNewGradeScaleDialogPreviewParameter(
     override val values: Sequence<UpsertGradeScaleUIState.State> = sequenceOf(
         UpsertGradeScaleUIState.State.Loading,
-        UpsertGradeScaleUIState.State.Loaded(Operation.Insert),
-        UpsertGradeScaleUIState.State.Loaded(Operation.Update("1")),
+        UpsertGradeScaleUIState.State.Loaded(UpsertGradeScaleUIState.State.Operation.Insert),
+        UpsertGradeScaleUIState.State.Loaded(UpsertGradeScaleUIState.State.Operation.Update("1")),
         UpsertGradeScaleUIState.State.Success("1"),
         UpsertGradeScaleUIState.State.SaveError,
-    )
+    ),
 ) : PreviewParameterProvider<UpsertGradeScaleUIState.State>
-

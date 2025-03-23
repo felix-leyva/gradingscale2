@@ -1,8 +1,8 @@
 @file:Suppress("UnstableApiUsage")
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.compose.compose
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -57,7 +57,7 @@ kotlin {
     }
 
     jvm {
-        mainRun{
+        mainRun {
             mainClass.set("de.felixlf.gradingscale2.MainKt")
         }
     }
@@ -91,7 +91,8 @@ kotlin {
         }
     }
 
-    @OptIn(ExperimentalKotlinGradlePluginApi::class) jvm {
+    @OptIn(ExperimentalKotlinGradlePluginApi::class)
+    jvm {
         mainRun {
             mainClass.set("de.felixlf.gradingscale2.MainKt")
         }

@@ -1,18 +1,19 @@
-package de.felixlf.gradingscale2.features.list.upsertgradescaledialog
+package de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog
 
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.test
 import arrow.core.None
 import arrow.core.Option
+import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Loaded
+import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Loading
+import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation.Insert
+import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation.Update
+import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
-import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Loaded
-import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Loading
-import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation
-import de.felixlf.gradingscale2.moleculeTest
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +23,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
@@ -101,12 +101,12 @@ class UpsertGradeScaleUIStateFactoryTest {
                 ),
                 awaitItem(),
             )
-            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Operation.Insert))
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Insert))
             assertEquals(
                 UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = "",
-                    state = Loaded(Operation.Insert),
+                    state = Loaded(Insert),
                 ),
                 awaitItem(),
             )
@@ -127,7 +127,7 @@ class UpsertGradeScaleUIStateFactoryTest {
                 ),
                 awaitItem(),
             )
-            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Operation.Insert))
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Insert))
             awaitItem()
 
             useCase.sendEvent(UpserGradeScaleUIEvent.SetNewName("newName2"))
@@ -135,7 +135,7 @@ class UpsertGradeScaleUIStateFactoryTest {
                 UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = "newName2",
-                    state = Loaded(Operation.Insert),
+                    state = Loaded(Insert),
                 ),
                 awaitItem(),
             )
@@ -159,7 +159,7 @@ class UpsertGradeScaleUIStateFactoryTest {
                 awaitItem(),
             )
 
-            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Operation.Insert))
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Insert))
             awaitItem()
             useCase.sendEvent(UpserGradeScaleUIEvent.Save(defaultGradeName))
 
@@ -194,7 +194,7 @@ class UpsertGradeScaleUIStateFactoryTest {
             },
         )
         getUIState(useCase).test {
-            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Operation.Insert))
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Insert))
             skipItems(2)
             val gradeScaleName = "scale"
             val defaultGradeName = "grade"
@@ -203,7 +203,7 @@ class UpsertGradeScaleUIStateFactoryTest {
                 UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = gradeScaleName,
-                    state = Loaded(Operation.Insert),
+                    state = Loaded(Insert),
                 ),
                 awaitItem(),
             )
@@ -236,12 +236,12 @@ class UpsertGradeScaleUIStateFactoryTest {
         getUIState(useCase).test {
             skipItems(2)
             val gradeScaleId = mockGradeScales[2].id
-            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Operation.Update(gradeScaleId)))
+            useCase.sendEvent(UpserGradeScaleUIEvent.SetOperation(Update(gradeScaleId)))
             assertEquals(
                 UpsertGradeScaleUIState(
                     existingGradeScaleNames = existingGradeScaleNames,
                     newName = mockGradeScales[2].gradeScaleName,
-                    state = Loaded(Operation.Update(gradeScaleId)),
+                    state = Loaded(Update(gradeScaleId)),
                 ),
                 awaitItem(),
             )

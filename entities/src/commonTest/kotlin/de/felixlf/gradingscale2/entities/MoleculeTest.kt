@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2
+package de.felixlf.gradingscale2.entities
 
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.test.TestScope

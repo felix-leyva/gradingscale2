@@ -12,7 +12,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-
 class InsertGradeUseCaseImplTest {
     private val dao: MockGradeScaleDao = MockGradeScaleDao()
     private val gradesDao: MockGradesDao = MockGradesDao()

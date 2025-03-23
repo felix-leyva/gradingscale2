@@ -1,21 +1,21 @@
-package de.felixlf.gradingscale2.features.list
+package de.felixlf.gradingscale2.entities.features.list
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SelectGradeScale
+import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SetTotalPoints
+import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.features.list.GradeScaleListUIEvent.SelectGradeScale
-import de.felixlf.gradingscale2.features.list.GradeScaleListUIEvent.SetTotalPoints
-import de.felixlf.gradingscale2.uimodel.MoleculePresenter
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 /**
  * This class is responsible for managing the UI state of the grade scale list screen.
  */
-internal class GradeListUIStateFactory(
+class GradeListUIStateFactory(
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
 ) : MoleculePresenter<GradeScaleListUIState, GradeScaleListUIEvent> {

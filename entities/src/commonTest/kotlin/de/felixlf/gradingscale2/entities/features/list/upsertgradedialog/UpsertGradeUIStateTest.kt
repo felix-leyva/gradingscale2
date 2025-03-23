@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.list.upsertgradedialog
+package de.felixlf.gradingscale2.entities.features.list.upsertgradedialog
 
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale

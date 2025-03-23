@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features.list.upsertgradedialog
+package de.felixlf.gradingscale2.entities.features.list.upsertgradedialog
 
 import androidx.compose.runtime.Stable
 import de.felixlf.gradingscale2.entities.models.Grade
@@ -25,7 +25,6 @@ data class UpsertGradeUIState(
             else -> null
         }
 
-
     private val duplicatedName = gradeScale?.grades?.map { it.namedGrade }?.contains(name) == true
     private val nameFieldErrors = when {
         name?.isBlank() == true -> Error.INVALID_NAME
@@ -44,5 +43,4 @@ data class UpsertGradeUIState(
         !(isLoading || name.isNullOrBlank() || percentage.isNullOrBlank() || duplicatedName || duplicatedPercentage)
 
     enum class Error { INVALID_PERCENTAGE, INVALID_NAME, DUPLICATE_NAME, DUPLICATE_PERCENTAGE }
-
 }

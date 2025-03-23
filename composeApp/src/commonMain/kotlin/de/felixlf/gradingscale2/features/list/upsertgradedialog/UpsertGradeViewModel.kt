@@ -2,6 +2,9 @@ package de.felixlf.gradingscale2.features.list.upsertgradedialog
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIEvent
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIFactory
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIState
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase

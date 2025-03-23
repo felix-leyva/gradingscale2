@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.uimodel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
+import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -14,7 +15,7 @@ internal interface MoleculeViewModelHelper<UIState, UIEvent> {
 
     /**
      * The UI State Factory.
-     * Provide here the [MoleculePresenter] which manages the UI State and the UI Events.
+     * Provide here the [de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter] which manages the UI State and the UI Events.
      */
     val factory: MoleculePresenter<UIState, UIEvent>
 

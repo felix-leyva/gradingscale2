@@ -1,9 +1,12 @@
 package de.felixlf.gradingscale2.features.list
 
 import androidx.lifecycle.ViewModel
+import de.felixlf.gradingscale2.entities.features.list.GradeListUIStateFactory
+import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent
+import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIState
+import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
 
 /**

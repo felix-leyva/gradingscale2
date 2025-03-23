@@ -1,9 +1,11 @@
-package de.felixlf.gradingscale2.features.list.upsertgradedialog
+package de.felixlf.gradingscale2.features
 
 import app.cash.turbine.test
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.option
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIEvent
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIState
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
@@ -12,6 +14,7 @@ import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCaseError
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeViewModel
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +27,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlin.collections.plus
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -44,9 +48,10 @@ class EditGradeViewModelTest {
     private val insertGradeUseCase = InsertGradeUseCase { gradeScaleId, percentage, namedGrade ->
         either {
             gradeScales.update {
-                val selectedGradeScale = ensureNotNull(it.firstOrNull { gradeScale -> gradeScale.id == gradeScaleId }) {
-                    InsertGradeUseCaseError.GradeScaleIdNotFound
-                }
+                val selectedGradeScale =
+                    ensureNotNull(it.firstOrNull { gradeScale -> gradeScale.id == gradeScaleId }) {
+                        InsertGradeUseCaseError.GradeScaleIdNotFound
+                    }
                 val newGrade = Grade(
                     namedGrade = namedGrade,
                     percentage = percentage,
@@ -54,7 +59,15 @@ class EditGradeViewModelTest {
                     nameOfScale = selectedGradeScale.gradeScaleName,
                     uuid = "1234",
                 )
-                it.map { gradeScale -> if (gradeScale.id == gradeScaleId) gradeScale.copy(grades = (gradeScale.grades + newGrade).toImmutableList()) else gradeScale }
+                it.map { gradeScale ->
+                    if (gradeScale.id == gradeScaleId) {
+                        gradeScale.copy(
+                            grades = (gradeScale.grades + newGrade).toImmutableList(),
+                        )
+                    } else {
+                        gradeScale
+                    }
+                }
             }
         }
     }
@@ -62,7 +75,8 @@ class EditGradeViewModelTest {
     private val updateSingleGradeUseCase = UpsertGradeUseCase { grade ->
         option {
             gradeScales.update {
-                val modifiedGradeScale = ensureNotNull(it.find { gradeScale -> gradeScale.id == grade.idOfGradeScale })
+                val modifiedGradeScale =
+                    ensureNotNull(it.find { gradeScale -> gradeScale.id == grade.idOfGradeScale })
                 val newGradeScale = GradeScale(
                     id = modifiedGradeScale.id,
                     gradeScaleName = modifiedGradeScale.gradeScaleName,
@@ -131,42 +145,44 @@ class EditGradeViewModelTest {
     }
 
     @Test
-    fun `updateGradeModel name updates the ui grade name but with errors if name is empty`() = runTest {
-        // Given
-        val grade = gradeScales.value[1].grades[3]
-        val uuid = grade.uuid
-        val newNameGrade = ""
+    fun `updateGradeModel name updates the ui grade name but with errors if name is empty`() =
+        runTest {
+            // Given
+            val grade = gradeScales.value[1].grades[3]
+            val uuid = grade.uuid
+            val newNameGrade = ""
 
-        // When, Then
-        viewModel.uiState.test {
-            assertEquals(null, awaitItem().grade)
-            viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid))
-            awaitItem()
-            viewModel.onEvent(UpsertGradeUIEvent.SetGradeName(newNameGrade))
-            val state = awaitItem()
-            assertEquals(newNameGrade, state.name)
-            assertEquals(UpsertGradeUIState.Error.INVALID_NAME, state.error.first())
+            // When, Then
+            viewModel.uiState.test {
+                assertEquals(null, awaitItem().grade)
+                viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid))
+                awaitItem()
+                viewModel.onEvent(UpsertGradeUIEvent.SetGradeName(newNameGrade))
+                val state = awaitItem()
+                assertEquals(newNameGrade, state.name)
+                assertEquals(UpsertGradeUIState.Error.INVALID_NAME, state.error.first())
+            }
         }
-    }
 
     @Test
-    fun `update percentage updates the ui percentage but with errors if percentage is not between 0 and 100`() = runTest {
-        // Given
-        val grade = gradeScales.value[1].grades[3]
-        val uuid = grade.uuid
-        val newPercentage = 101.0
+    fun `update percentage updates the ui percentage but with errors if percentage is not between 0 and 100`() =
+        runTest {
+            // Given
+            val grade = gradeScales.value[1].grades[3]
+            val uuid = grade.uuid
+            val newPercentage = 101.0
 
-        // When, Then
-        viewModel.uiState.test {
-            assertEquals(null, awaitItem().grade)
-            viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid))
-            awaitItem()
-            viewModel.onEvent(UpsertGradeUIEvent.SetPercentage(newPercentage.toString()))
-            val state = awaitItem()
-            assertEquals(newPercentage.toString(), state.percentage)
-            assertEquals(UpsertGradeUIState.Error.INVALID_PERCENTAGE, state.error.first())
+            // When, Then
+            viewModel.uiState.test {
+                assertEquals(null, awaitItem().grade)
+                viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid))
+                awaitItem()
+                viewModel.onEvent(UpsertGradeUIEvent.SetPercentage(newPercentage.toString()))
+                val state = awaitItem()
+                assertEquals(newPercentage.toString(), state.percentage)
+                assertEquals(UpsertGradeUIState.Error.INVALID_PERCENTAGE, state.error.first())
+            }
         }
-    }
 
     @Test
     fun `updateGradeModel updates the grade`() = runTest {

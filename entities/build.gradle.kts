@@ -1,6 +1,8 @@
 plugins {
     id("multiplatform-plugin")
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
+    id(libs2.plugins.compose.compiler.get().pluginId)
+    id(libs2.plugins.jetbrainsCompose.get().pluginId)
 }
 
 kotlin {
@@ -16,6 +18,9 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.components.resources)
+            implementation(libs2.molecule.runtime)
             implementation(libs2.kotlinx.collections.immutable)
             implementation(libs2.kotlinx.serialization)
         }
