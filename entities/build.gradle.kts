@@ -29,6 +29,10 @@ kotlin {
 
 android {
     namespace = libs.versions.packagename + ".entities"
+    // This is important to be able to run unit test when using molecule, due the MonotonicClock dependency
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 dependencies {
     testImplementation(project(":entities"))
