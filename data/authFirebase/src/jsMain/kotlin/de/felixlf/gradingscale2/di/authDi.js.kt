@@ -2,8 +2,8 @@
 
 package de.felixlf.gradingscale2.di
 
-import de.felixlf.gradingscale2.AuthInitializer
 import de.felixlf.gradingscale2.AuthInitializerImpl
+import de.felixlf.gradingscale2.entities.network.AuthInitializer
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module

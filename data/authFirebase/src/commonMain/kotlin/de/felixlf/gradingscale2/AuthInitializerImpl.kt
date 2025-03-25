@@ -1,8 +1,6 @@
 package de.felixlf.gradingscale2
 
-fun interface AuthInitializer {
-    operator fun invoke()
-}
+import de.felixlf.gradingscale2.entities.network.AuthInitializer
 
 internal expect class AuthInitializerImpl() : AuthInitializer {
     override fun invoke()

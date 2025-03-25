@@ -1,15 +1,11 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+
 plugins {
     id("multiplatform-plugin")
-    id(
-        libs2.plugins.kotlinxSerialization
-            .get()
-            .pluginId,
-    )
-    id(
-        libs2.plugins.ksp
-            .get()
-            .pluginId,
-    )
+    id(libs2.plugins.kotlinxSerialization.get().pluginId)
+    id(libs2.plugins.ksp.get().pluginId)
+    id(libs2.plugins.gmazzoBuildConfig.get().pluginId)
 }
 
 kotlin {
@@ -36,6 +32,13 @@ kotlin {
             implementation(libs2.ktor.client.core)
             implementation(libs2.ktor.client.content.negotiation)
             implementation(libs2.ktor.serialization.kotlinx.json)
+            implementation(libs2.ktor.client.logging)
+            implementation(libs2.ktor.client.auth)
+            implementation(projects.entities)
+        }
+
+        commonTest.dependencies {
+            implementation(libs2.ktor.client.test)
         }
 
         jvmMain.dependencies {
@@ -45,9 +48,28 @@ kotlin {
         iosMain.dependencies {
             implementation(libs2.ktor.client.darwin)
         }
+
+        jsMain.dependencies {
+            implementation(libs2.ktor.client.js)
+        }
     }
 }
 
 android {
     namespace = libs.versions.packagename + ".network"
 }
+
+// Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration
+val buildUrls = buildConfig.forClass("BuildResources")
+val generateBuildUrls by tasks.registering {
+    val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("GRADINGSCALE_BASE_URL")
+
+    doFirst {
+        buildUrls.apply {
+            packageName("de.felixlf.gradingscale2")
+            buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
+        }
+    }
+}
+
+tasks.generateJvmMainNonAndroidBuildConfig.dependsOn(generateBuildUrls)

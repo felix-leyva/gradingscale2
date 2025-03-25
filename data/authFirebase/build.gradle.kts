@@ -32,11 +32,11 @@ kotlin {
                 implementation(project.dependencies.platform(libs2.firebase.bom))
                 implementation(libs2.firebase.common.ktx)
                 implementation(libs2.firebase.auth.ktx)
-                //            implementation(libs2.firebase.crashlytics)
             }
         }
 
-        commonMain {
+        commonMain.dependencies {
+            implementation(projects.entities)
         }
 
         jsMain.dependencies {
@@ -55,9 +55,6 @@ kotlin {
 
 android {
     namespace = libs.versions.packagename + ".authfirebase"
-}
-
-buildConfig {
 }
 
 // Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration

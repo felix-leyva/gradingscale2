@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2
 
+import de.felixlf.gradingscale2.entities.network.AuthTokenProvider
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.FirebaseAuth
 import dev.gitlive.firebase.auth.auth

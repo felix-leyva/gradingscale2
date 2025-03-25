@@ -4,6 +4,8 @@ import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepository
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepositoryImpl
 import de.felixlf.gradingscale2.entities.repositories.GradesRepository
 import de.felixlf.gradingscale2.entities.repositories.GradesRepositoryImpl
+import de.felixlf.gradingscale2.entities.repositories.RemoteSyncRepository
+import de.felixlf.gradingscale2.entities.repositories.RemoteSyncRepositoryImpl
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeUseCase
@@ -30,6 +32,7 @@ val entitiesModule =
         single { MockGradeScalesGenerator() }
         single<GradeScaleRepository> { GradeScaleRepositoryImpl(get()) }
         single<GradesRepository> { GradesRepositoryImpl(get()) }
+        single<RemoteSyncRepository> { RemoteSyncRepositoryImpl(get()) }
 
         // Use cases
         single<GetAllGradeScalesUseCase> { GetAllGradeScalesUseCaseImpl(get(), get()) }

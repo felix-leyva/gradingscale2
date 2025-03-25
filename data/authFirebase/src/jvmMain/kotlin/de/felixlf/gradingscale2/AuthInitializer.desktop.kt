@@ -4,6 +4,7 @@ package de.felixlf.gradingscale2
 
 import android.app.Application
 import com.google.firebase.FirebasePlatform
+import de.felixlf.gradingscale2.entities.network.AuthInitializer
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.FirebaseOptions
 import dev.gitlive.firebase.auth.auth

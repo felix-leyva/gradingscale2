@@ -1,5 +1,7 @@
 package de.felixlf.gradingscale2
 
+import de.felixlf.gradingscale2.entities.network.AuthInitializer
+
 fun interface Initializer {
     operator fun invoke()
 }

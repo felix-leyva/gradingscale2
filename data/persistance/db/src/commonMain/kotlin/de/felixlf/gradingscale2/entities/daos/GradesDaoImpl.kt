@@ -3,7 +3,6 @@ package de.felixlf.gradingscale2.entities.daos
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import app.cash.sqldelight.db.SqlDriver
 import arrow.core.Option
 import arrow.core.raise.option
 import de.felixlf.gradingscale2.GradeScaleQueries
@@ -15,7 +14,6 @@ import kotlinx.coroutines.flow.flowOn
 
 internal class GradesDaoImpl(
     private val gradeScaleQueries: GradeScaleQueries,
-    private val driver: SqlDriver,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val mapper: GradeMapper = GradeMapper(),
 ) : GradesDao {

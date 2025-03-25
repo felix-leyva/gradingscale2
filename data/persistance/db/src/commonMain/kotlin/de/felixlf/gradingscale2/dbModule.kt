@@ -31,7 +31,7 @@ internal val sqlDaoModule = module {
     single<SqlDriver> { get<DriverFactory>().createDriver() }
     single<GradeScaleQueries> { get<Database>().gradeScaleQueries }
     single<GradeScaleDao> { GradeScaleDaoImpl(get()) }
-    single<GradesDao> { GradesDaoImpl(gradeScaleQueries = get(), driver = get()) }
+    single<GradesDao> { GradesDaoImpl(gradeScaleQueries = get()) }
 }
 
 val dbModule = module {
