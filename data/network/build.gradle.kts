@@ -72,4 +72,6 @@ val generateBuildUrls by tasks.registering {
     }
 }
 
-tasks.generateJvmMainNonAndroidBuildConfig.dependsOn(generateBuildUrls)
+tasks.matching { it.name.startsWith("compile") }.configureEach {
+    dependsOn(generateBuildUrls)
+}
