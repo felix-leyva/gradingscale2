@@ -23,6 +23,8 @@ internal actual fun authPlatformModule(): Module =
         singleOf<AuthInitializer>(::AuthInitializerImpl)
 
         single<AuthTokenProvider> {
+            val authInitializer: AuthInitializer = get()
+            authInitializer()
             AuthTokenProviderImpl(
                 auth = Firebase.auth,
                 scope = CoroutineScope(

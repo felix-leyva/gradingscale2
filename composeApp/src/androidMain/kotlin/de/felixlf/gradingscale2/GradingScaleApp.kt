@@ -8,12 +8,10 @@ import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
 class GradingScaleApp : Application() {
-    val appInitializer: Initializer by inject()
 
     override fun onCreate() {
         super.onCreate()
         setupKoin()
-        appInitializer()
     }
 
     private fun setupKoin() {

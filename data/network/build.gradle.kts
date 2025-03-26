@@ -1,5 +1,4 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 
 plugins {
     id("multiplatform-plugin")
@@ -60,7 +59,7 @@ android {
 }
 
 // Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration
-val buildUrls = buildConfig.forClass("BuildResources")
+val buildUrls = buildConfig.forClass("BuildBaseUrls")
 val generateBuildUrls by tasks.registering {
     val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("GRADINGSCALE_BASE_URL")
 

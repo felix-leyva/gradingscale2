@@ -21,7 +21,6 @@ internal class AuthTokenProviderImpl(
         auth.authStateChanged
             .mapLatest { user ->
                 val tokenResult = user?.getIdTokenResult(false)
-                auth.signInAnonymously()
                 when {
                     tokenResult == null -> user?.getIdToken(true)
                     else -> tokenResult.token

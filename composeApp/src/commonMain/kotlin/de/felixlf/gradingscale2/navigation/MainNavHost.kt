@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import de.felixlf.gradingscale2.features.calculator.GradeScaleCalculatorScreen
+import de.felixlf.gradingscale2.features.import.ImportScreen
 import de.felixlf.gradingscale2.features.list.GradeScaleListScreen
 
 @Composable
@@ -23,7 +24,7 @@ fun MainNavHost(appNavController: AppNavController) {
             Text(text = "${it.destination.route}")
         }
         composable(Destinations.GradeImporter.name) {
-            Text(text = "${it.destination.route}")
+            ImportScreen()
         }
     }
 }

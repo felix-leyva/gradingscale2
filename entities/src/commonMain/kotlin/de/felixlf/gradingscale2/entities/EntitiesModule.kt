@@ -16,6 +16,12 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.ImportRemoteGradeScaleIntoDbUseCase
+import de.felixlf.gradingscale2.entities.usecases.ImportRemoteGradeScaleIntoDbUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
@@ -25,6 +31,8 @@ import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 val entitiesModule =
@@ -44,4 +52,7 @@ val entitiesModule =
         single<UpsertGradeUseCase> { UpsertGradeUseCaseImpl(get()) }
         single<GetGradeByUUIDUseCase> { GetGradeByUUIDUseCaseImpl(get()) }
         single<InsertGradeUseCase> { InsertGradeUseCaseImpl(get(), get()) }
+        singleOf(::GetRemoteGradeScaleUseCaseImpl).bind<GetRemoteGradeScaleUseCase>()
+        singleOf(::GetRemoteGradeScalesUseCaseImpl).bind<GetRemoteGradeScalesUseCase>()
+        singleOf(::ImportRemoteGradeScaleIntoDbUseCaseImpl).bind<ImportRemoteGradeScaleIntoDbUseCase>()
     }

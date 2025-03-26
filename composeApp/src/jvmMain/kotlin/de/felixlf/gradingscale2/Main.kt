@@ -28,10 +28,8 @@ fun main() {
 private fun initJvmApp() =
     runBlocking {
         koinSetup()
-        val initializer: Initializer by inject(Initializer::class.java)
         val dbInitializer: DatabaseSchemaInitializer by inject(
             DatabaseSchemaInitializer::class.java,
         )
-        initializer()
         dbInitializer.initSchema()
     }

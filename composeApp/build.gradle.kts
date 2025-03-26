@@ -56,11 +56,7 @@ kotlin {
         useEsModules()
     }
 
-    jvm {
-        mainRun {
-            mainClass.set("de.felixlf.gradingscale2.MainKt")
-        }
-    }
+    jvm()
 
 //    wasmJs {
 //        moduleName = "composeApp"
@@ -88,13 +84,6 @@ kotlin {
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.fromTarget(libs2.versions.java.get()))
-        }
-    }
-
-    @OptIn(ExperimentalKotlinGradlePluginApi::class)
-    jvm {
-        mainRun {
-            mainClass.set("de.felixlf.gradingscale2.MainKt")
         }
     }
 
