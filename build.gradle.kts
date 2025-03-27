@@ -1,4 +1,6 @@
 import extensions.sonarQubeBaseConfig
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import kotlin.collections.addAll
 
 // jacocoBaseConfig()
 sonarQubeBaseConfig()
@@ -14,5 +16,10 @@ subprojects {
         outputToConsole.set(true)
         ignoreFailures.set(true)
         enableExperimentalRules.set(true)
+    }
+    tasks.withType<KotlinCompilationTask<*>>().configureEach {
+        compilerOptions {
+            freeCompilerArgs.addAll("-XXLanguage:+ExplicitBackingFields", "-opt-in=kotlin.uuid.ExperimentalUuidApi")
+        }
     }
 }

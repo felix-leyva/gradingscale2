@@ -25,9 +25,6 @@ kotlin {
             implementation(libs2.kotlinx.serialization)
         }
     }
-    compilerOptions {
-        freeCompilerArgs.addAll("-XXLanguage:+ExplicitBackingFields", "-opt-in=kotlin.uuid.ExperimentalUuidApi")
-    }
 }
 
 android {
