@@ -69,13 +69,13 @@ class UpsertGradeUIFactory(
         }
     }
 
-    override fun sendEvent(event: UpsertGradeUIEvent) {
-        when (event) {
-            is UpsertGradeUIEvent.SetGradeScaleId -> gradeScaleId = event.id
-            is UpsertGradeUIEvent.SetGradeUUID -> gradeUUID = event.uuid
-            is UpsertGradeUIEvent.SetGradeName -> updateGradeName(event)
-            is UpsertGradeUIEvent.SetPercentage -> upgradePercentage(event)
-            is UpsertGradeUIEvent.Save, is UpsertGradeUIEvent.SaveAsNew -> save(event)
+    override fun sendCommand(command: UpsertGradeUIEvent) {
+        when (command) {
+            is UpsertGradeUIEvent.SetGradeScaleId -> gradeScaleId = command.id
+            is UpsertGradeUIEvent.SetGradeUUID -> gradeUUID = command.uuid
+            is UpsertGradeUIEvent.SetGradeName -> updateGradeName(command)
+            is UpsertGradeUIEvent.SetPercentage -> upgradePercentage(command)
+            is UpsertGradeUIEvent.Save, is UpsertGradeUIEvent.SaveAsNew -> save(command)
             is UpsertGradeUIEvent.Delete -> TODO()
         }
     }

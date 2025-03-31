@@ -21,9 +21,11 @@ internal class ImportRemoteGradeScaleIntoDbUseCaseImpl(
 ) : ImportRemoteGradeScaleIntoDbUseCase {
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun invoke(remoteGradeScaleDTO: GradeScaleDTO): Option<String> = option {
-        val (currentNames, currentIds) = (gradeScaleRepository.getGradeScales().firstOrNull()
-            ?.map { it.gradeScaleName to it.id.toIntOrNull() }
-            ?: persistentListOf()).unzip()
+        val (currentNames, currentIds) = (
+            gradeScaleRepository.getGradeScales().firstOrNull()
+                ?.map { it.gradeScaleName to it.id.toIntOrNull() }
+                ?: persistentListOf()
+            ).unzip()
 
         val maxAvailableId = (currentIds.filterNotNull().maxOrNull() ?: 0) + 1
 
@@ -53,10 +55,9 @@ internal class ImportRemoteGradeScaleIntoDbUseCaseImpl(
     private fun generateUniqueName(
         originalName: String,
         countryName: String,
-        existingNames: List<String>
+        existingNames: List<String>,
     ): String {
         if (originalName !in existingNames) return originalName
-
 
         val countryPrefixedName = "$originalName - $countryName"
         if (countryPrefixedName !in existingNames) return countryPrefixedName
@@ -68,5 +69,4 @@ internal class ImportRemoteGradeScaleIntoDbUseCaseImpl(
             counter++
         }
     }
-
 }

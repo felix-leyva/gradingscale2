@@ -47,27 +47,27 @@ class CalculatorUIStateFactory(
         ).also { state = it }
     }
 
-    override fun sendEvent(event: CalculatorUIEvent) {
-        when (event) {
+    override fun sendCommand(command: CalculatorUIEvent) {
+        when (command) {
             is CalculatorUIEvent.SelectGradeScale ->
                 gradeScaleId =
-                    state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == event.gradeScaleName }?.gradeScaleId
+                    state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == command.gradeScaleName }?.gradeScaleId
 
             is CalculatorUIEvent.SetTotalPoints -> {
-                if (event.points <= 0) return
-                totalPoints = event.points
+                if (command.points <= 0) return
+                totalPoints = command.points
             }
 
-            is CalculatorUIEvent.SetPercentage -> if (event.percentage in 0.0..1.0) {
-                percentage = event.percentage
+            is CalculatorUIEvent.SetPercentage -> if (command.percentage in 0.0..1.0) {
+                percentage = command.percentage
             }
 
-            is CalculatorUIEvent.SetPoints -> if (event.points in 0.0..totalPoints) {
-                percentage = event.points / totalPoints
+            is CalculatorUIEvent.SetPoints -> if (command.points in 0.0..totalPoints) {
+                percentage = command.points / totalPoints
             }
 
             is CalculatorUIEvent.SetGradeName -> {
-                val selectedGradePercentage = state?.selectedGradeScale?.getPercentage(event.gradeName) ?: return
+                val selectedGradePercentage = state?.selectedGradeScale?.getPercentage(command.gradeName) ?: return
                 percentage = selectedGradePercentage
             }
         }

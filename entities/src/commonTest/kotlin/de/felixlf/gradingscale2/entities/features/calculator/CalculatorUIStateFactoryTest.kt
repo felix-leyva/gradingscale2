@@ -56,14 +56,14 @@ class CalculatorUIStateFactoryTest {
             assertEquals(null, state.selectedGradeScale)
 
             // When
-            factory.sendEvent(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
+            factory.sendCommand(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
 
             // Then
             val newState = awaitItem()
             assertEquals(mockGradeScales.first(), newState.selectedGradeScale)
 
             // When
-            factory.sendEvent(CalculatorUIEvent.SelectGradeScale(newState.gradeScalesNames.last()))
+            factory.sendCommand(CalculatorUIEvent.SelectGradeScale(newState.gradeScalesNames.last()))
             assertEquals(mockGradeScales.last(), awaitItem().selectedGradeScale)
         }
     }
@@ -73,10 +73,10 @@ class CalculatorUIStateFactoryTest {
         launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
             awaitItem()
             val state = awaitItem()
-            factory.sendEvent(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
+            factory.sendCommand(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
 
             // When
-            factory.sendEvent(CalculatorUIEvent.SetTotalPoints(20.0))
+            factory.sendCommand(CalculatorUIEvent.SetTotalPoints(20.0))
 
             // Then
             assertEquals(20.0, awaitItem().totalPoints)
@@ -88,10 +88,10 @@ class CalculatorUIStateFactoryTest {
         launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
             awaitItem()
             val state = awaitItem()
-            factory.sendEvent(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
+            factory.sendCommand(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
             awaitItem()
             // When
-            factory.sendEvent(CalculatorUIEvent.SetPercentage(0.51))
+            factory.sendCommand(CalculatorUIEvent.SetPercentage(0.51))
 
             // Then
             with(awaitItem()) {
@@ -108,10 +108,10 @@ class CalculatorUIStateFactoryTest {
         launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
             awaitItem()
             val state = awaitItem()
-            factory.sendEvent(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
+            factory.sendCommand(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
             awaitItem()
             // When
-            factory.sendEvent(CalculatorUIEvent.SetPoints(5.1))
+            factory.sendCommand(CalculatorUIEvent.SetPoints(5.1))
 
             // Then
             with(awaitItem()) {
@@ -128,10 +128,10 @@ class CalculatorUIStateFactoryTest {
         launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
             awaitItem()
             val state = awaitItem()
-            factory.sendEvent(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
+            factory.sendCommand(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
             awaitItem()
             // When
-            factory.sendEvent(CalculatorUIEvent.SetGradeName(mockGradeScales.first().gradeByPercentage(0.9).namedGrade))
+            factory.sendCommand(CalculatorUIEvent.SetGradeName(mockGradeScales.first().gradeByPercentage(0.9).namedGrade))
 
             // Then
             with(awaitItem()) {

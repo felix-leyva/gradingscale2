@@ -45,18 +45,18 @@ class GradeListUIStateFactory(
         ).also { state = it }
     }
 
-    override fun sendEvent(event: GradeScaleListUIEvent) {
-        when (event) {
+    override fun sendCommand(command: GradeScaleListUIEvent) {
+        when (command) {
             is SelectGradeScale ->
                 gradeScaleId =
-                    state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == event.gradeScaleName }?.gradeScaleId
+                    state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == command.gradeScaleName }?.gradeScaleId
 
             is SetTotalPoints -> {
-                if (event.points <= 0) return
-                totalPoints = event.points
+                if (command.points <= 0) return
+                totalPoints = command.points
             }
 
-            is GradeScaleListUIEvent.SelectGradeScaleById -> gradeScaleId = event.gradeScaleId
+            is GradeScaleListUIEvent.SelectGradeScaleById -> gradeScaleId = command.gradeScaleId
         }
     }
 }

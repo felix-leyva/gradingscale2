@@ -15,6 +15,6 @@ fun interface GetRemoteGradeScaleUseCase {
 
 internal class GetRemoteGradeScaleUseCaseImpl(private val repo: RemoteSyncRepository) : GetRemoteGradeScaleUseCase {
     override suspend fun invoke(
-        countryAndName: CountryAndName
+        countryAndName: CountryAndName,
     ): Either<RemoteError, GradeScaleDTO> = with(countryAndName) { repo.gradeScaleWithName(country, name) }
 }

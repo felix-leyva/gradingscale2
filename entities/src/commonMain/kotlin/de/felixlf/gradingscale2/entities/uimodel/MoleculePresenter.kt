@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.EmptyCoroutineContext
 
 /**
- * A Factory that produces a UI State of type [UIState] using a [androidx.compose.runtime.Composable] function and reacting to the [UIEvent]s.
+ * A Factory that produces a UI State of type [UIState] using a [androidx.compose.runtime.Composable] function and reacting to the [UICommand]s.
  *
  * The dependencies required to produce the UI State should be provided in the constructor of the implementing class.
  */
-interface MoleculePresenter<UIState, UIEvent> {
+interface MoleculePresenter<UIState, UICommand> {
     /**
      * Produces the UI State of type [UIState] using a [androidx.compose.runtime.Composable] function.
      *
@@ -21,9 +21,9 @@ interface MoleculePresenter<UIState, UIEvent> {
     fun produceUI(): UIState
 
     /**
-     * Sends an event of type [UIEvent] to the Factory.
+     * Sends an command of type [UICommand] to the Factory.
      */
-    fun sendEvent(event: UIEvent)
+    fun sendCommand(command: UICommand)
 
     /**
      * Converts a [kotlinx.coroutines.flow.StateFlow] of type [T] to a state exposing the value of type [T] in a composable function and represents its latest value.

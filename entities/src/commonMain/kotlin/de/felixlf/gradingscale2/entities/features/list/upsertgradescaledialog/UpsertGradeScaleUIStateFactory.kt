@@ -49,11 +49,11 @@ class UpsertGradeScaleUIStateFactory(
         )
     }
 
-    override fun sendEvent(event: UpserGradeScaleUIEvent) {
-        when (event) {
-            is UpserGradeScaleUIEvent.SetNewName -> newGradeScaleName = event.name
-            is UpserGradeScaleUIEvent.Save -> save(event)
-            is UpserGradeScaleUIEvent.SetOperation -> operation = event.operation
+    override fun sendCommand(command: UpserGradeScaleUIEvent) {
+        when (command) {
+            is UpserGradeScaleUIEvent.SetNewName -> newGradeScaleName = command.name
+            is UpserGradeScaleUIEvent.Save -> save(command)
+            is UpserGradeScaleUIEvent.SetOperation -> operation = command.operation
         }
     }
 

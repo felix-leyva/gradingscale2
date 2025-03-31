@@ -16,5 +16,4 @@ data class ImportUIState(
     val shownCountryGradingScales = selectedCountry?.let { country ->
         persistentListOf(countryGradingScales.find { it.country == country })
     } ?: countryGradingScales
-
 }

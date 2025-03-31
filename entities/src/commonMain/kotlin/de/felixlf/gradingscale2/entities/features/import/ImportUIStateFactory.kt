@@ -21,7 +21,7 @@ class ImportUIStateFactory(
     private val getRemoteGradeScalesUseCase: GetRemoteGradeScalesUseCase,
     private val getRemoteGradeScaleUseCase: GetRemoteGradeScaleUseCase,
     private val importRemoteGradeScaleIntoDbUseCase: ImportRemoteGradeScaleIntoDbUseCase,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
 ) : MoleculePresenter<ImportUIState, ImportCommand> {
     var countriesAndGrades: ImmutableList<CountryGradingScales> by mutableStateOf(persistentListOf())
     var displayedGradeScaleDTO: GradeScaleDTO? by mutableStateOf(null)
@@ -48,8 +48,8 @@ class ImportUIStateFactory(
         }
     }
 
-    override fun sendEvent(event: ImportCommand) {
-        when (event) {
+    override fun sendCommand(command: ImportCommand) {
+        when (command) {
             is ImportCommand.ImportGradeScale -> doLoadingOperation {
                 displayedGradeScaleDTO?.let {
                     importRemoteGradeScaleIntoDbUseCase(it).onSome { /* TODO handle success msg */ }
@@ -57,11 +57,11 @@ class ImportUIStateFactory(
             }
 
             is ImportCommand.OpenImportDialog -> doLoadingOperation {
-                getRemoteGradeScaleUseCase(event.countryAndName).onRight { displayedGradeScaleDTO = it }
+                getRemoteGradeScaleUseCase(command.countryAndName).onRight { displayedGradeScaleDTO = it }
                     .onLeft { error = it.message } // TODO: handle error with string resources
             }
 
-            is ImportCommand.SelectCountry -> selectedCountry = event.country
+            is ImportCommand.SelectCountry -> selectedCountry = command.country
         }
     }
 
@@ -70,5 +70,4 @@ class ImportUIStateFactory(
         operation()
         isLoading = false
     }
-
 }
