@@ -2,8 +2,10 @@ package de.felixlf.gradingscale2.uimodel.experiment
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewmodel.CreationExtras
-import kotlin.reflect.KClass
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
+import de.felixlf.gradingscale2.entities.uimodel.UIModel
+import kotlinx.coroutines.CoroutineScope
 
 /**
  * This view model is used mainly to link the CoroutineScope of the UIPresenter with the Lifecycle of the ViewModel, which is also linked
@@ -17,11 +19,12 @@ class ExperimentViewModel(
 /**
  * This factory is used to create the [ExperimentViewModel]. Normally we would not need this, as we use koin to inject it.
  */
-@Suppress("UNCHECKED_CAST")
-class ExperimentViewModelFactory : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
-        return ExperimentViewModel(
-            factory = ExperimentUIModel(),
-        ) as T
+fun experimentViewModelFactory(
+    scope: CoroutineScope,
+): ViewModelProvider.Factory = viewModelFactory {
+    initializer {
+        ExperimentViewModel(
+            factory = ExperimentUIModel(scope),
+        )
     }
 }

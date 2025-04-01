@@ -56,3 +56,5 @@ val entitiesModule =
         singleOf(::GetRemoteGradeScalesUseCaseImpl).bind<GetRemoteGradeScalesUseCase>()
         singleOf(::ImportRemoteGradeScaleIntoDbUseCaseImpl).bind<ImportRemoteGradeScaleIntoDbUseCase>()
     }
+
+private const val UI_MODEL_SCOPE = "uiModelScope"

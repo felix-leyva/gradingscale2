@@ -1,20 +1,17 @@
-package de.felixlf.gradingscale2.uimodel.experiment
+package de.felixlf.gradingscale2.entities.uimodel
 
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
-import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
-import de.felixlf.gradingscale2.uimodel.UIStateProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.StateFlow
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * An [UIModel] manages the UI state and UI events of a screen. It exposes a uiState [StateFlow<UIState>] which is consumed by the UI.
  * It also exposes an eventFlow [Flow<UIEvent>] which is used to dispatch UI events to the UI layer.
  */
-internal interface UIModel<UIState, UICommand, UIEvent> :
+interface UIModel<UIState, UICommand, UIEvent> :
     MoleculePresenter<UIState, UICommand>,
     UIEventDispatcher<UIEvent>,
     UIStateProvider<UIState> {
@@ -27,7 +24,7 @@ internal interface UIModel<UIState, UICommand, UIEvent> :
     val scope: CoroutineScope
 
     /**
-     * Launches a Molecule with the [RecompositionMode.Immediate] mode. This is used to create the UI state and dispatch UI events.
+     * Launches a Molecule with the [RecompositionMode.ContextClock] mode. This is used to create the UI state and dispatch UI events.
      * It returns a [StateFlow] which is consumed by the
      */
     fun moleculeUIState() = lazy {
@@ -40,4 +37,7 @@ internal interface UIModel<UIState, UICommand, UIEvent> :
 /**
  * Generates a [CoroutineScope] for the UI Model. This is based in the [ViewModelScope] of the AndroidX library.
  */
-fun uiModelScope(): CoroutineScope = CoroutineScope(EmptyCoroutineContext + Dispatchers.Main.immediate + SupervisorJob())
+fun uiModelScope(): CoroutineScope = CoroutineScope(
+    Dispatchers.Main.immediate + SupervisorJob(),
+)
+

@@ -7,6 +7,7 @@ import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIState
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
+import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
 
 /**
@@ -27,9 +28,10 @@ import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
  */
 
 internal class GradeScaleListViewModel(
+    dispatcherProvider: DispatcherProvider,
     allGradeScalesUseCase: GetAllGradeScalesUseCase,
     getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
-) : ViewModel(), MoleculeViewModelHelper<GradeScaleListUIState, GradeScaleListUIEvent> {
+) : ViewModel(dispatcherProvider.newUIScope()), MoleculeViewModelHelper<GradeScaleListUIState, GradeScaleListUIEvent> {
 
     override val factory = GradeListUIStateFactory(
         allGradeScalesUseCase = allGradeScalesUseCase,

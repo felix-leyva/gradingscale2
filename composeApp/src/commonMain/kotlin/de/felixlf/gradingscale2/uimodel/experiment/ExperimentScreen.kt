@@ -17,11 +17,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
+import de.felixlf.gradingscale2.entities.util.DispatcherProvider
+import de.felixlf.gradingscale2.uimodel.ObserveEvents
+import org.koin.compose.koinInject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExperimentScreen() {
-    val viewModel: ExperimentViewModel = viewModel(factory = ExperimentViewModelFactory())
+    val dispatcherProvider = koinInject<DispatcherProvider>()
+    val viewModel: ExperimentViewModel = viewModel(factory = experimentViewModelFactory(dispatcherProvider.newUIScope()))
     val uiState by viewModel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
     ObserveEvents(viewModel.eventFlow()) { event ->

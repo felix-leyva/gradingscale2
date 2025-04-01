@@ -9,6 +9,7 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
+import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
 
 /**
@@ -19,11 +20,12 @@ import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
  * to ease the uiState creation.
  */
 class UpsertGradeViewModel(
+    dispatcherProvider: DispatcherProvider,
     getGradeByUUIDUseCase: GetGradeByUUIDUseCase,
     upsertGradeUseCase: UpsertGradeUseCase,
     insertGradeUseCase: InsertGradeUseCase,
     getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
-) : ViewModel(), MoleculeViewModelHelper<UpsertGradeUIState, UpsertGradeUIEvent> {
+) : ViewModel(dispatcherProvider.newUIScope()), MoleculeViewModelHelper<UpsertGradeUIState, UpsertGradeUIEvent> {
     override val factory = UpsertGradeUIFactory(
         getGradeByUUIDUseCase = getGradeByUUIDUseCase,
         insertGradeUseCase = insertGradeUseCase,

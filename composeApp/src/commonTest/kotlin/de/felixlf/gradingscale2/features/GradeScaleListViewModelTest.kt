@@ -7,15 +7,9 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -32,21 +26,12 @@ class GradeScaleListViewModelTest {
     }
 
     private lateinit var viewModel: GradeScaleListViewModel
-    private val dispatcher = StandardTestDispatcher()
+    private val dispatcher = TestDispatcherProvider()
 
-    @BeforeTest
-    fun setup() {
-        Dispatchers.setMain(dispatcher)
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Dispatchers.resetMain()
-    }
 
     @Test
-    fun `gradeScales are initialized from the usecases`() = runTest {
-        viewModel = GradeScaleListViewModel(getAllGradeScalesUseCase, gradeScaleById)
+    fun `gradeScales are initialized from the usecases`() = runTest(dispatcher.testDispatcher) {
+        viewModel = GradeScaleListViewModel(dispatcher, getAllGradeScalesUseCase, gradeScaleById)
         viewModel.uiState.test {
             awaitItem()
             val state = awaitItem()
@@ -56,8 +41,8 @@ class GradeScaleListViewModelTest {
     }
 
     @Test
-    fun `selectGradeScale sets selectedGradeScaleId`() = runTest {
-        viewModel = GradeScaleListViewModel(getAllGradeScalesUseCase, gradeScaleById)
+    fun `selectGradeScale sets selectedGradeScaleId`() = runTest(dispatcher.testDispatcher) {
+        viewModel = GradeScaleListViewModel(dispatcher, getAllGradeScalesUseCase, gradeScaleById)
 
         viewModel.uiState.test {
             skipItems(2)
@@ -69,8 +54,8 @@ class GradeScaleListViewModelTest {
     }
 
     @Test
-    fun `setTotalPoints modifies the totalPoints of the selected gradescale`() = runTest {
-        viewModel = GradeScaleListViewModel(getAllGradeScalesUseCase, gradeScaleById)
+    fun `setTotalPoints modifies the totalPoints of the selected gradescale`() = runTest(dispatcher.testDispatcher) {
+        viewModel = GradeScaleListViewModel(dispatcher, getAllGradeScalesUseCase, gradeScaleById)
 
         viewModel.uiState.test {
             skipItems(2)

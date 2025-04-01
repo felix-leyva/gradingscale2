@@ -17,18 +17,12 @@ import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeViewModel
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import kotlin.collections.plus
-import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
@@ -97,22 +91,23 @@ class EditGradeViewModelTest {
     }
 
     private lateinit var viewModel: UpsertGradeViewModel
+    private lateinit var dispatcherProvider: TestDispatcherProvider
 
     @BeforeTest
     fun setup() {
-        val testDispatcher = StandardTestDispatcher()
-        Dispatchers.setMain(testDispatcher)
+        dispatcherProvider = TestDispatcherProvider()
         gradeScales = MutableStateFlow(MockGradeScalesGenerator().gradeScales)
-        viewModel = UpsertGradeViewModel(getGradeByUUIDUseCase, updateSingleGradeUseCase, insertGradeUseCase, getGradeScaleByIdUseCase)
-    }
-
-    @AfterTest
-    fun tearDown() {
-        Dispatchers.resetMain()
+        viewModel = UpsertGradeViewModel(
+            dispatcherProvider = dispatcherProvider,
+            getGradeByUUIDUseCase = getGradeByUUIDUseCase,
+            upsertGradeUseCase = updateSingleGradeUseCase,
+            insertGradeUseCase = insertGradeUseCase,
+            getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
+        )
     }
 
     @Test
-    fun `updateGradeModel loads the grade from the usecase`() = runTest {
+    fun `updateGradeModel loads the grade from the usecase`() = runTest(dispatcherProvider.testDispatcher) {
         // Given
         val grade = gradeScales.value[1].grades[3]
         val uuid = grade.uuid
@@ -126,7 +121,7 @@ class EditGradeViewModelTest {
     }
 
     @Test
-    fun `updateGradeModel name updates the ui grade name`() = runTest {
+    fun `updateGradeModel name updates the ui grade name`() = runTest(dispatcherProvider.testDispatcher) {
         // Given
         val grade = gradeScales.value[1].grades[3]
         val uuid = grade.uuid
@@ -146,7 +141,7 @@ class EditGradeViewModelTest {
 
     @Test
     fun `updateGradeModel name updates the ui grade name but with errors if name is empty`() =
-        runTest {
+        runTest(dispatcherProvider.testDispatcher) {
             // Given
             val grade = gradeScales.value[1].grades[3]
             val uuid = grade.uuid
@@ -166,7 +161,7 @@ class EditGradeViewModelTest {
 
     @Test
     fun `update percentage updates the ui percentage but with errors if percentage is not between 0 and 100`() =
-        runTest {
+        runTest(dispatcherProvider.testDispatcher) {
             // Given
             val grade = gradeScales.value[1].grades[3]
             val uuid = grade.uuid
@@ -185,7 +180,7 @@ class EditGradeViewModelTest {
         }
 
     @Test
-    fun `updateGradeModel updates the grade`() = runTest {
+    fun `updateGradeModel updates the grade`() = runTest(dispatcherProvider.testDispatcher) {
         // Given
         val grade = gradeScales.value[1].grades[3]
         val uuid = grade.uuid
@@ -208,7 +203,7 @@ class EditGradeViewModelTest {
     }
 
     @Test
-    fun `updateGradeModel creates a new grade`() = runTest {
+    fun `updateGradeModel creates a new grade`() = runTest(dispatcherProvider.testDispatcher) {
         // Given
         val gradeScaleId = gradeScales.value[1].id
         val newNameGrade = "New Grade Name"

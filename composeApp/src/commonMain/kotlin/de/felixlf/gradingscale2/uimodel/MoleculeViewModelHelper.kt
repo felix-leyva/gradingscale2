@@ -1,9 +1,17 @@
 package de.felixlf.gradingscale2.uimodel
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
+import de.felixlf.gradingscale2.entities.uimodel.UIStateProvider
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -26,24 +34,35 @@ internal interface MoleculeViewModelHelper<UIState, UIEvent> : UIStateProvider<U
     fun onEvent(event: UIEvent) {
         factory.sendCommand(event)
     }
-}
-
-internal interface UIStateProvider<UIState> {
-    /**
-     * The UI [StateFlow] which represents the UI State and is consumed by the UI.
-     * Use the [moleculeState] function to create the StateFlow.
-     * ```
-     * override val uiState = moleculeState()
-     * ```
-     */
-    val uiState: StateFlow<UIState>
 
     /**
-     * Helper function to create the UI State [StateFlow].
+     * Helper function to create the UI State [kotlinx.coroutines.flow.StateFlow].
      */
     fun <ViewModel, UIState, UIEvent> ViewModel.moleculeState(): StateFlow<UIState> where ViewModel : androidx.lifecycle.ViewModel, ViewModel : MoleculeViewModelHelper<UIState, UIEvent> {
+        viewModelScope.coroutineContext
         return viewModelScope.launchMolecule(RecompositionMode.Immediate) {
             factory.produceUI()
+        }
+    }
+}
+
+
+/**
+ * Allows the UI layer to observe UI events.
+ * @param flow A flow based on the [Channel] of UI events.
+ * @param onEvent A function that is called when a new event is emitted.
+ */
+@Composable
+fun <UIEvent> ObserveEvents(
+    flow: Flow<UIEvent>,
+    onEvent: (UIEvent) -> Unit,
+) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(Unit) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            flow.collect { event ->
+                onEvent(event)
+            }
         }
     }
 }

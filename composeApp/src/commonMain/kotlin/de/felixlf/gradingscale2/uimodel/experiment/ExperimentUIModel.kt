@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 
@@ -13,7 +14,7 @@ import kotlinx.coroutines.channels.Channel
  *
  */
 class ExperimentUIModel(
-    override val scope: CoroutineScope = uiModelScope(),
+    override val scope: CoroutineScope,
 ) : UIModel<ExperimentUIState, ExperimentUICommand, ExperimentUIEvent> {
     override val events = Channel<ExperimentUIEvent>()
     override val uiState by moleculeUIState()
