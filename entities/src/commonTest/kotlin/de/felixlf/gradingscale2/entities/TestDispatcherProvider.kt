@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.features
+package de.felixlf.gradingscale2.entities
 
 import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.MonotonicFrameClock
@@ -10,8 +10,8 @@ import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 
 /**
- * Test implementation of [DispatcherProvider] that uses a [TestDispatcher] for all dispatchers.
- * It also provides a [BroadcastFrameClock] for the main dispatcher, which is useful for testing molecules.
+ * Test implementation of [de.felixlf.gradingscale2.entities.util.DispatcherProvider] that uses a [kotlinx.coroutines.test.TestDispatcher] for all dispatchers.
+ * It also provides a [androidx.compose.runtime.BroadcastFrameClock] for the main dispatcher, which is useful for testing molecules.
  */
 class TestDispatcherProvider(
     val testDispatcher: TestDispatcher = StandardTestDispatcher(),

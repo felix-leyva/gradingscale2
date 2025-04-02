@@ -1,7 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class)
 
-import org.jetbrains.compose.compose
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
@@ -144,6 +143,7 @@ kotlin {
             implementation(libs2.koin.test)
             implementation(libs2.turbine)
             implementation(libs2.coroutines.test)
+            implementation(project(":entities"))
         }
 
         jvmMain.dependencies {

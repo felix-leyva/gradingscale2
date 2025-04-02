@@ -1,11 +1,10 @@
 import extensions.sonarQubeBaseConfig
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
-import kotlin.collections.addAll
 
 // jacocoBaseConfig()
 sonarQubeBaseConfig()
 plugins {
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
 subprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
