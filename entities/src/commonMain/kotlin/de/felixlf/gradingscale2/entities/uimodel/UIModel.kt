@@ -25,7 +25,7 @@ interface UIModel<UIState, UICommand, UIEvent> :
 
     /**
      * Launches a Molecule with the [RecompositionMode.ContextClock] mode. This is used to create the UI state and dispatch UI events.
-     * It returns a [StateFlow] which is consumed by the
+     * It returns a [StateFlow] lazily, to avoid that null pointer exceptions occur, due other vals not being initialized before.
      */
     fun moleculeUIState() = lazy {
         scope.launchMolecule(RecompositionMode.ContextClock) {

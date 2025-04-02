@@ -8,21 +8,26 @@ import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.models.remote.Country
 import de.felixlf.gradingscale2.entities.models.remote.CountryGradingScales
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
-import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
+import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.ImportRemoteGradeScaleIntoDbUseCase
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class ImportUIStateFactory(
+class ImportUIModel(
+    override val scope: CoroutineScope,
     private val getRemoteGradeScalesUseCase: GetRemoteGradeScalesUseCase,
     private val getRemoteGradeScaleUseCase: GetRemoteGradeScaleUseCase,
     private val importRemoteGradeScaleIntoDbUseCase: ImportRemoteGradeScaleIntoDbUseCase,
-    private val coroutineScope: CoroutineScope,
-) : MoleculePresenter<ImportUIState, ImportCommand> {
+) : UIModel<ImportUIState, ImportCommand, ImportUIEvent> {
+
+    override val events: Channel<ImportUIEvent> = Channel()
+    override val uiState: StateFlow<ImportUIState> by moleculeUIState()
     var countriesAndGrades: ImmutableList<CountryGradingScales> by mutableStateOf(persistentListOf())
     var displayedGradeScaleDTO: GradeScaleDTO? by mutableStateOf(null)
     private var selectedCountry: Country? by mutableStateOf(null)
@@ -43,8 +48,11 @@ class ImportUIStateFactory(
 
     private suspend fun loadGrades() {
         if (error == null) {
-            getRemoteGradeScalesUseCase().onRight { countriesAndGrades = it }
+            isLoading = true
+            getRemoteGradeScalesUseCase()
+                .onRight { countriesAndGrades = it }
                 .onLeft { error = it.message } // TODO: handle error with string resources
+            isLoading = false
         }
     }
 
@@ -52,12 +60,14 @@ class ImportUIStateFactory(
         when (command) {
             is ImportCommand.ImportGradeScale -> doLoadingOperation {
                 displayedGradeScaleDTO?.let {
-                    importRemoteGradeScaleIntoDbUseCase(it).onSome { /* TODO handle success msg */ }
+                    importRemoteGradeScaleIntoDbUseCase(it)
+                        .onSome { events.send(ImportUIEvent.ImportSuccess) }
                 }
             }
 
             is ImportCommand.OpenImportDialog -> doLoadingOperation {
-                getRemoteGradeScaleUseCase(command.countryAndName).onRight { displayedGradeScaleDTO = it }
+                getRemoteGradeScaleUseCase(command.countryAndName)
+                    .onRight { displayedGradeScaleDTO = it }
                     .onLeft { error = it.message } // TODO: handle error with string resources
             }
 
@@ -65,9 +75,11 @@ class ImportUIStateFactory(
         }
     }
 
-    private fun doLoadingOperation(operation: suspend () -> Unit) = coroutineScope.launch {
-        isLoading = true
-        operation()
-        isLoading = false
+    private fun doLoadingOperation(operation: suspend () -> Unit) {
+        scope.launch {
+            isLoading = true
+            operation()
+            isLoading = false
+        }
     }
 }

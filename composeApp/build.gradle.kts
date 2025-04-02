@@ -143,7 +143,6 @@ kotlin {
             implementation(libs2.koin.test)
             implementation(libs2.turbine)
             implementation(libs2.coroutines.test)
-            implementation(project(":entities"))
         }
 
         jvmMain.dependencies {
