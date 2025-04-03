@@ -62,7 +62,7 @@ class GetRemoteGradeScalesUseCaseTest {
         // Given - empty repository
 
         // When
-        val result = useCase()
+        val result: Either<RemoteError, ImmutableList<CountryGradingScales>> = useCase()
 
         // Then
         assertTrue(result.isRight())
@@ -77,7 +77,7 @@ class GetRemoteGradeScalesUseCaseTest {
         fakeRepository.shouldFail = true
 
         // When
-        val result = useCase()
+        val result: Either<RemoteError, ImmutableList<CountryGradingScales>> = useCase()
 
         // Then
         assertTrue(result.isLeft())
