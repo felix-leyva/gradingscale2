@@ -72,6 +72,10 @@ class ImportUIModel(
             }
 
             is ImportCommand.SelectCountry -> selectedCountry = command.country
+            ImportCommand.DismissImportDialog -> {
+                displayedGradeScaleDTO = null
+                error = null
+            }
         }
     }
 

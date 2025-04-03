@@ -18,7 +18,7 @@ subprojects {
     }
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
         compilerOptions {
-            freeCompilerArgs.addAll("-XXLanguage:+ExplicitBackingFields", "-opt-in=kotlin.uuid.ExperimentalUuidApi")
+            freeCompilerArgs.addAll( "-opt-in=kotlin.uuid.ExperimentalUuidApi")
         }
     }
 }

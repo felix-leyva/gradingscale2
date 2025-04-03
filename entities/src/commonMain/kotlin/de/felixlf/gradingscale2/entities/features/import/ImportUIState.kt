@@ -5,6 +5,7 @@ import de.felixlf.gradingscale2.entities.models.remote.CountryGradingScales
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 data class ImportUIState(
     val countryGradingScales: ImmutableList<CountryGradingScales>,
@@ -14,6 +15,12 @@ data class ImportUIState(
     val isLoading: Boolean,
 ) {
     val shownCountryGradingScales = selectedCountry?.let { country ->
-        persistentListOf(countryGradingScales.find { it.country == country })
+        countryGradingScales.filter { it.country == country }.toImmutableList()
     } ?: countryGradingScales
+
+    val uniqueCountryNames = countryGradingScales
+        .map { it.country }
+        .distinct()
+        .sorted()
+        .toImmutableList()
 }

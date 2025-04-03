@@ -3,8 +3,6 @@ package de.felixlf.gradingscale2.entities.uimodel
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -17,7 +15,7 @@ interface UIModel<UIState, UICommand, UIEvent> :
     UIStateProvider<UIState> {
     /**
      * The coroutine scope of the UI Model. This is used to launch coroutines and manage the lifecycle of the UI Model.
-     * Use the function [uiModelScope] to create the scope with the proper dispatcher and job.
+     * Use the function [de.felixlf.gradingscale2.entities.util.DispatcherProvider.newUIScope] to create the scope with the proper dispatcher and job.
      * When instantiating a ViewModel, insert the scope in the viewModel constructor, to link the lifecycle of the ViewModel with the lifecycle of the
      * UI Model.
      */
@@ -28,16 +26,10 @@ interface UIModel<UIState, UICommand, UIEvent> :
      * It returns a [StateFlow] lazily, to avoid that null pointer exceptions occur, due other vals not being initialized before.
      */
     fun moleculeUIState() = lazy {
-        scope.launchMolecule(RecompositionMode.ContextClock) {
+        scope.launchMolecule(getRecompositionMode()) {
             produceUI()
         }
     }
 }
 
-/**
- * Generates a [CoroutineScope] for the UI Model. This is based in the [ViewModelScope] of the AndroidX library.
- */
-fun uiModelScope(): CoroutineScope = CoroutineScope(
-    Dispatchers.Main.immediate + SupervisorJob(),
-)
-
+expect fun getRecompositionMode(): RecompositionMode
