@@ -19,6 +19,7 @@ fun interface ImportRemoteGradeScaleIntoDbUseCase {
 internal class ImportRemoteGradeScaleIntoDbUseCaseImpl(
     private val gradeScaleRepository: GradeScaleRepository,
 ) : ImportRemoteGradeScaleIntoDbUseCase {
+    @Suppress("MemberExtensionConflict")
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun invoke(remoteGradeScaleDTO: GradeScaleDTO): Option<String> = option {
         val (currentNames, currentIds) = (
