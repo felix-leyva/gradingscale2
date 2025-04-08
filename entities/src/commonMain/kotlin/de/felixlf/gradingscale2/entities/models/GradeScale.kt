@@ -44,4 +44,7 @@ data class GradeScale(
             .let(::gradeByPercentage)
 
     private fun validPercentage(percentage: Double) = percentage.coerceIn(0.0, 1.0)
+
+    fun nameByPercentage(percentage: Double): String =
+        gradeByPercentage(percentage).namedGrade
 }

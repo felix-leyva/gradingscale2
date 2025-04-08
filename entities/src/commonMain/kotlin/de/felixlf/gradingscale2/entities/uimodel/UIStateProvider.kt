@@ -7,7 +7,7 @@ interface UIStateProvider<UIState> {
      * The UI [kotlinx.coroutines.flow.StateFlow] which represents the UI State and is consumed by the UI.
      * Use the [moleculeState] function to create the StateFlow.
      * ```
-     * override val uiState = moleculeState()
+     * override val uiState by moleculeState()
      * ```
      */
     val uiState: StateFlow<UIState>

@@ -9,6 +9,7 @@ import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.Up
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Loading
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation.Insert
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation.Update
+import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
@@ -54,7 +55,7 @@ class UpsertGradeScaleUIStateFactoryTest {
     }
 
     private val existingGradeScaleNames = mockGradeScales.map {
-        UpsertGradeScaleUIState.GradeScaleNameAndId(
+        GradeScaleNameAndId(
             name = it.gradeScaleName,
             id = it.id,
         )

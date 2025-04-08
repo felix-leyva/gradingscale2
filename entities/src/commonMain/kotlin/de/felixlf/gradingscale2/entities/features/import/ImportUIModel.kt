@@ -61,7 +61,10 @@ class ImportUIModel(
             is ImportCommand.ImportGradeScale -> doLoadingOperation {
                 displayedGradeScaleDTO?.let {
                     importRemoteGradeScaleIntoDbUseCase(it)
-                        .onSome { events.send(ImportUIEvent.ImportSuccess) }
+                        .onSome {
+                            events.send(ImportUIEvent.ImportSuccess)
+                            displayedGradeScaleDTO = null
+                        }
                 }
             }
 

@@ -21,6 +21,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpserGradeScaleUIEvent
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation
+import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.theme.AppTheme
@@ -121,7 +122,7 @@ fun CreateNewGradeScaleDialogPreview() = AppTheme {
             UpsertGradeScaleDialog(
                 uiState = UpsertGradeScaleUIState(
                     existingGradeScaleNames = MockGradeScalesGenerator().gradeScales.map { gradeScale ->
-                        UpsertGradeScaleUIState.GradeScaleNameAndId(
+                        GradeScaleNameAndId(
                             name = gradeScale.gradeScaleName,
                             id = gradeScale.id,
                         )
@@ -137,8 +138,8 @@ fun CreateNewGradeScaleDialogPreview() = AppTheme {
 class CreateNewGradeScaleDialogPreviewParameter(
     override val values: Sequence<UpsertGradeScaleUIState.State> = sequenceOf(
         UpsertGradeScaleUIState.State.Loading,
-        UpsertGradeScaleUIState.State.Loaded(UpsertGradeScaleUIState.State.Operation.Insert),
-        UpsertGradeScaleUIState.State.Loaded(UpsertGradeScaleUIState.State.Operation.Update("1")),
+        UpsertGradeScaleUIState.State.Loaded(Operation.Insert),
+        UpsertGradeScaleUIState.State.Loaded(Operation.Update("1")),
         UpsertGradeScaleUIState.State.Success("1"),
         UpsertGradeScaleUIState.State.SaveError,
     ),

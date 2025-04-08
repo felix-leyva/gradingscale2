@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog
 
+import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_error_duplicated_name
 import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_error_invalid_name
@@ -28,8 +29,6 @@ data class UpsertGradeScaleUIState(
     }
 
     val isSaveEnabled = error == null
-
-    data class GradeScaleNameAndId(val name: String, val id: String)
 
     sealed class Errors(val errorDescriptions: StringResource) {
         data object DuplicatedName : Errors(Res.string.gradescale_list_dialog_edit_error_duplicated_name)

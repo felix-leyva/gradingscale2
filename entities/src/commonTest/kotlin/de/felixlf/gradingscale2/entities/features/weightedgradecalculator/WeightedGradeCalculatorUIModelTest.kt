@@ -1,0 +1,372 @@
+package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
+
+import de.felixlf.gradingscale2.entities.models.Grade
+import de.felixlf.gradingscale2.entities.models.GradeScale
+import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
+import de.felixlf.gradingscale2.entities.moleculeTest
+import de.felixlf.gradingscale2.entities.testMoleculeFlow
+import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.TestScope
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+
+class WeightedGradeCalculatorUIModelTest {
+
+    // Test data
+    private val testGradeScaleName = "Test Grade Scale"
+    private val testGradeScaleId = "test-scale-id"
+    private val testGrades = persistentListOf(
+        Grade(namedGrade = "A", percentage = 0.9, idOfGradeScale = testGradeScaleId, nameOfScale = testGradeScaleName, uuid = "UUID"),
+        Grade(namedGrade = "B", percentage = 0.8, idOfGradeScale = testGradeScaleId, nameOfScale = testGradeScaleName, uuid = "UUID"),
+        Grade(namedGrade = "C", percentage = 0.7, idOfGradeScale = testGradeScaleId, nameOfScale = testGradeScaleName, uuid = "UUID"),
+        Grade(namedGrade = "D", percentage = 0.6, idOfGradeScale = testGradeScaleId, nameOfScale = testGradeScaleName, uuid = "UUID"),
+        Grade(namedGrade = "F", percentage = 0.5, idOfGradeScale = testGradeScaleId, nameOfScale = testGradeScaleName, uuid = "UUID"),
+    )
+    private val testGradeScale = GradeScale(
+        id = testGradeScaleId,
+        gradeScaleName = testGradeScaleName,
+        grades = testGrades,
+        totalPoints = 10.0,
+    )
+    private val testGradeScaleNameAndId = GradeScaleNameAndId(
+        name = testGradeScaleName,
+        id = testGradeScaleId,
+    )
+    private val testWeightedGrade = WeightCalculatorUIState.WeightedGrade(
+        percentage = 85.0,
+        weight = 2.0,
+    )
+
+    // Track method calls
+    private var getAllGradeScalesUseCaseCalled = false
+    private var getGradeScaleByIdUseCaseCalled = false
+    private var lastGradeScaleIdParam: String? = null
+
+    // Define functional interfaces
+    private lateinit var getAllGradeScalesUseCase: GetAllGradeScalesUseCase
+    private lateinit var getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase
+
+    // Subject under test
+    private lateinit var weightedGradeCalculatorUIModel: WeightCalculatorUIModel
+
+    @BeforeTest
+    fun setup() {
+        // Reset tracking variables
+        getAllGradeScalesUseCaseCalled = false
+        getGradeScaleByIdUseCaseCalled = false
+        lastGradeScaleIdParam = null
+
+        // Create functional interface implementations
+        getAllGradeScalesUseCase = GetAllGradeScalesUseCase {
+            getAllGradeScalesUseCaseCalled = true
+            flowOf(persistentListOf(testGradeScale))
+        }
+
+        getGradeScaleByIdUseCase = GetGradeScaleByIdUseCase { id ->
+            getGradeScaleByIdUseCaseCalled = true
+            lastGradeScaleIdParam = id
+            flowOf(if (id == testGradeScaleId) testGradeScale else null)
+        }
+    }
+
+    private fun TestScope.initSUT() {
+        // Create the model with test scope
+        weightedGradeCalculatorUIModel = WeightCalculatorUIModel(
+            scope = this,
+            getAllGradeScales = getAllGradeScalesUseCase,
+            getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
+        )
+    }
+
+    @Test
+    fun initialStateShouldLoadGradeScales() = moleculeTest {
+        initSUT()
+
+        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+            // First emission might be the default state with isLoading=true
+            val initialState = awaitItem()
+
+            // Verify initial loading state
+            assertTrue(initialState.isLoading)
+            // Advance until the loading is done
+            val intermediateState = awaitItem()
+
+            // Verify
+            assertTrue(getAllGradeScalesUseCaseCalled)
+            assertEquals(1, intermediateState.gradeScaleNameAndIds.size)
+            assertEquals(testGradeScaleNameAndId.name, intermediateState.gradeScaleNameAndIds[0].name)
+            assertEquals(testGradeScaleNameAndId.id, intermediateState.gradeScaleNameAndIds[0].id)
+            val finalState = awaitItem()
+            assertFalse(finalState.isLoading)
+            assertNull(finalState.selectedGradeScale)
+            assertTrue(finalState.grades.isEmpty())
+
+            // Clean up any remaining emissions
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun shouldSelectGradeScaleWhenSelectGradeScaleCommandIsSent() = moleculeTest {
+        initSUT()
+
+        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+            // Get to stable state
+            awaitItem() // Skip initial loading state
+            awaitItem() // Get loaded state
+            awaitItem() // Get final state
+
+            // Reset tracking
+            getGradeScaleByIdUseCaseCalled = false
+            lastGradeScaleIdParam = null
+
+            // Act: select grade scale
+            weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.SelectGradeScale(testGradeScaleId))
+            val stateIntermediate = awaitItem()
+            stateIntermediate
+            // Get state after selection
+            val state = awaitItem()
+
+            // Verify
+            assertTrue(getGradeScaleByIdUseCaseCalled)
+            assertEquals(testGradeScaleId, lastGradeScaleIdParam)
+            assertEquals(testGradeScaleId, state.selectedGradeScale?.id)
+            assertEquals(testGradeScaleName, state.selectedGradeScale?.gradeScaleName)
+
+            // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun shouldAddGradeAtEndWhenCommandIsSent() = moleculeTest {
+        initSUT()
+
+        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+            // Get to stable state
+            awaitItem() // Skip initial loading state
+            awaitItem() // Get loaded state
+
+            // Act: add grade at end
+            weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.AddGradeAtEnd)
+
+            // Get updated state
+            awaitItem()
+
+            // Verify
+            assertEquals(weightedGradeCalculatorUIModel.grades.size, weightedGradeCalculatorUIModel.openedGradePos)
+
+            // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun shouldAddGradeAtPositionWhenCommandIsSent() = moleculeTest {
+        initSUT()
+
+        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+            // Get to stable state
+            awaitItem() // Skip initial loading state
+            awaitItem() // Get loaded state
+
+            // Act: add grade at specific position
+            val position = 2
+            weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.AddGradeAtPos(position))
+
+            // Get updated state
+            awaitItem()
+
+            // Verify
+            assertEquals(position, weightedGradeCalculatorUIModel.openedGradePos)
+
+            // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun shouldUpdateGradeWhenUpdateGradeCommandIsSent() = moleculeTest {
+        initSUT()
+
+        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+            // Get to stable state
+            awaitItem() // Skip initial loading state
+            awaitItem() // Get loaded state
+
+            // Setup: Add a grade first
+            weightedGradeCalculatorUIModel.grades.add(WeightCalculatorUIState.WeightedGrade(0.0, 0.0))
+            awaitItem()
+
+            // Act: update the grade
+            weightedGradeCalculatorUIModel.sendCommand(
+                WeightedCalculatorCommand.UpdateGrade(0, testWeightedGrade),
+            )
+
+            // Get updated state
+            val state = awaitItem()
+
+            // Verify
+            assertEquals(1, state.grades.size)
+            assertEquals(testWeightedGrade.percentage, state.grades[0].percentage)
+            assertEquals(testWeightedGrade.weight, state.grades[0].weight)
+
+            // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun shouldRemoveGradeWhenRemoveGradeCommandIsSent() = moleculeTest {
+        initSUT()
+
+        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+            // Get to stable state
+            awaitItem() // Skip initial loading state
+            awaitItem() // Get loaded state
+
+            // Setup: Add two grades first
+            weightedGradeCalculatorUIModel.grades.add(
+                WeightCalculatorUIState.WeightedGrade(0.85, 1.0),
+            )
+            weightedGradeCalculatorUIModel.grades.add(
+                WeightCalculatorUIState.WeightedGrade(0.75, 2.0),
+            )
+            awaitItem()
+
+            // Verify initial state
+            assertEquals(2, weightedGradeCalculatorUIModel.grades.size)
+
+            // Act: remove the first grade
+            weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.RemoveGrade(0))
+
+            // Get updated state
+            val state = awaitItem()
+
+            // Verify
+            assertEquals(1, state.grades.size)
+            assertEquals(0.75, state.grades[0].percentage)
+            assertEquals(2.0, state.grades[0].weight)
+
+            // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun weightedGradesShouldContainCorrectGradeNamesWhenGradeScaleIsSelected() = moleculeTest {
+        initSUT()
+
+        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+            // Get to stable state
+            awaitItem() // Skip initial loading state
+            awaitItem() // Get loaded state
+
+            // Setup: Select grade scale and add some grades
+            weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.SelectGradeScale(testGradeScaleId))
+            awaitItem()
+
+            weightedGradeCalculatorUIModel.grades.add(
+                WeightCalculatorUIState.WeightedGrade(0.85, 1.0),
+            )
+            awaitItem()
+            weightedGradeCalculatorUIModel.grades.add(
+                WeightCalculatorUIState.WeightedGrade(0.75, 2.0),
+            )
+
+            // Get updated state
+            val state = awaitItem()
+
+            // Verify weighted grades have correct names
+            assertEquals(2, state.weightedGrades.size)
+            assertEquals("B", state.weightedGrades[0].name) // 85% should be B
+            assertEquals("C", state.weightedGrades[1].name) // 75% should be C
+
+            // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun weightedGradesShouldBeEmptyWhenNoGradeScaleIsSelected() = moleculeTest {
+        initSUT()
+
+        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+            // Get to stable state
+            awaitItem() // Skip initial loading state
+            awaitItem() // Get loaded state
+
+            // Setup: Add grades without selecting a grade scale
+            weightedGradeCalculatorUIModel.grades.add(
+                WeightCalculatorUIState.WeightedGrade(0.85, 1.0),
+            )
+            weightedGradeCalculatorUIModel.grades.add(
+                WeightCalculatorUIState.WeightedGrade(0.75, 2.0),
+            )
+
+            // Get updated state
+            val state = awaitItem()
+
+            // Verify weighted grades list is empty when no grade scale is selected
+            assertTrue(state.weightedGrades.isEmpty())
+
+            // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun shouldHandleMultipleUpdatesCorrectly() = moleculeTest {
+        initSUT()
+
+        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+            // Get to stable state
+            awaitItem() // Skip initial loading state
+            awaitItem() // Get loaded state
+
+            // Select grade scale
+            weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.SelectGradeScale(testGradeScaleId))
+            awaitItem()
+
+            // Add first grade
+            weightedGradeCalculatorUIModel.grades.add(
+                WeightCalculatorUIState.WeightedGrade(0.85, 1.0),
+            )
+            val stateAfterFirstAdd = awaitItem()
+            assertEquals(1, stateAfterFirstAdd.grades.size)
+
+            // Update the grade
+            weightedGradeCalculatorUIModel.sendCommand(
+                WeightedCalculatorCommand.UpdateGrade(0, WeightCalculatorUIState.WeightedGrade(0.95, 3.0)),
+            )
+            val stateAfterUpdate = awaitItem()
+            assertEquals(0.95, stateAfterUpdate.grades[0].percentage)
+            assertEquals(3.0, stateAfterUpdate.grades[0].weight)
+            assertEquals("A", stateAfterUpdate.weightedGrades[0].name) // 95% should be A
+
+            // Add second grade
+            weightedGradeCalculatorUIModel.grades.add(
+                WeightCalculatorUIState.WeightedGrade(0.65, 2.0),
+            )
+            val stateAfterSecondAdd = awaitItem()
+            assertEquals(2, stateAfterSecondAdd.grades.size)
+
+            // Remove first grade
+            weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.RemoveGrade(0))
+            val finalState = awaitItem()
+            assertEquals(1, finalState.grades.size)
+            assertEquals(0.65, finalState.grades[0].percentage)
+            assertEquals("D", finalState.weightedGrades[0].name) // 65% should be D
+
+            // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+}

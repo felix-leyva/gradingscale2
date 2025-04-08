@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State
+import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
@@ -23,23 +24,23 @@ class UpsertGradeScaleUIStateFactory(
 ) : MoleculePresenter<UpsertGradeScaleUIState, UpserGradeScaleUIEvent> {
     private var newGradeScaleName by mutableStateOf("")
     private var uiSaveState by mutableStateOf<State>(State.Loading)
-    private var operation by mutableStateOf<UpsertGradeScaleUIState.State.Operation?>(null)
+    private var operation by mutableStateOf<State.Operation?>(null)
 
     @Composable
     override fun produceUI(): UpsertGradeScaleUIState {
         val existingGradeScaleNames = getAllGradeScalesUseCase().asState(persistentListOf()).map { gradeScale ->
-            UpsertGradeScaleUIState.GradeScaleNameAndId(
+            GradeScaleNameAndId(
                 name = gradeScale.gradeScaleName,
                 id = gradeScale.id,
             )
         }.toImmutableList()
 
         LaunchedEffect(existingGradeScaleNames, operation) {
-            (operation as? UpsertGradeScaleUIState.State.Operation.Update)?.let { operation ->
+            (operation as? State.Operation.Update)?.let { operation ->
                 val gradeScale = existingGradeScaleNames.find { it.id == operation.currentGradeScaleId }
                 newGradeScaleName = gradeScale?.name ?: ""
             }
-            operation?.let { uiSaveState = UpsertGradeScaleUIState.State.Loaded(it) }
+            operation?.let { uiSaveState = State.Loaded(it) }
         }
 
         return UpsertGradeScaleUIState(
@@ -58,9 +59,9 @@ class UpsertGradeScaleUIStateFactory(
     }
 
     private fun save(event: UpserGradeScaleUIEvent.Save) {
-        uiSaveState = UpsertGradeScaleUIState.State.Loading
+        uiSaveState = State.Loading
         scope.launch {
-            val id = (operation as? UpsertGradeScaleUIState.State.Operation.Update)?.currentGradeScaleId
+            val id = (operation as? State.Operation.Update)?.currentGradeScaleId
             when {
                 id != null -> updateGradeScaleUseCase(
                     gradeScaleId = id,
@@ -72,9 +73,9 @@ class UpsertGradeScaleUIStateFactory(
                     gradeScaleName = newGradeScaleName,
                     defaultGradeName = event.defaultGradeName,
                 )
-            }.onSome { uiSaveState = UpsertGradeScaleUIState.State.Success(it) }.onNone {
+            }.onSome { uiSaveState = State.Success(it) }.onNone {
                 uiSaveState =
-                    UpsertGradeScaleUIState.State.SaveError
+                    State.SaveError
             }
         }
     }
@@ -88,7 +89,7 @@ sealed interface UpserGradeScaleUIEvent {
     /**
      * Set the current grade scale id, if the dialog is used to update a grade scale
      */
-    data class SetOperation(val operation: UpsertGradeScaleUIState.State.Operation) : UpserGradeScaleUIEvent
+    data class SetOperation(val operation: State.Operation) : UpserGradeScaleUIEvent
 
     /**
      * Set the new name for the grade scale
