@@ -11,9 +11,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 internal class GradeScaleDaoStoreImpl(private val gradeScaleStoreProvider: GradeScaleStoreProvider) : GradeScaleDao {
-    override fun getGradeScaleById(gradeScaleId: String): Flow<GradeScale?> {
+    override fun getGradeScaleById(id: String): Flow<GradeScale?> {
         return gradeScaleStoreProvider.flow.map { gradeScales ->
-            gradeScales.find { it.id == gradeScaleId }
+            gradeScales.find { it.id == id }
         }
     }
 

@@ -52,7 +52,7 @@ class UpsertGradeUIFactory(
     }
 
     @Composable
-    private inline fun initUi() {
+    private fun initUi() {
         LaunchedEffect(gradeScaleId) {
             gradeScaleId?.let { getGradeScaleByIdUseCase(it) }?.filterNotNull()?.collect {
                 currentGradeScale = it

@@ -2,7 +2,6 @@ package de.felixlf.gradingscale2.uimodel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.viewModelScope
@@ -45,7 +44,6 @@ internal interface MoleculeViewModelHelper<UIState, UIEvent> : UIStateProvider<U
     }
 }
 
-
 /**
  * Allows the UI layer to observe UI events.
  * @param flow A flow based on the [Channel] of UI events.
@@ -56,7 +54,7 @@ fun <UIEvent> ObserveEvents(
     flow: Flow<UIEvent>,
     onEvent: (UIEvent) -> Unit,
 ) {
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val lifecycle = androidx.lifecycle.compose.LocalLifecycleOwner.current.lifecycle
     LaunchedEffect(Unit) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             flow.collect { event ->

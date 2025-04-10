@@ -28,7 +28,6 @@ class GradeScaleListViewModelTest {
     private lateinit var viewModel: GradeScaleListViewModel
     private val dispatcher = TestDispatcherProvider()
 
-
     @Test
     fun `gradeScales are initialized from the usecases`() = runTest(dispatcher.testDispatcher) {
         viewModel = GradeScaleListViewModel(dispatcher, getAllGradeScalesUseCase, gradeScaleById)

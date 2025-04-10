@@ -25,11 +25,11 @@ class CalculatorUIStateFactoryTest {
         flowOf(mockGradeScales.toImmutableList())
     }
 
-    private lateinit var factory: CalculatorUIStateFactory
+    private lateinit var factory: CalculatorUIModel
 
     @BeforeTest
     fun setup() {
-        factory = CalculatorUIStateFactory(getAllGradeScalesUseCase, gradeScaleByIdUseCase)
+        factory = CalculatorUIModel(getAllGradeScalesUseCase, gradeScaleByIdUseCase)
     }
 
     @Test

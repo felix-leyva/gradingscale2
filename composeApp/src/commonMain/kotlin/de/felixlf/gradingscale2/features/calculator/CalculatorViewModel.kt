@@ -2,7 +2,7 @@ package de.felixlf.gradingscale2.features.calculator
 
 import androidx.lifecycle.ViewModel
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIEvent
-import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIStateFactory
+import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIModel
 import de.felixlf.gradingscale2.entities.features.calculator.GradeScaleCalculatorUIState
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
@@ -16,7 +16,7 @@ import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
  * This ViewModel implements the UIEventPresenter interface to handle UI events and uses the default implementation of the interface by
  * delegation.
  *
- * The ViewModel uses a [CalculatorUIStateFactory] which implements the [MoleculePresenter] interface which manages directly the events, so that
+ * The ViewModel uses a [CalculatorUIModel] which implements the [MoleculePresenter] interface which manages directly the events, so that
  * that the State lives inside the Factory.
  *
  * In this case, the ViewModel serves simply as a container for the UI State Factory which conveniently manages the scope and lifecycle
@@ -31,7 +31,7 @@ internal class CalculatorViewModel(
     getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
 ) : ViewModel(), MoleculeViewModelHelper<GradeScaleCalculatorUIState, CalculatorUIEvent> {
 
-    override val factory = CalculatorUIStateFactory(
+    override val factory = CalculatorUIModel(
         allGradeScalesUseCase = allGradeScalesUseCase,
         getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
     )

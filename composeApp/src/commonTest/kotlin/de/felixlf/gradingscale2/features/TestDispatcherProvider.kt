@@ -2,6 +2,7 @@ package de.felixlf.gradingscale2.features
 
 import androidx.compose.runtime.BroadcastFrameClock
 import androidx.compose.runtime.MonotonicFrameClock
+import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -15,10 +16,10 @@ import kotlinx.coroutines.test.TestDispatcher
  */
 class TestDispatcherProvider(
     val testDispatcher: TestDispatcher = StandardTestDispatcher(),
-    val clock: MonotonicFrameClock = BroadcastFrameClock()
+    val clock: MonotonicFrameClock = BroadcastFrameClock(),
 ) : DispatcherProvider {
     override val main: CoroutineDispatcher = testDispatcher
     override val inmediate: CoroutineDispatcher = testDispatcher
     override val io: CoroutineDispatcher = testDispatcher
-    override fun newUIScope(): CoroutineScope = CoroutineScope(clock + inmediate + SupervisorJob())
+    override fun newUIScope(): UIModelScope = CoroutineScope(clock + inmediate + SupervisorJob())
 }

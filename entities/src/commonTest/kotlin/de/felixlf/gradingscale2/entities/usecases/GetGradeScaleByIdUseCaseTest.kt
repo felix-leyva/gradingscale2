@@ -12,15 +12,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 class GetGradeScaleByIdUseCaseTest {
-    
+
     private lateinit var fakeRepository: FakeGradeScaleRepository
     private lateinit var useCase: GetGradeScaleByIdUseCaseImpl
-    
+
     @BeforeTest
     fun setup() {
         fakeRepository = FakeGradeScaleRepository()
         useCase = GetGradeScaleByIdUseCaseImpl(fakeRepository)
-        
+
         // Add test data
         val testGradeScale = GradeScale(
             id = "1",
@@ -32,17 +32,17 @@ class GetGradeScaleByIdUseCaseTest {
                     namedGrade = "A",
                     percentage = 0.9,
                     idOfGradeScale = "1",
-                    uuid = "uuid1"
-                )
-            )
+                    uuid = "uuid1",
+                ),
+            ),
         )
         fakeRepository.addGradeScale(testGradeScale)
     }
-    
+
     @Test
     fun `test get existing grade scale by id`() = runTest {
         // Given existing grade scale with ID "1"
-        
+
         // When/Then
         useCase("1").test {
             val gradeScale = awaitItem()
@@ -53,11 +53,11 @@ class GetGradeScaleByIdUseCaseTest {
             cancelAndConsumeRemainingEvents()
         }
     }
-    
+
     @Test
     fun `test get non-existing grade scale by id`() = runTest {
         // Given: No grade scale with ID "999"
-        
+
         // When/Then
         useCase("999").test {
             val gradeScale = awaitItem()
@@ -65,7 +65,7 @@ class GetGradeScaleByIdUseCaseTest {
             cancelAndConsumeRemainingEvents()
         }
     }
-    
+
     @Test
     fun `test get grade scale after update`() = runTest {
         // Given
@@ -79,14 +79,14 @@ class GetGradeScaleByIdUseCaseTest {
                     namedGrade = "A",
                     percentage = 0.9,
                     idOfGradeScale = "1",
-                    uuid = "uuid1"
-                )
-            )
+                    uuid = "uuid1",
+                ),
+            ),
         )
-        
+
         // When
         fakeRepository.upsertGradeScale(updatedGradeScale)
-        
+
         // Then
         useCase("1").test {
             val gradeScale = awaitItem()

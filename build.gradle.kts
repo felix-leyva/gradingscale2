@@ -18,7 +18,8 @@ subprojects {
     }
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
         compilerOptions {
-            freeCompilerArgs.addAll("-opt-in=kotlin.uuid.ExperimentalUuidApi")
+            optIn.addAll("kotlin.RequiresOptIn")
+            freeCompilerArgs.addAll("-opt-in=kotlin.uuid.ExperimentalUuidApi", "-Xexpect-actual-classes")
         }
     }
 }

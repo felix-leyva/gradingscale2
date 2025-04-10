@@ -7,4 +7,3 @@ import org.koin.core.module.Module
  * @return The platform specific module
  */
 expect fun getApplicationModule(): Module
-

@@ -15,7 +15,7 @@ import kotlinx.collections.immutable.toImmutableList
  * @param allGradeScalesUseCase UseCase for getting all grade scales.
  * @param getGradeScaleByIdUseCase UseCase for getting a grade scale by its ID.
  */
-class CalculatorUIStateFactory(
+class CalculatorUIModel(
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
 ) : MoleculePresenter<GradeScaleCalculatorUIState, CalculatorUIEvent> {

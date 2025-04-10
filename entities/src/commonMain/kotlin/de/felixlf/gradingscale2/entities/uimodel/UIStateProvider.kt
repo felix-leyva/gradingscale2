@@ -11,5 +11,4 @@ interface UIStateProvider<UIState> {
      * ```
      */
     val uiState: StateFlow<UIState>
-
 }

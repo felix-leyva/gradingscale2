@@ -1,11 +1,16 @@
 package de.felixlf.gradingscale2.entities
 
+import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIModel
+import de.felixlf.gradingscale2.entities.features.import.ImportUIModel
+import de.felixlf.gradingscale2.entities.features.list.GradeListUIModel
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightCalculatorUIModel
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepository
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepositoryImpl
 import de.felixlf.gradingscale2.entities.repositories.GradesRepository
 import de.felixlf.gradingscale2.entities.repositories.GradesRepositoryImpl
 import de.felixlf.gradingscale2.entities.repositories.RemoteSyncRepository
 import de.felixlf.gradingscale2.entities.repositories.RemoteSyncRepositoryImpl
+import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeUseCase
@@ -30,7 +35,9 @@ import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCaseImpl
+import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -55,6 +62,11 @@ val entitiesModule =
         singleOf(::GetRemoteGradeScaleUseCaseImpl).bind<GetRemoteGradeScaleUseCase>()
         singleOf(::GetRemoteGradeScalesUseCaseImpl).bind<GetRemoteGradeScalesUseCase>()
         singleOf(::ImportRemoteGradeScaleIntoDbUseCaseImpl).bind<ImportRemoteGradeScaleIntoDbUseCase>()
-    }
 
-private const val UI_MODEL_SCOPE = "uiModelScope"
+        // UI Model
+        factory { get<DispatcherProvider>().newUIScope() }.bind<UIModelScope>()
+        factoryOf(::GradeListUIModel)
+        factoryOf(::CalculatorUIModel)
+        factoryOf(::ImportUIModel)
+        factoryOf(::WeightCalculatorUIModel)
+    }

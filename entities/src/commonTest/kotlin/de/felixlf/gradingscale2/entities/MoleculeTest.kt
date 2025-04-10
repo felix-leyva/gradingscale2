@@ -37,5 +37,5 @@ fun moleculeTest(
  */
 suspend fun <UIState, UICommand, UIEvent> TestScope.testMoleculeFlow(
     uiModel: UIModel<UIState, UICommand, UIEvent>,
-    validate: suspend TurbineTestContext<UIState>.() -> Unit
+    validate: suspend TurbineTestContext<UIState>.() -> Unit,
 ) = launchMolecule(mode = RecompositionMode.Immediate, body = { uiModel.produceUI() }).test(validate = validate)

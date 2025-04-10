@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.utils
 
+import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -11,7 +12,7 @@ class DefaultDispatcherProvider : DispatcherProvider {
     override val inmediate: CoroutineDispatcher = Dispatchers.Main.immediate
     override val io: CoroutineDispatcher = Dispatchers.Default
 
-    override fun newUIScope(): CoroutineScope {
+    override fun newUIScope(): UIModelScope {
         return CoroutineScope(inmediate + SupervisorJob())
     }
 }

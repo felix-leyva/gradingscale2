@@ -14,6 +14,7 @@ import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.ImportRemoteGradeScaleIntoDbUseCase
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -62,7 +63,6 @@ class ImportUIModelTest {
     // Subject under test
     private lateinit var importUIModel: ImportUIModel
 
-
     @BeforeTest
     fun setup() {
         // Reset tracking variables
@@ -89,8 +89,6 @@ class ImportUIModelTest {
             lastGradeScaleDTOParam = gradeScaleDTO
             "Success".some()
         }
-
-
     }
 
     private fun TestScope.initSUT() {
@@ -111,7 +109,7 @@ class ImportUIModelTest {
             // First emission might be the default state with isLoading=true
             awaitItem()
             // Advance until the loading is done
-            //testDispatcherProvider.testDispatcher.scheduler.advanceUntilIdle()
+            // testDispatcherProvider.testDispatcher.scheduler.advanceUntilIdle()
 
             // If there's another emission, get it
             val finalState = awaitItem()
@@ -304,6 +302,7 @@ class ImportUIModelTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun shouldNotAttemptImportWhenNoGradeScaleIsDisplayed() = moleculeTest {
         initSUT()
@@ -321,7 +320,6 @@ class ImportUIModelTest {
 
             // Act: import grade scale
             importUIModel.sendCommand(ImportCommand.ImportGradeScale)
-
 
             // Verify
             assertFalse(importRemoteGradeScaleIntoDbUseCaseCalled)
@@ -397,12 +395,11 @@ class ImportUIModelTest {
             // Skip initial loading state if necessary
             assertTrue(initialState.isLoading)
             val loaded = awaitItem()
-            assertFalse { loaded.isLoading}
+            assertFalse { loaded.isLoading }
             importUIModel.sendCommand(ImportCommand.OpenImportDialog(testCountryAndName))
             // Should have final state with loading=false
-            val finalState =  awaitItem()
+            val finalState = awaitItem()
             assertFalse(finalState.isLoading)
-
 
             // Clean up
             cancelAndIgnoreRemainingEvents()

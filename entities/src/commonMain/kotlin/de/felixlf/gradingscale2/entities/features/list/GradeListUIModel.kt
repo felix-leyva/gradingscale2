@@ -15,7 +15,7 @@ import kotlinx.collections.immutable.toImmutableList
 /**
  * This class is responsible for managing the UI state of the grade scale list screen.
  */
-class GradeListUIStateFactory(
+class GradeListUIModel(
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
 ) : MoleculePresenter<GradeScaleListUIState, GradeScaleListUIEvent> {

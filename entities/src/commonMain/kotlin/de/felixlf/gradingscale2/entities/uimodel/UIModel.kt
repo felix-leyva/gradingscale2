@@ -19,7 +19,7 @@ interface UIModel<UIState, UICommand, UIEvent> :
      * When instantiating a ViewModel, insert the scope in the viewModel constructor, to link the lifecycle of the ViewModel with the lifecycle of the
      * UI Model.
      */
-    val scope: CoroutineScope
+    val scope: UIModelScope
 
     /**
      * Launches a Molecule with the [RecompositionMode.ContextClock] mode. This is used to create the UI state and dispatch UI events.
@@ -31,5 +31,7 @@ interface UIModel<UIState, UICommand, UIEvent> :
         }
     }
 }
+
+typealias UIModelScope = CoroutineScope
 
 expect fun getRecompositionMode(): RecompositionMode

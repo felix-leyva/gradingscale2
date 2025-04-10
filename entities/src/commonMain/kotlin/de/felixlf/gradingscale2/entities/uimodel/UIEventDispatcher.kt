@@ -11,4 +11,3 @@ interface UIEventDispatcher<UIEvent> {
     val events: Channel<UIEvent>
     fun eventFlow(): Flow<UIEvent> = events.receiveAsFlow()
 }
-

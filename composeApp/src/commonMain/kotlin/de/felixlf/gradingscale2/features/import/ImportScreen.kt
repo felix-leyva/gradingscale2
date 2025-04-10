@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -60,7 +59,7 @@ internal fun ImportScreen() {
 @Composable
 fun ImportScreen(
     uiState: ImportUIState,
-    onSendCommand: (ImportCommand) -> Unit
+    onSendCommand: (ImportCommand) -> Unit,
 ) {
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -76,7 +75,7 @@ fun ImportScreen(
                 uiState.error != null -> {
                     // Show error screen
                     ErrorContent(error = uiState.error!!) {
-                        //onSendCommand(ImportCommand.Refresh)
+                        // onSendCommand(ImportCommand.Refresh)
                     }
                 }
 
@@ -148,7 +147,7 @@ private fun ErrorContent(error: String, onRetry: () -> Unit) {
 @Composable
 private fun MainContent(
     uiState: ImportUIState,
-    onSendCommand: (ImportCommand) -> Unit
+    onSendCommand: (ImportCommand) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         // Country filter dropdown
@@ -194,7 +193,7 @@ private fun MainContent(
 private fun CountryFilterDropdown(
     selectedCountry: String?,
     availableCountries: List<String>,
-    onCountrySelected: (String?) -> Unit
+    onCountrySelected: (String?) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -260,7 +259,7 @@ private fun CountryFilterDropdown(
 @Composable
 private fun GradeScalesList(
     countryGradingScales: List<CountryGradingScales>,
-    onGradeScaleClick: (String, String) -> Unit
+    onGradeScaleClick: (String, String) -> Unit,
 ) {
     LazyColumn {
         // Flatten all country grading scales into pairs of country and grade scale name
@@ -283,7 +282,7 @@ private fun GradeScalesList(
 private fun GradeScaleItem(
     country: String,
     gradeName: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -296,14 +295,14 @@ private fun GradeScaleItem(
             style = MaterialTheme.typography.bodyMedium,
         )
     }
-    Divider()
+    HorizontalDivider()
 }
 
 @Composable
 private fun ImportDialog(
     gradeScale: GradeScaleDTO,
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
