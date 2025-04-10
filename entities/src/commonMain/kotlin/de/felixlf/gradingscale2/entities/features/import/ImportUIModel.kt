@@ -13,6 +13,7 @@ import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.ImportRemoteGradeScaleIntoDbUseCase
+import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
@@ -24,12 +25,13 @@ class ImportUIModel(
     private val getRemoteGradeScalesUseCase: GetRemoteGradeScalesUseCase,
     private val getRemoteGradeScaleUseCase: GetRemoteGradeScaleUseCase,
     private val importRemoteGradeScaleIntoDbUseCase: ImportRemoteGradeScaleIntoDbUseCase,
+    private val showSnackbarUseCase: ShowSnackbarUseCase,
 ) : UIModel<ImportUIState, ImportCommand, ImportUIEvent> {
 
     override val events: Channel<ImportUIEvent> = Channel()
     override val uiState: StateFlow<ImportUIState> by moleculeUIState()
-    var countriesAndGrades: ImmutableList<CountryGradingScales> by mutableStateOf(persistentListOf())
-    var displayedGradeScaleDTO: GradeScaleDTO? by mutableStateOf(null)
+    internal var countriesAndGrades: ImmutableList<CountryGradingScales> by mutableStateOf(persistentListOf())
+    internal var displayedGradeScaleDTO: GradeScaleDTO? by mutableStateOf(null)
     private var selectedCountry: Country? by mutableStateOf(null)
     private var error: String? by mutableStateOf(null)
     private var isLoading by mutableStateOf(true)
@@ -62,8 +64,14 @@ class ImportUIModel(
                 displayedGradeScaleDTO?.let {
                     importRemoteGradeScaleIntoDbUseCase(it)
                         .onSome {
-                            events.send(ImportUIEvent.ImportSuccess)
-                            displayedGradeScaleDTO = null
+                            scope.launch {
+                                displayedGradeScaleDTO = null
+                                showSnackbarUseCase(
+                                    message = "Grade scale imported successfully",
+                                    actionLabel = null,
+                                    duration = ShowSnackbarUseCase.SnackbarDuration.Short,
+                                )
+                            }
                         }
                 }
             }
@@ -79,6 +87,8 @@ class ImportUIModel(
                 displayedGradeScaleDTO = null
                 error = null
             }
+
+            ImportCommand.Refresh -> scope.launch { loadGrades() }
         }
     }
 

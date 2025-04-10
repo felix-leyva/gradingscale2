@@ -1,8 +1,10 @@
 package de.felixlf.gradingscale2.di
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavHostController
 import de.felixlf.gradingscale2.dbModule
 import de.felixlf.gradingscale2.entities.entitiesModule
+import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
 import de.felixlf.gradingscale2.features.calculator.CalculatorViewModel
 import de.felixlf.gradingscale2.features.import.ImportViewModel
 import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
@@ -12,6 +14,7 @@ import de.felixlf.gradingscale2.features.weightedgradecalculator.WeightedCalcula
 import de.felixlf.gradingscale2.navigation.AppNavController
 import de.felixlf.gradingscale2.navigation.AppNavControllerImpl
 import de.felixlf.gradingscale2.network.di.networkModule
+import de.felixlf.gradingscale2.usecases.ShowSnackbarUseCaseImpl
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -32,4 +35,5 @@ val mainModule = module {
     viewModelOf(::WeightedCalculatorViewModel)
 
     single<AppNavController> { (controller: NavHostController) -> AppNavControllerImpl(controller) }
+    single<ShowSnackbarUseCase> { (snackbarHostState: SnackbarHostState) -> ShowSnackbarUseCaseImpl(snackbarHostState) }
 }

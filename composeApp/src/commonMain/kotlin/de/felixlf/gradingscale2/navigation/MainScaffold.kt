@@ -1,6 +1,5 @@
 package de.felixlf.gradingscale2.navigation
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.MutableWindowInsets
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,8 +10,10 @@ import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.onConsumedWindowInsetsChanged
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
-import androidx.compose.material3.Surface
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
@@ -32,6 +34,10 @@ fun MainScaffold() {
     val navController = rememberNavController()
     val appNavController: AppNavController = koinInject { parametersOf(navController) }
     val currentDestination = appNavController.controller.currentBackStackEntryAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    // Initialize the ShowSnackbarUseCase with the SnackbarHostState
+    koinInject<ShowSnackbarUseCase> { parametersOf(snackbarHostState) }
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
@@ -56,18 +62,19 @@ fun MainScaffold() {
                 start = insets.calculateStartPadding(direction),
                 end = insets.calculateEndPadding(direction),
             )
-            Surface(
-                modifier =
-                Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets ->
-                    // Exclude currently consumed window insets from user provided contentWindowInsets
+
+            Scaffold(
+                modifier = Modifier.onConsumedWindowInsetsChanged { consumedWindowInsets ->
                     safeInsets.insets = contentWindowInsets.exclude(consumedWindowInsets)
                 },
+                snackbarHost = {
+                    SnackbarHost(
+                        hostState = snackbarHostState,
+                        modifier = Modifier.padding(innerPadding),
+                    )
+                },
             ) {
-                Box(
-                    modifier = Modifier.padding(innerPadding),
-                ) {
-                    MainNavHost(appNavController)
-                }
+                MainNavHost(modifier = Modifier.padding(it), appNavController)
             }
         },
     )

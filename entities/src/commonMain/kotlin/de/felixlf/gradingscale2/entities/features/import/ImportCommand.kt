@@ -10,4 +10,6 @@ sealed interface ImportCommand {
     data object DismissImportDialog : ImportCommand
 
     data object ImportGradeScale : ImportCommand
+
+    data object Refresh : ImportCommand
 }

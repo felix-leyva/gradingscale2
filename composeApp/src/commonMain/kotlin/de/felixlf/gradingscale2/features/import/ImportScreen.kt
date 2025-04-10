@@ -1,39 +1,19 @@
 package de.felixlf.gradingscale2.features.import
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.features.import.ImportCommand
 import de.felixlf.gradingscale2.entities.features.import.ImportUIState
@@ -41,6 +21,11 @@ import de.felixlf.gradingscale2.entities.models.remote.CountryAndName
 import de.felixlf.gradingscale2.entities.models.remote.CountryGradingScales
 import de.felixlf.gradingscale2.entities.models.remote.GradeDTO
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
+import de.felixlf.gradingscale2.features.import.components.ImportErrorContent
+import de.felixlf.gradingscale2.features.import.components.ImportGradeScalesList
+import de.felixlf.gradingscale2.features.import.dialogs.ImportDialog
+import de.felixlf.gradingscale2.uicomponents.DropboxSelector
+import de.felixlf.gradingscale2.uicomponents.LoadingContent
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -61,86 +46,27 @@ fun ImportScreen(
     uiState: ImportUIState,
     onSendCommand: (ImportCommand) -> Unit,
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background,
-    ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            when {
-                uiState.isLoading && uiState.countryGradingScales.isEmpty() -> {
-                    // Show loading indicator when initially loading
-                    LoadingContent()
-                }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        when {
+            uiState.isLoading && uiState.countryGradingScales.isEmpty() -> LoadingContent()
 
-                uiState.error != null -> {
-                    // Show error screen
-                    ErrorContent(error = uiState.error!!) {
-                        // onSendCommand(ImportCommand.Refresh)
-                    }
-                }
-
-                else -> {
-                    // Main content
-                    MainContent(
-                        uiState = uiState,
-                        onSendCommand = onSendCommand,
-                    )
-                }
+            uiState.error != null -> ImportErrorContent(error = uiState.error!!) {
+                onSendCommand(ImportCommand.Refresh)
             }
-        }
 
-        // Show import dialog if needed
-        uiState.displayedGradeScaleDTO?.let { loadedGradeScaleDTO ->
-            ImportDialog(
-                gradeScale = loadedGradeScaleDTO,
-                onConfirm = { onSendCommand(ImportCommand.ImportGradeScale) },
-                onDismiss = { onSendCommand(ImportCommand.DismissImportDialog) },
+            else -> MainContent(
+                uiState = uiState,
+                onSendCommand = onSendCommand,
             )
         }
     }
-}
 
-@Composable
-private fun LoadingContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun ErrorContent(error: String, onRetry: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(modifier = Modifier.weight(1f))
-
-        Text(
-            text = "Error loading data",
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
+    uiState.displayedGradeScaleDTO?.let { loadedGradeScaleDTO ->
+        ImportDialog(
+            gradeScale = loadedGradeScaleDTO,
+            onConfirm = { onSendCommand(ImportCommand.ImportGradeScale) },
+            onDismiss = { onSendCommand(ImportCommand.DismissImportDialog) },
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = error,
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Center,
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(onClick = onRetry) {
-            Text("Retry")
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
@@ -149,204 +75,38 @@ private fun MainContent(
     uiState: ImportUIState,
     onSendCommand: (ImportCommand) -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Country filter dropdown
-        CountryFilterDropdown(
-            selectedCountry = uiState.selectedCountry,
-            availableCountries = uiState.uniqueCountryNames,
-            onCountrySelected = { onSendCommand(ImportCommand.SelectCountry(it)) },
-        )
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            DropboxSelector(
+                elements = uiState.uniqueCountryNames,
+                selectedElement = uiState.selectedCountry,
+                onSelectElement = { onSendCommand(ImportCommand.SelectCountry(it)) },
+                label = "Filter by country",
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+            )
 
-        // Header
-        Text(
-            text = "Country and grade scale name",
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-        )
+            Text(
+                text = "Country and grade scale name",
+                modifier = Modifier.fillMaxWidth().padding(16.dp),
+                style = MaterialTheme.typography.titleMedium,
+            )
 
-        HorizontalDivider(Modifier)
+            HorizontalDivider(Modifier)
 
-        // Grade scales list
-        GradeScalesList(
-            countryGradingScales = uiState.shownCountryGradingScales,
-            onGradeScaleClick = { country, name ->
-                onSendCommand(ImportCommand.OpenImportDialog(CountryAndName(country, name)))
-            },
-        )
-
-        // Loading indicator overlay if needed
+            ImportGradeScalesList(
+                countryGradingScales = uiState.shownCountryGradingScales,
+                onGradeScaleClick = { country, name ->
+                    onSendCommand(ImportCommand.OpenImportDialog(CountryAndName(country, name)))
+                },
+            )
+        }
         if (uiState.isLoading && uiState.countryGradingScales.isNotEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
+            LoadingContent()
         }
     }
-}
-
-@Composable
-private fun CountryFilterDropdown(
-    selectedCountry: String?,
-    availableCountries: List<String>,
-    onCountrySelected: (String?) -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        shadowElevation = 1.dp,
-        shape = MaterialTheme.shapes.medium,
-    ) {
-        Box {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { expanded = true }
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = selectedCountry ?: "Filter by country",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f),
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Dropdown Arrow",
-                )
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.fillMaxWidth(0.9f),
-            ) {
-                // Add "All" option to reset filter
-                DropdownMenuItem(
-                    onClick = {
-                        onCountrySelected(null)
-                        expanded = false
-                    },
-                    text = {
-                        Text("All Countries")
-                    },
-                )
-
-                // List all available countries
-                availableCountries.forEach { country ->
-                    DropdownMenuItem(
-                        onClick = {
-                            onCountrySelected(country)
-                            expanded = false
-                        },
-                        text = {
-                            Text(country)
-                        },
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun GradeScalesList(
-    countryGradingScales: List<CountryGradingScales>,
-    onGradeScaleClick: (String, String) -> Unit,
-) {
-    LazyColumn {
-        // Flatten all country grading scales into pairs of country and grade scale name
-        countryGradingScales.forEach { countryScale ->
-            val country = countryScale.country
-
-            // Display each grade scale for the country
-            items(countryScale.gradesScalesNames) { gradeName ->
-                GradeScaleItem(
-                    country = country,
-                    gradeName = gradeName,
-                    onClick = { onGradeScaleClick(country, gradeName) },
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun GradeScaleItem(
-    country: String,
-    gradeName: String,
-    onClick: () -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(16.dp),
-    ) {
-        Text(
-            text = "$country - $gradeName",
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
-    HorizontalDivider()
-}
-
-@Composable
-private fun ImportDialog(
-    gradeScale: GradeScaleDTO,
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Import the selected grade scale?") },
-        text = {
-            Column {
-                Text(
-                    text = "${gradeScale.country}: ${gradeScale.gradeScaleName}",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Display all grades in the scale
-                gradeScale.grades.forEach { grade ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                    ) {
-                        Text(
-                            text = grade.gradeName,
-                            modifier = Modifier.weight(1f),
-                        )
-                        Text(
-                            text = "${(grade.percentage * 100).toInt()}%",
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text("YES")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("NO")
-            }
-        },
-    )
 }
 
 @Preview

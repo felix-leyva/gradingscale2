@@ -12,7 +12,16 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+/**
+ * Use case to import a remote grade scale into the database.
+ */
 fun interface ImportRemoteGradeScaleIntoDbUseCase {
+    /**
+     * Imports a remote grade scale into the database.
+     *
+     * @param remoteGradeScaleDTO The remote grade scale to import.
+     * @return The ID of the imported grade scale, or an error message if the import failed.
+     */
     suspend operator fun invoke(remoteGradeScaleDTO: GradeScaleDTO): Option<String>
 }
 
@@ -23,10 +32,10 @@ internal class ImportRemoteGradeScaleIntoDbUseCaseImpl(
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun invoke(remoteGradeScaleDTO: GradeScaleDTO): Option<String> = option {
         val (currentNames, currentIds) = (
-            gradeScaleRepository.getGradeScales().firstOrNull()
-                ?.map { it.gradeScaleName to it.id.toIntOrNull() }
-                ?: persistentListOf()
-            ).unzip()
+                gradeScaleRepository.getGradeScales().firstOrNull()
+                    ?.map { it.gradeScaleName to it.id.toIntOrNull() }
+                    ?: persistentListOf()
+                ).unzip()
 
         val maxAvailableId = (currentIds.filterNotNull().maxOrNull() ?: 0) + 1
 
