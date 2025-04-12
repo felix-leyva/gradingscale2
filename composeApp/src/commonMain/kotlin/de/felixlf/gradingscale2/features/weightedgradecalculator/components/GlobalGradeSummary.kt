@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGradeSummary
+import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeSummary
 
 @Composable
 internal fun GlobalGradeSummary(

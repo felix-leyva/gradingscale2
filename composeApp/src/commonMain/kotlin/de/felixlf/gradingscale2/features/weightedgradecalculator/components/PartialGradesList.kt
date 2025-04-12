@@ -21,7 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGradeWithName
+import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeWithName
 import de.felixlf.gradingscale2.entities.util.stringWithDecimals
 import kotlinx.collections.immutable.ImmutableList
 

@@ -1,6 +1,6 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 
-import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGrade
+import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 
 sealed interface WeightedCalculatorCommand {
     data class SelectGradeScale(val gradeScaleId: String?) : WeightedCalculatorCommand

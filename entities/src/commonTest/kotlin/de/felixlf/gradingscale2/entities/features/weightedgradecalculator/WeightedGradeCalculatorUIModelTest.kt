@@ -1,6 +1,6 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 
-import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGrade
+import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId

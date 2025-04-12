@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightCalculatorUIState
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand
-import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGrade
+import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.features.weightedgradecalculator.components.GlobalGradeSummary
 import de.felixlf.gradingscale2.features.weightedgradecalculator.components.PartialGradesList
 import de.felixlf.gradingscale2.features.weightedgradecalculator.dialogs.GradeEditDialog

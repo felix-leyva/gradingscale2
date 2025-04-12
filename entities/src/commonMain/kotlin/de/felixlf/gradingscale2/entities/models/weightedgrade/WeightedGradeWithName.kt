@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model
+package de.felixlf.gradingscale2.entities.models.weightedgrade
 
 data class WeightedGradeWithName(
     val grade: WeightedGrade,
