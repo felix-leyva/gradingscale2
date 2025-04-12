@@ -8,7 +8,6 @@ dependencies {
     implementation(libs.gradle.jetbrainsCompose)
     implementation(libs.gradle.compose.compiler)
     implementation(libs.gradle.kotlinMultiplatform)
-    implementation(libs.gradle.room)
     implementation(libs.gradle.ksp)
     implementation(libs.gradle.google.services)
     implementation(libs.gradle.kotlinxSerialization)

@@ -2,7 +2,7 @@
 # Project specific
 arrowCore = "2.0.1"
 material3AdaptiveNavigationSuite = "1.7.3"
-moleculeRuntime = "2.0.0"
+moleculeRuntime = "2.1.0"
 napier = "2.7.1"
 navigationCompose = "2.8.0-alpha10"
 sqlDelightVersion = "2.0.2"
@@ -18,16 +18,14 @@ versionName = "1.0"
 java = "17"
 
 agp = "8.9.1"
-android-compileSdk = "35"
+android-compileSdk = "36"
 android-minSdk = "24"
-android-targetSdk = "35"
+android-targetSdk = "36"
 androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.0"
-androidx-constraintlayout = "2.1.4"
 androidx-core-ktx = "1.15.0"
 androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.4"
-androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 android-desugar = "2.1.5"
 compose-plugin = "1.7.3"
@@ -35,7 +33,7 @@ junit = "4.13.2"
 kotlin = "2.1.20"
 kotlin-compiler = "2.1.20"
 compose-reload = "1.0.0-alpha03"
-kotlinx-coroutines = "1.10.1"
+kotlinx-coroutines = "1.10.2"
 kotlinx-dateTime = "0.6.0"
 koin = "4.0.4"
 ktor = "2.3.12"
@@ -47,11 +45,7 @@ aboutLibraries = "11.1.4" # https://github.com/mikepenz/AboutLibraries/releases
 sonarqubeGradlePlugin = "6.1.0.5360"
 turbineVersion = "1.2.0" # https://mvnrepository.com/artifact/app.cash.turbine/turbine
 
-# Room
-room = "2.7.0-rc03"
 ksp = "2.1.20-1.0.32"
-sqlite = "2.5.0-SNAPSHOT"
-
 sqlDelightPlugin = "2.0.2"
 kstore = "0.9.1"
 kotlinxSerialization = "1.8.1"
@@ -142,7 +136,6 @@ gradle-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" } 
 gradle-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-plugin" } # https://plugins.gradle.org/plugin/org.jetbrains.compose
 gradle-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin-compiler" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.compose
 gradle-kotlinMultiplatform = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-compiler" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.multiplatform
-gradle-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" } # https://maven.google.com/web/index.html#androidx.room:room-gradle-plugin
 gradle-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" } # https://maven.google.com/web/index.html#com.google.devtools.ksp
 gradle-google-services = { module = "com.google.gms.google-services:com.google.gms.google-services.gradle.plugin", version.ref = "google-services" } # https://maven.google.com/web/index.html#com.google.gms.google-services:com.google.gms.google-services.gradle.plugin
 gradle-kotlinxSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.serialization
@@ -162,7 +155,6 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-compiler" } # https://mvnrepository.com/artifact/org.jetbrains.compose/org.jetbrains.compose.gradle.plugin
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-compiler" }
-room = { id = "androidx.room", version.ref = "room" }#
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsBuildtools" }
