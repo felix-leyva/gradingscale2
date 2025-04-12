@@ -28,6 +28,7 @@ import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.utils.dialogScopedViewModel
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.default_grade_name
 import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_cancel
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
@@ -50,8 +51,7 @@ internal fun UpsertGradeScaleDialog(
         (uiState.value.state as? UpsertGradeScaleUIState.State.Success)?.gradeScaleId?.let { onDismiss(it) }
     }
 
-    // TODO: add into resources
-    val defaultGradeName = "new grade"
+    val defaultGradeName = stringResource(Res.string.default_grade_name)
     Dialog(onDismissRequest = { onDismiss(null) }) {
         UpsertGradeScaleDialog(
             uiState = uiState.value,

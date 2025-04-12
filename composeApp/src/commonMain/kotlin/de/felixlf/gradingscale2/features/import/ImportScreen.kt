@@ -26,7 +26,11 @@ import de.felixlf.gradingscale2.features.import.components.ImportGradeScalesList
 import de.felixlf.gradingscale2.features.import.dialogs.ImportDialog
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.uicomponents.LoadingContent
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.import_country_and_scale_name
+import gradingscale2.entities.generated.resources.import_filter_by_country
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -84,12 +88,12 @@ private fun MainContent(
                 elements = uiState.uniqueCountryNames,
                 selectedElement = uiState.selectedCountry,
                 onSelectElement = { onSendCommand(ImportCommand.SelectCountry(it)) },
-                label = "Filter by country",
+                label = stringResource(Res.string.import_filter_by_country),
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
             )
 
             Text(
-                text = "Country and grade scale name",
+                text = stringResource(Res.string.import_country_and_scale_name),
                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                 style = MaterialTheme.typography.titleMedium,
             )

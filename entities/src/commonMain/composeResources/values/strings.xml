@@ -24,4 +24,18 @@
     <string name="gradescale_list_dialog_edit_cancel">Cancel</string>
     <string name="gradescale_list_dialog_edit_error_duplicated_name">A grade scale with the same name already exists. Please use a different name</string>
     <string name="gradescale_list_dialog_edit_error_invalid_name">Invalid name, please make sure the field is filled up</string>
+    <string name="add_grade">Add Grade</string>
+    <string name="default_grade_name">new grade</string>
+    <string name="import_filter_by_country">Filter by country</string>
+    <string name="import_country_and_scale_name">Country and grade scale name</string>
+    <string name="weighted_calculator_selected_grade_scale">Selected grade scale</string>
+    <string name="weighted_grade_dialog_title">Grade</string>
+    <string name="weighted_grade_dialog_grade_name">Name of grade</string>
+    <string name="weighted_grade_dialog_percentage">Percentage</string>
+    <string name="weighted_grade_dialog_points">Points</string>
+    <string name="weighted_grade_dialog_total_points">Total points</string>
+    <string name="weighted_grade_dialog_save">SAVE</string>
+    <string name="weighted_grade_dialog_cancel">CANCEL</string>
+    <string name="weighted_grade_dialog_delete">DELETE</string>
+    <string name="upsert_grade_save_as_new">Save as new</string>
 </resources>

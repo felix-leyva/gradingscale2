@@ -40,6 +40,7 @@ import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.edit_grade_name
 import gradingscale2.entities.generated.resources.edit_grade_percentage
 import gradingscale2.entities.generated.resources.edit_grade_save_button
+import gradingscale2.entities.generated.resources.upsert_grade_save_as_new
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -122,7 +123,6 @@ private fun UpsertGradeDialog(
                 error = uiState.error.any { it == UpsertGradeUIState.Error.INVALID_PERCENTAGE || it == UpsertGradeUIState.Error.DUPLICATE_PERCENTAGE },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             )
-            // TODO: update with a fixed space between the buttons and replace the text with a string resource
             uiState.error.joinToString { it.name }.ifBlank { null }?.let {
                 Text(
                     text = it,
@@ -149,7 +149,7 @@ private fun UpsertGradeDialog(
                 onClick = onSaveNew,
                 enabled = uiState.isSaveNewButtonEnabled,
             ) {
-                Text("Save as new")
+                Text(stringResource(Res.string.upsert_grade_save_as_new))
             }
         }
     }

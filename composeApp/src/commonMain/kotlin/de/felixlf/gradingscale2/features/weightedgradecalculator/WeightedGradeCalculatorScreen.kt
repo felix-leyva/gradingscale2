@@ -25,7 +25,11 @@ import de.felixlf.gradingscale2.features.weightedgradecalculator.components.Part
 import de.felixlf.gradingscale2.features.weightedgradecalculator.dialogs.GradeEditDialog
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.uicomponents.LoadingContent
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.add_grade
+import gradingscale2.entities.generated.resources.weighted_calculator_selected_grade_scale
 import kotlinx.collections.immutable.toImmutableList
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
@@ -70,7 +74,7 @@ fun WeightedGradeCalculatorScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add Grade",
+                    contentDescription = stringResource(Res.string.add_grade),
                     tint = MaterialTheme.colorScheme.onPrimary,
                 )
             }
@@ -121,7 +125,7 @@ private fun MainContent(
                 onSendCommand(WeightedCalculatorCommand.SelectGradeScale(selectedId))
             },
             modifier = Modifier.fillMaxWidth(),
-            label = "Selected grade scale",
+            label = stringResource(Res.string.weighted_calculator_selected_grade_scale),
         )
 
         GlobalGradeSummary(

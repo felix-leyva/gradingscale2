@@ -20,6 +20,16 @@ import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.textFieldManager
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.weighted_grade_dialog_cancel
+import gradingscale2.entities.generated.resources.weighted_grade_dialog_delete
+import gradingscale2.entities.generated.resources.weighted_grade_dialog_grade_name
+import gradingscale2.entities.generated.resources.weighted_grade_dialog_percentage
+import gradingscale2.entities.generated.resources.weighted_grade_dialog_points
+import gradingscale2.entities.generated.resources.weighted_grade_dialog_save
+import gradingscale2.entities.generated.resources.weighted_grade_dialog_title
+import gradingscale2.entities.generated.resources.weighted_grade_dialog_total_points
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,12 +64,12 @@ fun GradeEditDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Grade") },
+        title = { Text(stringResource(Res.string.weighted_grade_dialog_title)) },
         text = {
             Column {
                 DropboxSelector(
                     modifier = Modifier.fillMaxWidth(),
-                    label = "Name of grade",
+                    label = stringResource(Res.string.weighted_grade_dialog_grade_name),
                     elements = gradeScale.gradesNamesList,
                     selectedElement = uiState.gradeNameString,
                     onSelectElement = { selectedGrade ->
@@ -70,21 +80,21 @@ fun GradeEditDialog(
                 // Percentage field
                 CalculatorTextField(
                     state = percentageTextField,
-                    label = "Percentage",
+                    label = stringResource(Res.string.weighted_grade_dialog_percentage),
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 )
 
                 // Points field
                 CalculatorTextField(
                     state = relativeWeightTextField,
-                    label = "Points",
+                    label = stringResource(Res.string.weighted_grade_dialog_points),
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 )
 
                 // Total points field
                 CalculatorTextField(
                     state = weightTextField,
-                    label = "Total points",
+                    label = stringResource(Res.string.weighted_grade_dialog_total_points),
                     modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                 )
             }
@@ -105,14 +115,14 @@ fun GradeEditDialog(
                 },
             ) {
                 Text(
-                    text = "SAVE",
+                    text = stringResource(Res.string.weighted_grade_dialog_save),
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("CANCEL")
+                Text(stringResource(Res.string.weighted_grade_dialog_cancel))
             }
 
             Column {
@@ -123,7 +133,7 @@ fun GradeEditDialog(
                     },
                     content = {
                         Text(
-                            text = "DELETE",
+                            text = stringResource(Res.string.weighted_grade_dialog_delete),
                             color = MaterialTheme.colorScheme.error,
                         )
                     },
