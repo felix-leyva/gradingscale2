@@ -6,11 +6,11 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.ui.graphics.vector.ImageVector
-import gradingscale2.composeapp.generated.resources.Res
-import gradingscale2.composeapp.generated.resources.destinations_menu_grade_importerr
-import gradingscale2.composeapp.generated.resources.destinations_menu_grade_scale_detail
-import gradingscale2.composeapp.generated.resources.destinations_menu_grade_scale_list
-import gradingscale2.composeapp.generated.resources.destinations_menu_weighted_grade_calculator
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.destinations_menu_grade_importerr
+import gradingscale2.entities.generated.resources.destinations_menu_grade_scale_detail
+import gradingscale2.entities.generated.resources.destinations_menu_grade_scale_list
+import gradingscale2.entities.generated.resources.destinations_menu_weighted_grade_calculator
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 

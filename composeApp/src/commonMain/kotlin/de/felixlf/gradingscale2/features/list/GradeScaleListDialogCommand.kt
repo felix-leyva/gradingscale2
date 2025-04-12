@@ -1,10 +1,10 @@
 package de.felixlf.gradingscale2.features.list
 
-import gradingscale2.composeapp.generated.resources.Res
-import gradingscale2.composeapp.generated.resources.gradescale_list_menu_add_new_grade
-import gradingscale2.composeapp.generated.resources.gradescale_list_menu_add_new_grade_scale
-import gradingscale2.composeapp.generated.resources.gradescale_list_menu_edit_grade_scale
-import gradingscale2.composeapp.generated.resources.gradescale_list_menu_help
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.gradescale_list_menu_add_new_grade
+import gradingscale2.entities.generated.resources.gradescale_list_menu_add_new_grade_scale
+import gradingscale2.entities.generated.resources.gradescale_list_menu_edit_grade_scale
+import gradingscale2.entities.generated.resources.gradescale_list_menu_help
 import org.jetbrains.compose.resources.StringResource
 
 sealed class GradeScaleListDialogCommand(val menuText: StringResource? = null) {

@@ -21,12 +21,13 @@ import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.entities.util.stringWithDecimals
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.textFieldManager
-import gradingscale2.composeapp.generated.resources.Res
-import gradingscale2.composeapp.generated.resources.calculator_screen_grade_name_dropbox_default
-import gradingscale2.composeapp.generated.resources.calculator_screen_percentage_input
-import gradingscale2.composeapp.generated.resources.calculator_screen_points_input
-import gradingscale2.composeapp.generated.resources.calculator_screen_total_points_input
-import gradingscale2.composeapp.generated.resources.gradescale_list_select_grade_scale
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.calculator_screen_grade_name_dropbox_default
+import gradingscale2.entities.generated.resources.calculator_screen_grade_name_dropbox_label
+import gradingscale2.entities.generated.resources.calculator_screen_percentage_input
+import gradingscale2.entities.generated.resources.calculator_screen_points_input
+import gradingscale2.entities.generated.resources.calculator_screen_total_points_input
+import gradingscale2.entities.generated.resources.gradescale_list_select_grade_scale
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
@@ -123,7 +124,7 @@ private fun GradeScaleCalculatorScreen(
                         selectedElement = uiState.currentGrade?.namedGrade,
                         onSelectElement = onSelectGradeName,
                         defaultText = stringResource(Res.string.calculator_screen_grade_name_dropbox_default),
-                        label = stringResource(Res.string.calculator_screen_grade_name_dropbox_default),
+                        label = stringResource(Res.string.calculator_screen_grade_name_dropbox_label),
                         modifier = Modifier.padding(vertical = 16.dp).weight(1f),
                         textStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                     )

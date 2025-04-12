@@ -136,7 +136,7 @@ class WeightCalculatorUIStateTest {
         // Assert
         assertNotNull(state.weightedGradeSummary)
         with(state.weightedGradeSummary!!) {
-            assertEquals("C", totalGradeName) 
+            assertEquals("C", totalGradeName)
             assertEquals("76.67 %", weightedPercentage)
             assertEquals("4.6", earnedPoints)
             assertEquals("6", totalPoints)
@@ -192,7 +192,7 @@ class WeightCalculatorUIStateTest {
 
         // Assert
         assertEquals(5, state.weightedGrades.size)
-        
+
         // Check each grade was mapped to the correct named grade
         val expectedNames = listOf("A", "B", "C", "D", "F")
         for (i in grades.indices) {

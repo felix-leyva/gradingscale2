@@ -26,7 +26,11 @@ kotlin {
         }
     }
 }
-
+compose {
+    resources {
+        publicResClass = true
+    }
+}
 android {
     namespace = libs.versions.packagename + ".entities"
     // This is important to be able to run unit test when using molecule, due the MonotonicClock dependency

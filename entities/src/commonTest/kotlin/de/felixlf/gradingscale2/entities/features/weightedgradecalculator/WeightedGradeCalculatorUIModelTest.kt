@@ -259,7 +259,7 @@ class WeightedGradeCalculatorUIModelTest {
 
             // Get updated state after adding
             awaitItem()
-            
+
             // Now select the newly added grade
             weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.SelectGrade("UUID3"))
 
@@ -438,7 +438,7 @@ class WeightedGradeCalculatorUIModelTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
-    
+
     @Test
     fun shouldHandleMultipleUpdatesCorrectly() = moleculeTest {
         initSUT()

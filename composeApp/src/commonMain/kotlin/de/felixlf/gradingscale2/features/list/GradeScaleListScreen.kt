@@ -38,10 +38,10 @@ import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGrade
 import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.textFieldManager
-import gradingscale2.composeapp.generated.resources.Res
-import gradingscale2.composeapp.generated.resources.gradescale_list_no_grade_scale_selected
-import gradingscale2.composeapp.generated.resources.gradescale_list_select_grade_scale
-import gradingscale2.composeapp.generated.resources.gradescale_list_total_points
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.gradescale_list_no_grade_scale_selected
+import gradingscale2.entities.generated.resources.gradescale_list_select_grade_scale
+import gradingscale2.entities.generated.resources.gradescale_list_total_points
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

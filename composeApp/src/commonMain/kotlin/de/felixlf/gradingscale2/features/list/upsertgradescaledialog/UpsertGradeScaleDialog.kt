@@ -27,8 +27,8 @@ import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.utils.dialogScopedViewModel
 import de.felixlf.gradingscale2.utils.textFieldManager
-import gradingscale2.composeapp.generated.resources.Res
-import gradingscale2.composeapp.generated.resources.gradescale_list_dialog_edit_cancel
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_cancel
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview

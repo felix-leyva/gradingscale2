@@ -150,17 +150,17 @@ class WeightedGradeDialogUIStateTest {
     @Test
     fun relativeWeightCalculationTests() {
         // Test relative weight calculations
-        assertRelativeWeight(0.8, 2.0, "1.6")  // 80% of 2.0
-        assertRelativeWeight(0.9, 3.0, "2.7")  // 90% of 3.0
-        assertRelativeWeight(0.75, 4.0, "3")    // 75% of 4.0
-        assertRelativeWeight(0.5, 5.0, "2.5")  // 50% of 5.0
+        assertRelativeWeight(0.8, 2.0, "1.6") // 80% of 2.0
+        assertRelativeWeight(0.9, 3.0, "2.7") // 90% of 3.0
+        assertRelativeWeight(0.75, 4.0, "3") // 75% of 4.0
+        assertRelativeWeight(0.5, 5.0, "2.5") // 50% of 5.0
     }
 
     @Test
     fun roundingTests() {
         // Test rounding behavior
-        assertPercentageFormat(0.333, "33.3")  // Should round to 1 decimal place
-        assertWeightFormat(1.666, "1.67")      // Should round to 2 decimal places
+        assertPercentageFormat(0.333, "33.3") // Should round to 1 decimal place
+        assertWeightFormat(1.666, "1.67") // Should round to 2 decimal places
         assertRelativeWeight(0.333, 1.0, "0.33") // Should round properly
     }
 
@@ -169,21 +169,21 @@ class WeightedGradeDialogUIStateTest {
         // Test values at or beyond the expected ranges
         assertPercentageFormat(0.0, "0")
         assertPercentageFormat(1.0, "100")
-        
+
         // Values outside 0-1 range should be handled appropriately
         val state = WeightedGradeDialogUIState(
             gradeScale = testGradeScale,
             percentage = 1.5, // Above 1.0
-            weight = 2.0
+            weight = 2.0,
         )
         assertEquals("A", state.gradeNameString) // Should use the highest grade (coerced to 1.0)
         assertEquals("150", state.percentageString) // Shows actual value
-        
+
         // Negative weights
         val negativeWeightState = WeightedGradeDialogUIState(
             gradeScale = testGradeScale,
             percentage = 0.8,
-            weight = -1.0
+            weight = -1.0,
         )
         assertEquals("-1", negativeWeightState.weightString)
         assertEquals("-0.8", negativeWeightState.relativeWeightString)
@@ -194,39 +194,51 @@ class WeightedGradeDialogUIStateTest {
         val uiState = WeightedGradeDialogUIState(
             gradeScale = testGradeScale,
             percentage = percentage,
-            weight = null
+            weight = null,
         )
-        assertEquals(expectedGradeName, uiState.gradeNameString, 
-            "Expected grade name for $percentage to be $expectedGradeName, but was ${uiState.gradeNameString}")
+        assertEquals(
+            expectedGradeName,
+            uiState.gradeNameString,
+            "Expected grade name for $percentage to be $expectedGradeName, but was ${uiState.gradeNameString}",
+        )
     }
 
     private fun assertPercentageFormat(percentage: Double, expectedString: String) {
         val uiState = WeightedGradeDialogUIState(
             gradeScale = null,
             percentage = percentage,
-            weight = null
+            weight = null,
         )
-        assertEquals(expectedString, uiState.percentageString, 
-            "Expected percentage format for $percentage to be $expectedString, but was ${uiState.percentageString}")
+        assertEquals(
+            expectedString,
+            uiState.percentageString,
+            "Expected percentage format for $percentage to be $expectedString, but was ${uiState.percentageString}",
+        )
     }
 
     private fun assertWeightFormat(weight: Double, expectedString: String) {
         val uiState = WeightedGradeDialogUIState(
             gradeScale = null,
             percentage = null,
-            weight = weight
+            weight = weight,
         )
-        assertEquals(expectedString, uiState.weightString, 
-            "Expected weight format for $weight to be $expectedString, but was ${uiState.weightString}")
+        assertEquals(
+            expectedString,
+            uiState.weightString,
+            "Expected weight format for $weight to be $expectedString, but was ${uiState.weightString}",
+        )
     }
 
     private fun assertRelativeWeight(percentage: Double, weight: Double, expectedString: String) {
         val uiState = WeightedGradeDialogUIState(
             gradeScale = null,
             percentage = percentage,
-            weight = weight
+            weight = weight,
         )
-        assertEquals(expectedString, uiState.relativeWeightString, 
-            "Expected relative weight for $percentage × $weight to be $expectedString, but was ${uiState.relativeWeightString}")
+        assertEquals(
+            expectedString,
+            uiState.relativeWeightString,
+            "Expected relative weight for $percentage × $weight to be $expectedString, but was ${uiState.relativeWeightString}",
+        )
     }
 }
