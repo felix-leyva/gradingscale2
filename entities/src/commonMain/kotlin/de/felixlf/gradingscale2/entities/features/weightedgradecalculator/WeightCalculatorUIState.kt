@@ -1,10 +1,10 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 
+import de.felixlf.gradingscale2.entities.models.GradeScale
+import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeSummary
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeWithName
-import de.felixlf.gradingscale2.entities.models.GradeScale
-import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.util.stringWithDecimals
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf

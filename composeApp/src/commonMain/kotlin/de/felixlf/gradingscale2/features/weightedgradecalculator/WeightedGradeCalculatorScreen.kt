@@ -28,6 +28,7 @@ import de.felixlf.gradingscale2.uicomponents.LoadingContent
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.uuid.Uuid
 
 @Composable
 internal fun WeightedGradeCalculatorScreen() {
@@ -59,9 +60,10 @@ fun WeightedGradeCalculatorScreen(
                     val newGrade = WeightedGrade(
                         percentage = 1.0,
                         weight = 1.0,
+                        uuid = Uuid.random().toString(),
                     )
                     onSendCommand(WeightedCalculatorCommand.AddGradeAtPos(uiState.grades.size, newGrade))
-                    onSendCommand(WeightedCalculatorCommand.SelectGrade(uiState.grades.size))
+                    onSendCommand(WeightedCalculatorCommand.SelectGrade(newGrade.uuid))
                 },
                 modifier = Modifier.align(Alignment.BottomEnd).padding(32.dp),
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -84,7 +86,7 @@ fun WeightedGradeCalculatorScreen(
             onSave = { updatedGrade ->
                 val position = uiState.grades.indexOf(uiState.selectedGrade)
                 if (position != -1) {
-                    onSendCommand(WeightedCalculatorCommand.UpdateGrade(position, updatedGrade))
+                    onSendCommand(WeightedCalculatorCommand.UpdateGrade(updatedGrade))
                 } else {
                     onSendCommand(WeightedCalculatorCommand.AddGradeAtPos(0, updatedGrade))
                 }
@@ -92,7 +94,7 @@ fun WeightedGradeCalculatorScreen(
             onDelete = {
                 val position = uiState.grades.indexOf(uiState.selectedGrade)
                 if (position != -1) {
-                    onSendCommand(WeightedCalculatorCommand.RemoveGrade(position))
+                    onSendCommand(WeightedCalculatorCommand.RemoveGrade(it.uuid))
                 }
             },
             onDismiss = {
@@ -130,8 +132,8 @@ private fun MainContent(
         // List of partial grades
         PartialGradesList(
             weightedGrades = uiState.weightedGrades,
-            onGradeClick = { position ->
-                onSendCommand(WeightedCalculatorCommand.SelectGrade(position))
+            onGradeClick = { id ->
+                onSendCommand(WeightedCalculatorCommand.SelectGrade(id))
             },
             modifier = Modifier.fillMaxWidth().weight(1f),
         )

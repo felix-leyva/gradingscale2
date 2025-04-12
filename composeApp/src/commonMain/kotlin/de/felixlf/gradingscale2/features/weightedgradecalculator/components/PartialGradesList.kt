@@ -29,7 +29,7 @@ import kotlinx.collections.immutable.ImmutableList
 @Composable
 internal fun PartialGradesList(
     weightedGrades: ImmutableList<WeightedGradeWithName>,
-    onGradeClick: (Int) -> Unit,
+    onGradeClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -53,7 +53,7 @@ internal fun PartialGradesList(
             itemsIndexed(weightedGrades) { index, grade ->
                 GradeRow(
                     weightedGradeWithName = grade,
-                    onClick = { onGradeClick(index) },
+                    onClick = { onGradeClick(grade.grade.uuid) },
                 )
                 if (index < weightedGrades.lastIndex) {
                     HorizontalDivider()

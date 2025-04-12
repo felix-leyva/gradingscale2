@@ -2,40 +2,44 @@ package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.AddGradeAtPos
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.RemoveGrade
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.UpdateGrade
-import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
+import de.felixlf.gradingscale2.entities.usecases.DeleteWeightedGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetAllWeightedGradesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCase
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class WeightCalculatorUIModel(
     override val scope: UIModelScope,
     private val getAllGradeScales: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
+    private val getAllWeightedGradesUseCase: GetAllWeightedGradesUseCase,
+    private val upsertWeightedGradeUseCase: UpsertWeightedGradeUseCase,
+    private val deleteWeightedGradeUseCase: DeleteWeightedGradeUseCase,
 ) : UIModel<WeightCalculatorUIState, WeightedCalculatorCommand, WeightedCalculatorEvent> {
     override val events: Channel<WeightedCalculatorEvent> = Channel()
     override val uiState: StateFlow<WeightCalculatorUIState> by moleculeUIState()
 
     private var selectedGradeScaleId by mutableStateOf<String?>(null)
-    private var openedGradePos by mutableStateOf<Int?>(null)
-
-    // TODO: temporary solution, later this will be saved in the database
-    private val grades = mutableStateListOf<WeightedGrade>()
+    private var openedGradeId by mutableStateOf<String?>(null)
 
     @Composable
     override fun produceUI(): WeightCalculatorUIState {
+        val grades = getAllWeightedGradesUseCase().asState(persistentListOf())
+
         val gradeScalesNamesAndIds = getAllGradeScales().asState(persistentListOf()).map {
             GradeScaleNameAndId(name = it.gradeScaleName, id = it.id)
         }
@@ -47,27 +51,29 @@ class WeightCalculatorUIModel(
         return WeightCalculatorUIState(
             gradeScaleNameAndIds = gradeScalesNamesAndIds.toImmutableList(),
             selectedGradeScale = selectedGradeScale,
-            grades = grades.toImmutableList(),
-            selectedGrade = openedGradePos?.let { grades[it] },
+            grades = grades,
+            selectedGrade = openedGradeId?.let { grades.find { it.uuid == openedGradeId } },
         )
     }
 
     override fun sendCommand(command: WeightedCalculatorCommand) {
         when (command) {
-            is AddGradeAtPos -> grades.add(command.position, command.grade)
-
-            is RemoveGrade -> {
-                openedGradePos = null
-                grades.removeAt(command.position)
+            is AddGradeAtPos -> scope.launch {
+                upsertWeightedGradeUseCase(command.grade)
             }
 
-            is UpdateGrade -> {
-                openedGradePos = null
-                grades[command.position] = command.grade
+            is RemoveGrade -> scope.launch {
+                openedGradeId = null
+                deleteWeightedGradeUseCase(command.id)
+            }
+
+            is UpdateGrade -> scope.launch {
+                openedGradeId = null
+                upsertWeightedGradeUseCase(command.grade)
             }
 
             is SelectGradeScale -> selectedGradeScaleId = command.gradeScaleId
-            is WeightedCalculatorCommand.SelectGrade -> openedGradePos = command.position
+            is WeightedCalculatorCommand.SelectGrade -> openedGradeId = command.id
         }
     }
 }

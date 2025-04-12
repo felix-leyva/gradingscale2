@@ -11,13 +11,19 @@ import de.felixlf.gradingscale2.entities.repositories.GradesRepository
 import de.felixlf.gradingscale2.entities.repositories.GradesRepositoryImpl
 import de.felixlf.gradingscale2.entities.repositories.RemoteSyncRepository
 import de.felixlf.gradingscale2.entities.repositories.RemoteSyncRepositoryImpl
+import de.felixlf.gradingscale2.entities.repositories.WeightedGradesRepository
+import de.felixlf.gradingscale2.entities.repositories.WeightedGradesRepositoryImpl
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.DeleteWeightedGradeUseCase
+import de.felixlf.gradingscale2.entities.usecases.DeleteWeightedGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.GetAllWeightedGradesUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetAllWeightedGradesUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
@@ -36,6 +42,8 @@ import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCase
+import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import org.koin.core.module.dsl.factoryOf
@@ -49,6 +57,7 @@ val entitiesModule =
         single<GradeScaleRepository> { GradeScaleRepositoryImpl(get()) }
         single<GradesRepository> { GradesRepositoryImpl(get()) }
         single<RemoteSyncRepository> { RemoteSyncRepositoryImpl(get()) }
+        singleOf(::WeightedGradesRepositoryImpl).bind<WeightedGradesRepository>()
 
         // Use cases
         single<GetAllGradeScalesUseCase> { GetAllGradeScalesUseCaseImpl(get(), get()) }
@@ -63,6 +72,9 @@ val entitiesModule =
         singleOf(::GetRemoteGradeScaleUseCaseImpl).bind<GetRemoteGradeScaleUseCase>()
         singleOf(::GetRemoteGradeScalesUseCaseImpl).bind<GetRemoteGradeScalesUseCase>()
         singleOf(::ImportRemoteGradeScaleIntoDbUseCaseImpl).bind<ImportRemoteGradeScaleIntoDbUseCase>()
+        singleOf(::GetAllWeightedGradesUseCaseImpl).bind<GetAllWeightedGradesUseCase>()
+        singleOf(::DeleteWeightedGradeUseCaseImpl).bind<DeleteWeightedGradeUseCase>()
+        singleOf(::UpsertWeightedGradeUseCaseImpl).bind<UpsertWeightedGradeUseCase>()
 
         // UI Model
         factory { get<DispatcherProvider>().newUIScope() }.bind<UIModelScope>()

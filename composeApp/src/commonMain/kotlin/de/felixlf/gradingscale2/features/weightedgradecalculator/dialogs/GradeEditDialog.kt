@@ -15,8 +15,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog.WeightedGradeDialogCommand
-import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.entities.models.GradeScale
+import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.utils.textFieldManager
@@ -99,6 +99,7 @@ fun GradeEditDialog(
                         WeightedGrade(
                             percentage = percentage,
                             weight = weight,
+                            uuid = grade.uuid,
                         ),
                     )
                 },

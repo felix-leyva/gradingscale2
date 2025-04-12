@@ -1,0 +1,18 @@
+CREATE TABLE weighted_grade (
+    id TEXT PRIMARY KEY NOT NULL,
+    percentage REAL NOT NULL,
+    weight REAL NOT NULL
+);
+
+-- Upsert a weighted grade
+upsertWeightedGrade:
+INSERT OR REPLACE INTO weighted_grade (id, percentage, weight)
+VALUES (?, ?, ?);
+
+-- Delete a weighted grade by id
+deleteWeightedGradeById:
+DELETE FROM weighted_grade WHERE id = ?;
+
+--- Get all weighted grades
+getAllWeightedGrades:
+SELECT * FROM weighted_grade;

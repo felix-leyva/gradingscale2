@@ -8,7 +8,13 @@ import de.felixlf.gradingscale2.entities.daos.GradeScaleDao
 import de.felixlf.gradingscale2.entities.daos.GradeScaleDaoImpl
 import de.felixlf.gradingscale2.entities.daos.GradesDao
 import de.felixlf.gradingscale2.entities.daos.GradesDaoImpl
+import de.felixlf.gradingscale2.entities.daos.WeightedGradeDao
+import de.felixlf.gradingscale2.entities.daos.weightedgrade.DbToWeightedGradeMapper
+import de.felixlf.gradingscale2.entities.daos.weightedgrade.DbToWeightedGradeMapperImpl
+import de.felixlf.gradingscale2.entities.daos.weightedgrade.WeightedGradeDaoImpl
 import org.koin.core.module.Module
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal expect fun getDbPlatformModule(): Module
@@ -32,6 +38,10 @@ internal val sqlDaoModule = module {
     single<GradeScaleQueries> { get<Database>().gradeScaleQueries }
     single<GradeScaleDao> { GradeScaleDaoImpl(get()) }
     single<GradesDao> { GradesDaoImpl(gradeScaleQueries = get()) }
+
+    single<WeightedGradeQueries> { get<Database>().weightedGradeQueries }
+    singleOf(::WeightedGradeDaoImpl).bind<WeightedGradeDao>()
+    singleOf(::DbToWeightedGradeMapperImpl).bind<DbToWeightedGradeMapper>()
 }
 
 val dbModule = module {
