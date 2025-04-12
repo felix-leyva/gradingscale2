@@ -9,6 +9,7 @@ import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.Weight
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.RemoveGrade
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.UpdateGrade
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGrade
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
@@ -31,7 +32,7 @@ class WeightCalculatorUIModel(
     private var openedGradePos by mutableStateOf<Int?>(null)
 
     // TODO: temporary solution, later this will be saved in the database
-    private val grades = mutableStateListOf<WeightCalculatorUIState.WeightedGrade>()
+    private val grades = mutableStateListOf<WeightedGrade>()
 
     @Composable
     override fun produceUI(): WeightCalculatorUIState {
@@ -54,9 +55,18 @@ class WeightCalculatorUIModel(
     override fun sendCommand(command: WeightedCalculatorCommand) {
         when (command) {
             is AddGradeAtPos -> grades.add(command.position, command.grade)
-            is RemoveGrade -> grades.removeAt(command.position)
+
+            is RemoveGrade -> {
+                openedGradePos = null
+                grades.removeAt(command.position)
+            }
+
+            is UpdateGrade -> {
+                openedGradePos = null
+                grades[command.position] = command.grade
+            }
+
             is SelectGradeScale -> selectedGradeScaleId = command.gradeScaleId
-            is UpdateGrade -> grades[command.position] = command.grade
             is WeightedCalculatorCommand.SelectGrade -> openedGradePos = command.position
         }
     }

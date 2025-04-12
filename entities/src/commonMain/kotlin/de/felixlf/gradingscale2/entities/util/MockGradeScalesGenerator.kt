@@ -12,7 +12,7 @@ class MockGradeScalesGenerator(
 ) {
     private val range = 0..size
     val percentages = range.map { it.toDouble() / size }
-    val gradeNames = range.map { Char('A'.code + it) }
+    val gradeNames = range.map { Char('A'.code + it) }.reversed()
     val gradeScaleNames = listOf("Hamburg", "Berlin", "Munich")
 
     val gradeScales =

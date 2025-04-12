@@ -1,7 +1,11 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGrade
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGradeSummary
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGradeWithName
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
+import de.felixlf.gradingscale2.entities.util.stringWithDecimals
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -14,26 +18,25 @@ class WeightCalculatorUIState(
 ) {
     val isLoading: Boolean = gradeScaleNameAndIds.isEmpty()
 
-    val totalWeight: Double = grades.sumOf { it.weight }
+    private val totalWeight: Double = grades.sumOf { it.weight }
+
+    val weightedGradeSummary = selectedGradeScale?.let { gradeScale ->
+        if (grades.isEmpty()) return@let null
+        val totalPoints = grades.sumOf { it.percentage * it.weight }
+        val weightedPercentage = totalPoints / totalWeight
+        val totalGradeName = gradeScale.nameByPercentage(weightedPercentage)
+        WeightedGradeSummary(
+            totalGradeName = totalGradeName,
+            weightedPercentage = "${(weightedPercentage * 100).stringWithDecimals()} %",
+            earnedPoints = totalPoints.stringWithDecimals(),
+            totalPoints = totalWeight.stringWithDecimals(),
+        )
+    }
 
     val weightedGrades = selectedGradeScale?.let { gradeScale ->
         grades.map { grade ->
             val name = gradeScale.nameByPercentage(grade.percentage)
-            WeightedGradeWithName(grade = grade, name = name, weightFromTotal = grade.weight / totalWeight)
+            WeightedGradeWithName(grade = grade, name = name)
         }.toImmutableList()
     } ?: persistentListOf()
-
-    data class WeightedGradeWithName(
-        val grade: WeightedGrade,
-        val name: String,
-        val weightFromTotal: Double,
-    ) {
-        val percentage: Double = grade.percentage
-        val weight: Double = grade.weight
-    }
-
-    data class WeightedGrade(
-        val percentage: Double,
-        val weight: Double,
-    )
 }

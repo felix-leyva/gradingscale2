@@ -32,10 +32,10 @@ internal class ImportRemoteGradeScaleIntoDbUseCaseImpl(
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun invoke(remoteGradeScaleDTO: GradeScaleDTO): Option<String> = option {
         val (currentNames, currentIds) = (
-                gradeScaleRepository.getGradeScales().firstOrNull()
-                    ?.map { it.gradeScaleName to it.id.toIntOrNull() }
-                    ?: persistentListOf()
-                ).unzip()
+            gradeScaleRepository.getGradeScales().firstOrNull()
+                ?.map { it.gradeScaleName to it.id.toIntOrNull() }
+                ?: persistentListOf()
+            ).unzip()
 
         val maxAvailableId = (currentIds.filterNotNull().maxOrNull() ?: 0) + 1
 

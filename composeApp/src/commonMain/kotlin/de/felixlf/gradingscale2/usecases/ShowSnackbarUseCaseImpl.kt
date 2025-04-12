@@ -6,12 +6,12 @@ import androidx.compose.material3.SnackbarResult
 import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
 
 internal class ShowSnackbarUseCaseImpl(
-    private val snackbarHostState: SnackbarHostState
+    private val snackbarHostState: SnackbarHostState,
 ) : ShowSnackbarUseCase {
     override suspend fun invoke(
         message: String,
         actionLabel: String?,
-        duration: ShowSnackbarUseCase.SnackbarDuration?
+        duration: ShowSnackbarUseCase.SnackbarDuration?,
     ): ShowSnackbarUseCase.SnackbarResult {
         val duration = when (duration) {
             ShowSnackbarUseCase.SnackbarDuration.Long -> SnackbarDuration.Long

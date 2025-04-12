@@ -10,8 +10,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.models.PointedGrade
+import de.felixlf.gradingscale2.entities.util.stringWithDecimals
 import de.felixlf.gradingscale2.uicomponents.VerticalDivider
-import de.felixlf.gradingscale2.utils.stringWithDecimals
 
 /**
  * A list item that displays a grade with its name, percentage and points.

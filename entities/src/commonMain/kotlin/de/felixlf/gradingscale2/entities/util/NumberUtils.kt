@@ -1,4 +1,4 @@
-package de.felixlf.gradingscale2.utils
+package de.felixlf.gradingscale2.entities.util
 
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -9,7 +9,7 @@ import kotlin.math.roundToInt
  * If the number is a whole number, the decimal places are removed.
  * If the number is a whole number and [removeTrailingZeros] is set to false, the decimal places are kept.
  */
-internal fun Double.stringWithDecimals(decimals: Int = 2, removeTrailingZeros: Boolean = true): String {
+fun Double.stringWithDecimals(decimals: Int = 2, removeTrailingZeros: Boolean = true): String {
     val factor = 10.0.pow(decimals)
     val roundedValue = ((this * factor).roundToInt() / factor).toString()
     return if (removeTrailingZeros && roundedValue.endsWith(".0")) roundedValue.substringBeforeLast(".0") else roundedValue

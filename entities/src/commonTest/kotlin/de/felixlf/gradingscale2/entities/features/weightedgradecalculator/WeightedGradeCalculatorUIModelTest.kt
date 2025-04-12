@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.model.WeightedGrade
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
@@ -39,7 +40,7 @@ class WeightedGradeCalculatorUIModelTest {
         name = testGradeScaleName,
         id = testGradeScaleId,
     )
-    private val testWeightedGrade = WeightCalculatorUIState.WeightedGrade(
+    private val testWeightedGrade = WeightedGrade(
         percentage = 85.0,
         weight = 2.0,
     )
@@ -127,7 +128,7 @@ class WeightedGradeCalculatorUIModelTest {
 
             // Act: select grade scale
             weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.SelectGradeScale(testGradeScaleId))
-            val stateIntermediate = awaitItem()
+            awaitItem()
             // Get state after selection
             val state = awaitItem()
 
@@ -152,7 +153,7 @@ class WeightedGradeCalculatorUIModelTest {
             awaitItem() // Get loaded state
 
             // Select the grade first to be able to see it in selectedGrade
-            val newGrade = WeightCalculatorUIState.WeightedGrade(0.0, 0.0)
+            val newGrade = WeightedGrade(0.0, 0.0)
 
             // Act: add grade at position 0 (beginning/end since list is empty)
             weightedGradeCalculatorUIModel.sendCommand(
@@ -163,7 +164,7 @@ class WeightedGradeCalculatorUIModelTest {
             )
 
             // Get updated state after adding
-            val stateAfterAdd = awaitItem()
+            awaitItem()
 
             // Now select the grade
             weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.SelectGrade(0))
@@ -194,7 +195,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 0,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.85, 1.0),
+                    grade = WeightedGrade(0.85, 1.0),
                 ),
             )
             awaitItem()
@@ -202,14 +203,14 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 1,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.75, 2.0),
+                    grade = WeightedGrade(0.75, 2.0),
                 ),
             )
             awaitItem()
 
             // Act: add grade at specific position
             val position = 1
-            val newGrade = WeightCalculatorUIState.WeightedGrade(0.8, 1.5)
+            val newGrade = WeightedGrade(0.8, 1.5)
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = position,
@@ -218,7 +219,7 @@ class WeightedGradeCalculatorUIModelTest {
             )
 
             // Get updated state after adding
-            val stateAfterAdd = awaitItem()
+            awaitItem()
 
             // Now select the grade
             weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.SelectGrade(position))
@@ -249,7 +250,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 0,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.0, 0.0),
+                    grade = WeightedGrade(0.0, 0.0),
                 ),
             )
             awaitItem()
@@ -285,7 +286,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 0,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.85, 1.0),
+                    grade = WeightedGrade(0.85, 1.0),
                 ),
             )
             awaitItem()
@@ -293,7 +294,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 1,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.75, 2.0),
+                    grade = WeightedGrade(0.75, 2.0),
                 ),
             )
             // Get state after adding both grades
@@ -335,7 +336,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 0,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.85, 1.0),
+                    grade = WeightedGrade(0.85, 1.0),
                 ),
             )
             awaitItem()
@@ -343,7 +344,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 1,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.75, 2.0),
+                    grade = WeightedGrade(0.75, 2.0),
                 ),
             )
 
@@ -373,7 +374,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 0,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.85, 1.0),
+                    grade = WeightedGrade(0.85, 1.0),
                 ),
             )
             awaitItem()
@@ -381,7 +382,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 1,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.75, 2.0),
+                    grade = WeightedGrade(0.75, 2.0),
                 ),
             )
 
@@ -414,7 +415,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 0,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.85, 1.0),
+                    grade = WeightedGrade(0.85, 1.0),
                 ),
             )
             val stateAfterFirstAdd = awaitItem()
@@ -422,7 +423,7 @@ class WeightedGradeCalculatorUIModelTest {
 
             // Update the grade
             weightedGradeCalculatorUIModel.sendCommand(
-                WeightedCalculatorCommand.UpdateGrade(0, WeightCalculatorUIState.WeightedGrade(0.95, 3.0)),
+                WeightedCalculatorCommand.UpdateGrade(0, WeightedGrade(0.95, 3.0)),
             )
             val stateAfterUpdate = awaitItem()
             assertEquals(0.95, stateAfterUpdate.grades[0].percentage)
@@ -433,7 +434,7 @@ class WeightedGradeCalculatorUIModelTest {
             weightedGradeCalculatorUIModel.sendCommand(
                 WeightedCalculatorCommand.AddGradeAtPos(
                     position = 1,
-                    grade = WeightCalculatorUIState.WeightedGrade(0.65, 2.0),
+                    grade = WeightedGrade(0.65, 2.0),
                 ),
             )
             val stateAfterSecondAdd = awaitItem()

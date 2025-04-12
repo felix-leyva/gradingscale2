@@ -11,6 +11,7 @@ import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeViewModel
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleViewModel
 import de.felixlf.gradingscale2.features.weightedgradecalculator.WeightedCalculatorViewModel
+import de.felixlf.gradingscale2.features.weightedgradecalculator.dialogs.WeightedGradeDialogViewModel
 import de.felixlf.gradingscale2.navigation.AppNavController
 import de.felixlf.gradingscale2.navigation.AppNavControllerImpl
 import de.felixlf.gradingscale2.network.di.networkModule
@@ -33,6 +34,7 @@ val mainModule = module {
     viewModelOf(::UpsertGradeScaleViewModel)
     viewModelOf(::ImportViewModel)
     viewModelOf(::WeightedCalculatorViewModel)
+    viewModelOf(::WeightedGradeDialogViewModel)
 
     single<AppNavController> { (controller: NavHostController) -> AppNavControllerImpl(controller) }
     single<ShowSnackbarUseCase> { (snackbarHostState: SnackbarHostState) -> ShowSnackbarUseCaseImpl(snackbarHostState) }

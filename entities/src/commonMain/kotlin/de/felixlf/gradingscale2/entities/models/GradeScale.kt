@@ -29,9 +29,10 @@ data class GradeScale(
 
     val gradesNamesList = sortedGrades.map { it.namedGrade }.toImmutableList()
 
-    fun getPercentage(gradeName: String): Double = sortedGrades.find {
-        it.namedGrade == gradeName
-    }?.percentage ?: 0.0
+    fun getPercentageOrNull(gradeName: String): Double? =
+        sortedGrades.find { it.namedGrade == gradeName }?.percentage
+
+    fun getPercentage(gradeName: String): Double = getPercentageOrNull(gradeName) ?: 0.0
 
     fun gradeByPercentage(percentage: Double) =
         sortedGrades

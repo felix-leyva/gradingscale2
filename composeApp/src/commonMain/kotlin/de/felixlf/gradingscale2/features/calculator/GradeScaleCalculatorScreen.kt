@@ -18,8 +18,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIEvent
 import de.felixlf.gradingscale2.entities.features.calculator.GradeScaleCalculatorUIState
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.entities.util.stringWithDecimals
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
-import de.felixlf.gradingscale2.utils.stringWithDecimals
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.composeapp.generated.resources.Res
 import gradingscale2.composeapp.generated.resources.calculator_screen_grade_name_dropbox_default

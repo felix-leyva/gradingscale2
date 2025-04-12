@@ -28,6 +28,7 @@ import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIState
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.entities.util.stringWithDecimals
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.features.list.components.DialogActionsMenu
 import de.felixlf.gradingscale2.features.list.components.GradeScaleListItem
@@ -36,7 +37,6 @@ import de.felixlf.gradingscale2.features.list.upsertgradedialog.InsertGradeDialo
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleDialog
 import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
-import de.felixlf.gradingscale2.utils.stringWithDecimals
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.composeapp.generated.resources.Res
 import gradingscale2.composeapp.generated.resources.gradescale_list_no_grade_scale_selected
