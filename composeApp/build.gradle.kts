@@ -165,6 +165,13 @@ android {
 compose.desktop {
     application {
         mainClass = "de.felixlf.gradingscale2.MainKt"
+        buildTypes {
+            release {
+                proguard {
+                    isEnabled = false
+                }
+            }
+        }
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
@@ -176,7 +183,6 @@ compose.desktop {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.icns"))
                 bundleID = "de.felixlf.gradingscale2"
                 packageName = "Grading Scale"
-
             }
             windows {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.ico"))

@@ -1,4 +1,6 @@
 import extensions.sonarQubeBaseConfig
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
 // jacocoBaseConfig()
@@ -18,6 +20,7 @@ subprojects {
     }
     tasks.withType<KotlinCompilationTask<*>>().configureEach {
         compilerOptions {
+            (this as? KotlinJvmCompilerOptions)?.jvmTarget?.set(JvmTarget.fromTarget(libs2.versions.java.get()))
             optIn.addAll("kotlin.RequiresOptIn")
             freeCompilerArgs.addAll("-opt-in=kotlin.uuid.ExperimentalUuidApi", "-Xexpect-actual-classes")
         }
