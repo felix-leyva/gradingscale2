@@ -1,0 +1,91 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+    <!-- Enhanced with more distinct elements for better visibility on white backgrounds -->
+    <defs>
+        <linearGradient id="bgGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#E8EAF6" />
+            <stop offset="100%" stop-color="#C5CAE9" />
+        </linearGradient>
+
+        <linearGradient id="circleGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#FF5252" />
+            <stop offset="100%" stop-color="#D32F2F" />
+        </linearGradient>
+
+        <linearGradient id="rowGradient" x1="0%" x2="100%" y1="0%" y2="0%">
+            <stop offset="0%" stop-color="#5C6BC0" />
+            <stop offset="100%" stop-color="#3F51B5" />
+        </linearGradient>
+
+        <linearGradient id="checkGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#4CAF50" />
+            <stop offset="100%" stop-color="#388E3C" />
+        </linearGradient>
+
+        <linearGradient id="xGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#E0E0E0" />
+            <stop offset="100%" stop-color="#BDBDBD" />
+        </linearGradient>
+
+        <linearGradient id="xLineGradient" x1="0%" x2="100%" y1="0%" y2="100%">
+            <stop offset="0%" stop-color="#9E9E9E" />
+            <stop offset="100%" stop-color="#616161" />
+        </linearGradient>
+    </defs>
+
+    <!-- Subtle shadow for the entire document -->
+    <path d="M96,64 L96,448 C96,465.673 110.327,480 128,480 L384,480 C401.673,480 416,465.673 416,448 L416,120 L360,64 L96,64 Z"
+            fill="#9FA8DA" opacity="0.3" transform="translate(6, 6)" />
+
+    <!-- Main Document Shape with a more distinct color -->
+    <path d="M96,64 L96,448 C96,465.673 110.327,480 128,480 L384,480 C401.673,480 416,465.673 416,448 L416,120 L360,64 L96,64 Z"
+            fill="url(#bgGradient)" />
+
+    <!-- Document border for better visibility -->
+    <path d="M96,64 L96,448 C96,465.673 110.327,480 128,480 L384,480 C401.673,480 416,465.673 416,448 L416,120 L360,64 L96,64 Z"
+            fill="none" stroke="#7986CB" stroke-width="3" />
+
+    <!-- Document fold -->
+    <path d="M360,64 L416,120 L380,120 C368.954,120 360,111.046 360,100 L360,64 Z" fill="#9FA8DA" />
+    <path d="M360,64 L416,120 L380,120 C368.954,120 360,111.046 360,100 L360,64 Z" fill="none"
+            stroke="#7986CB" stroke-width="2" />
+
+    <!-- Completed items - with gradient -->
+    <g transform="translate(120, 190)">
+        <circle cx="20" cy="20" fill="url(#checkGradient)" r="20" />
+        <path d="M10,20 L18,28 L30,12" fill="none" stroke="white" stroke-linecap="round"
+                stroke-linejoin="round" stroke-width="5" />
+    </g>
+
+    <g transform="translate(120, 260)">
+        <circle cx="20" cy="20" fill="url(#checkGradient)" r="20" />
+        <path d="M10,20 L18,28 L30,12" fill="none" stroke="white" stroke-linecap="round"
+                stroke-linejoin="round" stroke-width="5" />
+    </g>
+
+    <!-- Incomplete items - with gradient -->
+    <g transform="translate(120, 330)">
+        <circle cx="20" cy="20" fill="url(#xGradient)" r="20" />
+        <path d="M10,10 L30,30 M30,10 L10,30" fill="none" stroke="url(#xLineGradient)"
+                stroke-linecap="round" stroke-width="5" />
+    </g>
+
+    <g transform="translate(120, 400)">
+        <circle cx="20" cy="20" fill="url(#xGradient)" r="20" />
+        <path d="M10,10 L30,30 M30,10 L10,30" fill="none" stroke="url(#xLineGradient)"
+                stroke-linecap="round" stroke-width="5" />
+    </g>
+
+    <!-- Row items - with gradient -->
+    <rect fill="url(#rowGradient)" height="40" rx="8" width="180" x="180" y="190" />
+    <rect fill="url(#rowGradient)" height="40" rx="8" width="180" x="180" y="260" />
+    <rect fill="url(#rowGradient)" height="40" rx="8" width="180" x="180" y="330" />
+    <rect fill="url(#rowGradient)" height="40" rx="8" width="180" x="180" y="400" />
+
+    <!-- Grade Circle with subtle shadow -->
+    <circle cx="353" cy="103" fill="#D32F2F" opacity="0.3" r="70" />
+    <circle cx="350" cy="100" fill="url(#circleGradient)" r="70" />
+
+    <!-- Checkmark inside circle -->
+    <path d="M310,100 L340,130 L390,70" fill="none" stroke="white" stroke-linecap="round"
+            stroke-linejoin="round" stroke-width="12" />
+</svg>

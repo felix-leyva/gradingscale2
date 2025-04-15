@@ -168,8 +168,22 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "de.felixlf.gradingscale2"
+            packageName = "Grading Scale"
             packageVersion = "1.0.0"
+            modules("java.sql", "java.management")
+
+            macOS {
+                iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.icns"))
+                bundleID = "de.felixlf.gradingscale2"
+                packageName = "Grading Scale"
+
+            }
+            windows {
+                iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.ico"))
+            }
+            linux {
+                iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.png"))
+            }
         }
     }
 }
