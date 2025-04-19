@@ -217,8 +217,30 @@ tasks.register("checkAndCreateGoogleServices") {
     }
 }
 
+tasks.register("checkAndCreateIosGoogleServices") {
+    val googleServicesFile = parent?.layout?.projectDirectory?.file("iosApp/iosApp/GoogleService-Info.plist")
+        ?: run {
+            println("Parent project not found.")
+            return@register
+        }
+    val googleServicesContent = providers.environmentVariable("GOOGLE_IOS_SECRET")
+    doLast {
+        if (!googleServicesFile.asFile.exists()) {
+            val content = googleServicesContent.orNull
+            if (content != null) {
+                googleServicesFile.asFile.writeText(content)
+                println("GoogleService-Info.plist file created")
+            } else {
+                println("Environment variable GOOGLE_IOS_SECRET is not set.")
+            }
+        } else {
+            println("GoogleService-Info.plist file already exists.")
+        }
+    }
+}
+
 tasks.named("preBuild") {
-    dependsOn("checkAndCreateGoogleServices")
+    dependsOn("checkAndCreateGoogleServices", "checkAndCreateIosGoogleServices")
 }
 dependencies {
     ksp(libs2.arrow.optics.ksp.plugin)

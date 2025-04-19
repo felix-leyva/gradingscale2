@@ -8,6 +8,7 @@
 name: Java CI with Gradle
 env:
   GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
+  GOOGLE_IOS_SECRET: ${{ secrets.GOOGLE_IOS_SECRET }}
 on:
   push:
     branches: [ "main" ]
