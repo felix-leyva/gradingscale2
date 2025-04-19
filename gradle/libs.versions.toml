@@ -55,6 +55,7 @@ firebase-kotlin = "2.1.0"
 google-services = "4.4.2"
 firebaseCrashlyticsBuildtools = "3.0.3"
 foundationAndroid = "1.7.8"
+coreKtx = "1.16.0"
 
 
 [libraries]
@@ -147,6 +148,7 @@ gradle-sqldelight = { group = "app.cash.sqldelight", name = "app.cash.sqldelight
 gradle-hotreload = { group = "org.jetbrains.compose-hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelightVersion" }
+core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 
 [plugins]
@@ -164,3 +166,4 @@ aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "abo
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqubeGradlePlugin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightPlugin" }
 hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-reload" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-compiler" }
