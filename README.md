@@ -21,3 +21,7 @@ The projects is WIP and is not yet ready for production use.
 - Multiplatform Serialization
 - Firebase Crashlytics
 - Firebase Auth
+- Conveyor for Desktop App Distribution
+
+# Download
+The desktop app is available for download on the [Download Section](https://felix-leyva.github.io/gradingscale2/download)
