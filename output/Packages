@@ -1,0 +1,14 @@
+Architecture: amd64
+Built-With: Hydraulic Conveyor
+Depends: libasound2t64 | liboss4-salsa-asound2, libc6, libfontconfig1, libfreetype6, libgcc-s1, libgl1, libstdc++6, libx11-6, libxext6, libxi6, libxrender1, libxtst6, zlib1g
+Description: Grading Scale App
+Installed-Size: 150183
+Maintainer: felixlf.de <nobody@nowhere>
+Package: felixlfde-grading-scale
+Priority: optional
+Provides: felixlfde-grading-scale
+Section: misc
+Version: 1.0
+Filename: felixlfde-grading-scale_1.0_amd64.deb
+Size: 73768148
+SHA256: b9e697e82707c9689c440694119a8d9811be17442065320bd76776c08f69a2a3

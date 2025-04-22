@@ -1,0 +1,18 @@
+Architectures: amd64
+Components: main
+Date: Tue, 22 Apr 2025 08:03:47 GMT
+Description: Public archive for Grading Scale App
+Origin: Grading Scale App
+Suite: stable
+MD5Sum:
+ 76f24df0de519568d71674811258fabf               568 Packages
+ 444800c4d75fc01da509d401df78e295               444 Packages.xz
+SHA1:
+ 72587de86d86d4772fdc88ae07e255d441ce709d               568 Packages
+ ca0e19fbe4a532ae1242939ca7fe7acdb3808f49               444 Packages.xz
+SHA256:
+ 5cbde974053fc9b808659a2236ff26909e377b92ee1d917126a071eb5899ea6b               568 Packages
+ 7d928206d26a0e498b77858ba48de65e891902c3c8effe49839ecd1c4e004f3a               444 Packages.xz
+SHA512:
+ 8e4c5ac5803fbe6378bbc4937d376975eb0b60a87a01d1daa10a65fc54470a4892f0ce044be89181350c034ce8ea659141ed9438d0052310d3a5d261b41b4818               568 Packages
+ 3c7418f945529fe1555fc9617d23a4f01867deba0c06173974a7ad0377ca59b9cc142c9108d4abc6f446d2e53c4a07e1a66c7c0373bae7c463b977b19499402f               444 Packages.xz
