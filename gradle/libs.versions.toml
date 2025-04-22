@@ -57,6 +57,7 @@ firebaseCrashlyticsBuildtools = "3.0.3"
 foundationAndroid = "1.7.8"
 coreKtx = "1.16.0"
 
+conveyorVersion = "1.12"
 
 [libraries]
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
@@ -167,3 +168,4 @@ sonarqube = { id = "org.sonarqube", version.ref = "sonarqubeGradlePlugin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightPlugin" }
 hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-reload" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-compiler" }
+conveyor = { id = "dev.hydraulic.conveyor", version.ref = "conveyorVersion" }

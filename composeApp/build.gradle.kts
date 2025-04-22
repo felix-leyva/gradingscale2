@@ -29,9 +29,11 @@ plugins {
     )
     // We add here alias, due that we do not add this buildSrc, as the Kotlin version would be enforced also there to 2.1
     alias(libs2.plugins.hot.reload)
+    alias(libs2.plugins.conveyor)
 }
 
 kotlin {
+    version = "1.0"
     // Configure JS target with more conservative options
     js(IR) {
         outputModuleName = "composeApp"
@@ -175,17 +177,20 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "Grading Scale"
+            packageName = "grading-scale"
             packageVersion = "1.0.0"
-            modules("java.sql", "java.management")
+            modules("java.instrument", "java.management", "java.sql", "jdk.unsupported")
 
             macOS {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.icns"))
                 bundleID = "de.felixlf.gradingscale2"
                 packageName = "Grading Scale"
+                appStore = true
+                appCategory = "public.app-category.utilities"
             }
             windows {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.ico"))
+                perUserInstall = true
             }
             linux {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.png"))
@@ -242,6 +247,20 @@ tasks.register("checkAndCreateIosGoogleServices") {
 tasks.named("preBuild") {
     dependsOn("checkAndCreateGoogleServices", "checkAndCreateIosGoogleServices")
 }
+
 dependencies {
     ksp(libs2.arrow.optics.ksp.plugin)
+    // Use the configurations created by the Conveyor plugin to tell Gradle/Conveyor where to find the artifacts for each platform.
+    linuxAmd64(compose.desktop.linux_x64)
+    macAmd64(compose.desktop.macos_x64)
+    macAarch64(compose.desktop.macos_arm64)
+    windowsAmd64(compose.desktop.windows_x64)
+}
+
+// Work around https://conveyor.hydraulic.dev/17.0/tutorial/tortoise/2-gradle/#adapting-a-compose-multiplatform-app
+configurations.all {
+    attributes {
+        // https://github.com/JetBrains/compose-jb/issues/1404#issuecomment-1146894731
+        attribute(Attribute.of("ui", String::class.java), "awt")
+    }
 }
