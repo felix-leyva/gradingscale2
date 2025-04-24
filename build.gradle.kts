@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
 
-// jacocoBaseConfig()
 sonarQubeBaseConfig()
 plugins {
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
