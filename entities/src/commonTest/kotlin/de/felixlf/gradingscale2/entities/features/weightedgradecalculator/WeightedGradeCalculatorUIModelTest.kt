@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 
+import arrow.core.Option
 import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
@@ -122,6 +123,8 @@ class WeightedGradeCalculatorUIModelTest {
             getAllWeightedGradesUseCase = getAllWeightedGradesUseCase,
             upsertWeightedGradeUseCase = upsertWeightedGradeUseCase,
             deleteWeightedGradeUseCase = deleteWeightedGradeUseCase,
+            getLastSelectedGradeScaleIdUseCase = { null },
+            setLastSelectedGradeScaleIdUseCase = { Option(Unit) },
         )
     }
 

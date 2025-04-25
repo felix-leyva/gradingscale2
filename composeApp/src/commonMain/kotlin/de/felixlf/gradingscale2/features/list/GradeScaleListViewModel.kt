@@ -1,12 +1,15 @@
 package de.felixlf.gradingscale2.features.list
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import de.felixlf.gradingscale2.entities.features.list.GradeListUIModel
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIState
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
 import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
 
@@ -31,11 +34,16 @@ internal class GradeScaleListViewModel(
     dispatcherProvider: DispatcherProvider,
     allGradeScalesUseCase: GetAllGradeScalesUseCase,
     getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
+    getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleId,
+    setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleId,
 ) : ViewModel(dispatcherProvider.newUIScope()), MoleculeViewModelHelper<GradeScaleListUIState, GradeScaleListUIEvent> {
 
     override val factory = GradeListUIModel(
+        scope = viewModelScope,
         allGradeScalesUseCase = allGradeScalesUseCase,
         getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
+        getLastSelectedGradeScaleIdUseCase = getLastSelectedGradeScaleIdUseCase,
+        setLastSelectedGradeScaleIdUseCase = setLastSelectedGradeScaleIdUseCase,
     )
 
     override val uiState = moleculeState()

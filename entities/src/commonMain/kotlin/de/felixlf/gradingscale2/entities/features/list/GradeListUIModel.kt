@@ -1,6 +1,7 @@
 package de.felixlf.gradingscale2.entities.features.list
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -9,15 +10,22 @@ import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.Set
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * This class is responsible for managing the UI state of the grade scale list screen.
  */
 class GradeListUIModel(
+    private val scope: CoroutineScope,
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
+    private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleId,
+    private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleId,
 ) : MoleculePresenter<GradeScaleListUIState, GradeScaleListUIEvent> {
 
     // MutableStateOf causes inside the produceUI function recomposition which is helpful to update the State. If we wish to "observe" this
@@ -30,6 +38,7 @@ class GradeListUIModel(
 
     @Composable
     override fun produceUI(): GradeScaleListUIState {
+        LaunchedEffect(Unit) { getLastSelectedGradeScaleIdUseCase()?.let { gradeScaleId = it } }
         val selectedGradeScale = gradeScaleId?.let { getGradeScaleByIdUseCase(it).asState(null) }
         val modifiedGradeScale = selectedGradeScale?.copy(totalPoints = totalPoints)
         val gradeScalesNamesWithId = allGradeScalesUseCase().asState(persistentListOf()).map {
@@ -47,9 +56,10 @@ class GradeListUIModel(
 
     override fun sendCommand(command: GradeScaleListUIEvent) {
         when (command) {
-            is SelectGradeScale ->
-                gradeScaleId =
-                    state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == command.gradeScaleName }?.gradeScaleId
+            is SelectGradeScale -> {
+                gradeScaleId = state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == command.gradeScaleName }?.gradeScaleId
+                scope.launch { gradeScaleId?.let { setLastSelectedGradeScaleIdUseCase(it) } }
+            }
 
             is SetTotalPoints -> {
                 if (command.points <= 0) return
@@ -66,29 +76,3 @@ sealed interface GradeScaleListUIEvent {
     data class SelectGradeScaleById(val gradeScaleId: String) : GradeScaleListUIEvent
     data class SetTotalPoints(val points: Double) : GradeScaleListUIEvent
 }
-
-// The following code is the original code from the project, which was optimized using Molecule.
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    val uiState =
-//        selectedGradeScaleId
-//            .flatMapLatest { id ->
-//                id?.let { getGradeScaleByIdUseCase(it) } ?: flowOf(null)
-//            }.combine(totalPoints) { gradeScale, totalPoints ->
-//                gradeScale?.copy(totalPoints = totalPoints)
-//            }.combine(getAllGradeScalesUseCase()) { selectedGradeScale, gradeScales ->
-//                GradeScaleListUIState(
-//                    selectedGradeScale = selectedGradeScale,
-//                    gradeScalesNamesWithId =
-//                        gradeScales
-//                            .map {
-//                                GradeScaleNameWithId(
-//                                    gradeScaleName = it.gradeScaleName,
-//                                    gradeScaleId = it.id,
-//                                )
-//                            }.toImmutableList(),
-//                )
-//            }.stateIn(
-//                scope = viewModelScope,
-//                started = SharingStarted.WhileSubscribed(5000),
-//                initialValue = GradeScaleListUIState.Initial,
-//            )
