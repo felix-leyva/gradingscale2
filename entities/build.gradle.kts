@@ -3,6 +3,7 @@ plugins {
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
     id(libs2.plugins.compose.compiler.get().pluginId)
     id(libs2.plugins.jetbrainsCompose.get().pluginId)
+    id(libs2.plugins.gmazzoBuildConfig.get().pluginId)
 }
 
 kotlin {
@@ -40,4 +41,14 @@ android {
 }
 dependencies {
     testImplementation(project(":entities"))
+}
+
+buildConfig {
+    className("BuildConfigs")
+    val packageName = libs2.versions.applicationId.get()
+    useKotlinOutput { internalVisibility = false }
+    packageName(packageName)
+    buildConfigField("String", "PACKAGE_NAME", "\"$packageName\"")
+    buildConfigField("String", "VERSION_CODE", "\"${libs2.versions.versionCode.get()}\"")
+    buildConfigField("String", "ORGANIZATION", "\"${libs2.versions.organization.get()}\"")
 }

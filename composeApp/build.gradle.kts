@@ -136,6 +136,7 @@ kotlin {
             implementation(project(":data:authFirebase"))
             implementation(project(":data:network"))
             implementation(project(":data:persistance:db"))
+            implementation(project(":data:persistance:sharedprefs"))
         }
 
         commonTest.dependencies {

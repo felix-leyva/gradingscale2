@@ -15,6 +15,7 @@ import de.felixlf.gradingscale2.features.weightedgradecalculator.dialogs.Weighte
 import de.felixlf.gradingscale2.navigation.AppNavController
 import de.felixlf.gradingscale2.navigation.AppNavControllerImpl
 import de.felixlf.gradingscale2.network.di.networkModule
+import de.felixlf.gradingscale2.sharedprefs.preferencesModule
 import de.felixlf.gradingscale2.usecases.ShowSnackbarUseCaseImpl
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -26,6 +27,7 @@ val mainModule = module {
         dbModule,
         networkModule,
         entitiesModule,
+        preferencesModule,
     )
 
     viewModelOf(::GradeScaleListViewModel)

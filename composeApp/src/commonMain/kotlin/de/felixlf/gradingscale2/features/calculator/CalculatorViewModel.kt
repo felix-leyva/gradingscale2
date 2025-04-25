@@ -1,12 +1,15 @@
 package de.felixlf.gradingscale2.features.calculator
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIEvent
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIModel
 import de.felixlf.gradingscale2.entities.features.calculator.GradeScaleCalculatorUIState
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
 import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
 
 /**
@@ -29,11 +32,16 @@ import de.felixlf.gradingscale2.uimodel.MoleculeViewModelHelper
 internal class CalculatorViewModel(
     allGradeScalesUseCase: GetAllGradeScalesUseCase,
     getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
+    getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleId,
+    setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleId,
 ) : ViewModel(), MoleculeViewModelHelper<GradeScaleCalculatorUIState, CalculatorUIEvent> {
 
     override val factory = CalculatorUIModel(
+        scope = viewModelScope,
         allGradeScalesUseCase = allGradeScalesUseCase,
         getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
+        getLastSelectedGradeScaleIdUseCase = getLastSelectedGradeScaleIdUseCase,
+        setLastSelectedGradeScaleIdUseCase = setLastSelectedGradeScaleIdUseCase,
     )
 
     override val uiState = moleculeState()
