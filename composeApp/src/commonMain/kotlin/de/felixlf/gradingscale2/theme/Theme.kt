@@ -7,7 +7,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.material3.ColorScheme
 
 private val lightScheme = lightColorScheme(
     primary = primaryLight,
@@ -258,10 +257,10 @@ fun AppTheme(
     dynamicColor: Boolean = true,
     highContrastMode: Boolean = false,
     mediumContrastMode: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val dynamicColorScheme = getDynamicColorScheme(darkTheme)
-    
+
     val colorScheme = when {
         dynamicColor && dynamicColorScheme != null -> dynamicColorScheme
         darkTheme && highContrastMode -> highContrastDarkColorScheme
@@ -275,6 +274,6 @@ fun AppTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = AppTypography,
-        content = content
+        content = content,
     )
 }

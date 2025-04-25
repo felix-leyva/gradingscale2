@@ -2,20 +2,23 @@ package de.felixlf.gradingscale2.entities.util
 
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 /**
- * Comfort class to generate a grade scale with a given size.
+ * Comfort class to generate a grade scale with a given size. This should only be used for Compose previews generation and testing.
+ * @param size The size of the grade scale.
  */
 class MockGradeScalesGenerator(
     val size: Int = 20,
-) {
-    private val range = 0..size
-    val percentages = range.map { it.toDouble() / size }
-    val gradeNames = range.map { Char('A'.code + it) }.reversed()
-    val gradeScaleNames = listOf("Hamburg", "Berlin", "Munich")
-
-    val gradeScales =
+) : GradeScaleGenerator {
+    val gradeScaleNames: PersistentList<String> = persistentListOf("Hamburg", "Berlin", "Munich")
+    val gradeScales: ImmutableList<GradeScale> = run {
+        val range = 0..size
+        val percentages = range.map { it.toDouble() / size }
+        val gradeNames = range.map { Char('A'.code + it) }.reversed()
         gradeScaleNames
             .mapIndexed { scaleIndex, gradeScaleName ->
                 GradeScale(
@@ -35,4 +38,7 @@ class MockGradeScalesGenerator(
                         }.toImmutableList(),
                 )
             }.toImmutableList()
+    }
+
+    override suspend fun getGradeScales(): List<GradeScale> = gradeScales
 }

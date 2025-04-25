@@ -45,7 +45,8 @@ import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.util.DispatcherProvider
-import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.entities.util.GradeScaleGenerator
+import de.felixlf.gradingscale2.entities.util.ResourceGradeScaleGenerator
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -53,7 +54,7 @@ import org.koin.dsl.module
 
 val entitiesModule =
     module {
-        single { MockGradeScalesGenerator() }
+        singleOf(::ResourceGradeScaleGenerator).bind<GradeScaleGenerator>()
         single<GradeScaleRepository> { GradeScaleRepositoryImpl(get()) }
         single<GradesRepository> { GradesRepositoryImpl(get()) }
         single<RemoteSyncRepository> { RemoteSyncRepositoryImpl(get()) }

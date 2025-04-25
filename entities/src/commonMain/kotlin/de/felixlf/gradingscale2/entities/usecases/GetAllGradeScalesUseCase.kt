@@ -2,7 +2,7 @@ package de.felixlf.gradingscale2.entities.usecases
 
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepository
-import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.entities.util.GradeScaleGenerator
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -14,13 +14,13 @@ fun interface GetAllGradeScalesUseCase {
 
 internal class GetAllGradeScalesUseCaseImpl(
     private val gradeScaleRepository: GradeScaleRepository,
-    private val generator: MockGradeScalesGenerator,
+    private val generator: GradeScaleGenerator,
 ) : GetAllGradeScalesUseCase {
     override fun invoke(): Flow<ImmutableList<GradeScale>> =
         gradeScaleRepository.getGradeScales()
             .onStart {
                 if (gradeScaleRepository.getGradeScales().first().isEmpty()) {
-                    generator.gradeScales.forEach { gradeScaleRepository.upsertGradeScale(it) }
+                    generator.getGradeScales().forEach { gradeScaleRepository.upsertGradeScale(it) }
                 }
             }
 }

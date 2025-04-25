@@ -1,0 +1,694 @@
+[
+    {
+        "country": "Germany",
+        "gradeScaleName": "Grundschule",
+        "grades": [
+            {
+                "namedGrade": "1",
+                "percentage": 0.92
+            },
+            {
+                "namedGrade": "2",
+                "percentage": 0.81
+            },
+            {
+                "namedGrade": "3",
+                "percentage": 0.67
+            },
+            {
+                "namedGrade": "4",
+                "percentage": 0.5
+            },
+            {
+                "namedGrade": "5",
+                "percentage": 0.23
+            },
+            {
+                "namedGrade": "6",
+                "percentage": 0.01
+            }
+        ]
+    },
+    {
+        "country": "Germany",
+        "gradeScaleName": "KMK-Standard Oberstufe und Abiturprüfungen",
+        "grades": [
+            {
+                "namedGrade": "15 (1+)",
+                "percentage": 0.95
+            },
+            {
+                "namedGrade": "14 (1)",
+                "percentage": 0.90
+            },
+            {
+                "namedGrade": "13 (1-)",
+                "percentage": 0.85
+            },
+            {
+                "namedGrade": "12 (2+)",
+                "percentage": 0.8
+            },
+            {
+                "namedGrade": "11 (2)",
+                "percentage": 0.75
+            },
+            {
+                "namedGrade": "10 (2-)",
+                "percentage": 0.7
+            },
+            {
+                "namedGrade": "9 (3+)",
+                "percentage": 0.65
+            },
+            {
+                "namedGrade": "8 (3)",
+                "percentage": 0.6
+            },
+            {
+                "namedGrade": "7 (3-)",
+                "percentage": 0.55
+            },
+            {
+                "namedGrade": "6 (4+)",
+                "percentage": 0.5
+            },
+            {
+                "namedGrade": "5 (4)",
+                "percentage": 0.45
+            },
+            {
+                "namedGrade": "4 (4-)",
+                "percentage": 0.4
+            },
+            {
+                "namedGrade": "3 (5+)",
+                "percentage": 0.33
+            },
+            {
+                "namedGrade": "2 (5)",
+                "percentage": 0.27
+            },
+            {
+                "namedGrade": "1 (5-)",
+                "percentage": 0.20
+            },
+            {
+                "namedGrade": "0 (6)",
+                "percentage": 0.01
+            }
+        ]
+    },
+    {
+        "country": "Germany",
+        "gradeScaleName": "IHK",
+        "grades": [
+            {
+                "namedGrade": "1,0",
+                "percentage": 1.0
+            },
+            {
+                "namedGrade": "1,1",
+                "percentage": 0.98
+            },
+            {
+                "namedGrade": "1,2",
+                "percentage": 0.96
+            },
+            {
+                "namedGrade": "1,3",
+                "percentage": 0.94
+            },
+            {
+                "namedGrade": "1,4",
+                "percentage": 0.92
+            },
+            {
+                "namedGrade": "1,5",
+                "percentage": 0.91
+            },
+            {
+                "namedGrade": "1,6",
+                "percentage": 0.9
+            },
+            {
+                "namedGrade": "1,7",
+                "percentage": 0.89
+            },
+            {
+                "namedGrade": "1,8",
+                "percentage": 0.88
+            },
+            {
+                "namedGrade": "1,9",
+                "percentage": 0.87
+            },
+            {
+                "namedGrade": "2,0",
+                "percentage": 0.85
+            },
+            {
+                "namedGrade": "2,1",
+                "percentage": 0.84
+            },
+            {
+                "namedGrade": "2,2",
+                "percentage": 0.83
+            },
+            {
+                "namedGrade": "2,3",
+                "percentage": 0.82
+            },
+            {
+                "namedGrade": "2,4",
+                "percentage": 0.81
+            },
+            {
+                "namedGrade": "2,5",
+                "percentage": 0.8
+            },
+            {
+                "namedGrade": "2,6",
+                "percentage": 0.79
+            },
+            {
+                "namedGrade": "2,7",
+                "percentage": 0.77
+            },
+            {
+                "namedGrade": "2,8",
+                "percentage": 0.76
+            },
+            {
+                "namedGrade": "2,9",
+                "percentage": 0.74
+            },
+            {
+                "namedGrade": "3,0",
+                "percentage": 0.73
+            },
+            {
+                "namedGrade": "3,1",
+                "percentage": 0.71
+            },
+            {
+                "namedGrade": "3,2",
+                "percentage": 0.7
+            },
+            {
+                "namedGrade": "3,3",
+                "percentage": 0.68
+            },
+            {
+                "namedGrade": "3,4",
+                "percentage": 0.67
+            },
+            {
+                "namedGrade": "3,5",
+                "percentage": 0.66
+            },
+            {
+                "namedGrade": "3,6",
+                "percentage": 0.64
+            },
+            {
+                "namedGrade": "3,7",
+                "percentage": 0.62
+            },
+            {
+                "namedGrade": "3,8",
+                "percentage": 0.61
+            },
+            {
+                "namedGrade": "3,9",
+                "percentage": 0.59
+            },
+            {
+                "namedGrade": "4,0",
+                "percentage": 0.57
+            },
+            {
+                "namedGrade": "4,1",
+                "percentage": 0.55
+            },
+            {
+                "namedGrade": "4,2",
+                "percentage": 0.54
+            },
+            {
+                "namedGrade": "4,3",
+                "percentage": 0.52
+            },
+            {
+                "namedGrade": "4,4",
+                "percentage": 0.5
+            },
+            {
+                "namedGrade": "4,5",
+                "percentage": 0.49
+            },
+            {
+                "namedGrade": "4,6",
+                "percentage": 0.47
+            },
+            {
+                "namedGrade": "4,7",
+                "percentage": 0.45
+            },
+            {
+                "namedGrade": "4,8",
+                "percentage": 0.43
+            },
+            {
+                "namedGrade": "4,9",
+                "percentage": 0.41
+            },
+            {
+                "namedGrade": "5,0",
+                "percentage": 0.38
+            },
+            {
+                "namedGrade": "5,1",
+                "percentage": 0.36
+            },
+            {
+                "namedGrade": "5,2",
+                "percentage": 0.34
+            },
+            {
+                "namedGrade": "5,3",
+                "percentage": 0.32
+            },
+            {
+                "namedGrade": "5,4",
+                "percentage": 0.3
+            },
+            {
+                "namedGrade": "5,5",
+                "percentage": 0.29
+            },
+            {
+                "namedGrade": "5,6",
+                "percentage": 0.23
+            },
+            {
+                "namedGrade": "5,7",
+                "percentage": 0.17
+            },
+            {
+                "namedGrade": "5,8",
+                "percentage": 0.12
+            },
+            {
+                "namedGrade": "5,9",
+                "percentage": 0.06
+            },
+            {
+                "namedGrade": "6.0",
+                "percentage": 0.05
+            }
+        ]
+    },
+    {
+        "country": "Germany",
+        "gradeScaleName": "Niedersachsen Französisch und Spanisch",
+        "grades": [
+            {
+                "namedGrade": "1",
+                "percentage": 0.875
+            },
+            {
+                "namedGrade": "2",
+                "percentage": 0.75
+            },
+            {
+                "namedGrade": "3",
+                "percentage": 0.625
+            },
+            {
+                "namedGrade": "4",
+                "percentage": 0.5
+            },
+            {
+                "namedGrade": "5",
+                "percentage": 0.25
+            },
+            {
+                "namedGrade": "6",
+                "percentage": 0.0
+            }
+        ]
+    },
+    {
+        "country": "Germany",
+        "gradeScaleName": "Hamburg STS7-STS10",
+        "grades": [
+            {
+                "namedGrade": "E1+",
+                "percentage": 0.98
+            },
+            {
+                "namedGrade": "E1",
+                "percentage": 0.94
+            },
+            {
+                "namedGrade": "E1-",
+                "percentage": 0.9
+            },
+            {
+                "namedGrade": "E2+",
+                "percentage": 0.87
+            },
+            {
+                "namedGrade": "E2",
+                "percentage": 0.84
+            },
+            {
+                "namedGrade": "E2-",
+                "percentage": 0.8
+            },
+            {
+                "namedGrade": "E3+",
+                "percentage": 0.75
+            },
+            {
+                "namedGrade": "E3",
+                "percentage": 0.7
+            },
+            {
+                "namedGrade": "E3-",
+                "percentage": 0.65
+            },
+            {
+                "namedGrade": "E4+",
+                "percentage": 0.6
+            },
+            {
+                "namedGrade": "E4",
+                "percentage": 0.5
+            },
+            {
+                "namedGrade": "E4-",
+                "percentage": 0.49
+            },
+            {
+                "namedGrade": "G2+",
+                "percentage": 0.48
+            },
+            {
+                "namedGrade": "G2-",
+                "percentage": 0.45
+            },
+            {
+                "namedGrade": "G3+",
+                "percentage": 0.42
+            },
+            {
+                "namedGrade": "G3",
+                "percentage": 0.4
+            },
+            {
+                "namedGrade": "G3-",
+                "percentage": 0.37
+            },
+            {
+                "namedGrade": "G4+",
+                "percentage": 0.35
+            },
+            {
+                "namedGrade": "G4",
+                "percentage": 0.32
+            },
+            {
+                "namedGrade": "G4-",
+                "percentage": 0.29
+            },
+            {
+                "namedGrade": "G5+",
+                "percentage": 0.23
+            },
+            {
+                "namedGrade": "G5",
+                "percentage": 0.17
+            },
+            {
+                "namedGrade": "G5-",
+                "percentage": 0.12
+            },
+            {
+                "namedGrade": "G6",
+                "percentage": 0.11
+            }
+        ]
+    },
+    {
+        "country": "Germany",
+        "gradeScaleName": "Hamburg Abitur - Mathe, Chemie, Physik, Biologie, Informatik",
+        "grades": [
+            {
+                "namedGrade": "15 (1+)",
+                "percentage": 0.95
+            },
+            {
+                "namedGrade": "14 (1)",
+                "percentage": 0.90
+            },
+            {
+                "namedGrade": "13 (1-)",
+                "percentage": 0.85
+            },
+            {
+                "namedGrade": "12 (2+)",
+                "percentage": 0.8
+            },
+            {
+                "namedGrade": "11 (2)",
+                "percentage": 0.75
+            },
+            {
+                "namedGrade": "10 (2-)",
+                "percentage": 0.7
+            },
+            {
+                "namedGrade": "9 (3+)",
+                "percentage": 0.65
+            },
+            {
+                "namedGrade": "8 (3)",
+                "percentage": 0.6
+            },
+            {
+                "namedGrade": "7 (3-)",
+                "percentage": 0.55
+            },
+            {
+                "namedGrade": "6 (4+)",
+                "percentage": 0.5
+            },
+            {
+                "namedGrade": "5 (4)",
+                "percentage": 0.45
+            },
+            {
+                "namedGrade": "4 (4-)",
+                "percentage": 0.4
+            },
+            {
+                "namedGrade": "3 (5+)",
+                "percentage": 0.33
+            },
+            {
+                "namedGrade": "2 (5)",
+                "percentage": 0.26
+            },
+            {
+                "namedGrade": "1 (5-)",
+                "percentage": 0.19
+            },
+            {
+                "namedGrade": "0 (6)",
+                "percentage": 0.18
+            }
+        ]
+    },
+    {
+        "country": "USA",
+        "gradeScaleName": "Letter Grades - Public High Schools 2009",
+        "grades": [
+            {
+                "namedGrade": "A",
+                "percentage": 0.9
+            },
+            {
+                "namedGrade": "B",
+                "percentage": 0.8
+            },
+            {
+                "namedGrade": "C",
+                "percentage": 0.7
+            },
+            {
+                "namedGrade": "D",
+                "percentage": 0.6
+            },
+            {
+                "namedGrade": "F",
+                "percentage": 0.5
+            }
+        ]
+    },
+    {
+        "country": "USA",
+        "gradeScaleName": "Letter Grades - Collegues (non universal)",
+        "grades": [
+            {
+                "namedGrade": "A+",
+                "percentage": 0.97
+            },
+            {
+                "namedGrade": "A",
+                "percentage": 0.93
+            },
+            {
+                "namedGrade": "A-",
+                "percentage": 0.9
+            },
+            {
+                "namedGrade": "B+",
+                "percentage": 0.87
+            },
+            {
+                "namedGrade": "B",
+                "percentage": 0.83
+            },
+            {
+                "namedGrade": "B-",
+                "percentage": 0.8
+            },
+            {
+                "namedGrade": "C+",
+                "percentage": 0.77
+            },
+            {
+                "namedGrade": "C",
+                "percentage": 0.73
+            },
+            {
+                "namedGrade": "C-",
+                "percentage": 0.7
+            },
+            {
+                "namedGrade": "D+",
+                "percentage": 0.67
+            },
+            {
+                "namedGrade": "D",
+                "percentage": 0.63
+            },
+            {
+                "namedGrade": "D-",
+                "percentage": 0.6
+            },
+            {
+                "namedGrade": "F",
+                "percentage": 0.01
+            }
+        ]
+    },
+    {
+        "country": "International",
+        "gradeScaleName": "10 to 0",
+        "grades": [
+            {
+                "namedGrade": "10",
+                "percentage": 1.0
+            },
+            {
+                "namedGrade": "9",
+                "percentage": 0.9
+            },
+            {
+                "namedGrade": "8",
+                "percentage": 0.8
+            },
+            {
+                "namedGrade": "7",
+                "percentage": 0.7
+            },
+            {
+                "namedGrade": "6",
+                "percentage": 0.6
+            },
+            {
+                "namedGrade": "5",
+                "percentage": 0.5
+            },
+            {
+                "namedGrade": "4",
+                "percentage": 0.4
+            },
+            {
+                "namedGrade": "3",
+                "percentage": 0.3
+            },
+            {
+                "namedGrade": "2",
+                "percentage": 0.2
+            },
+            {
+                "namedGrade": "1",
+                "percentage": 0.1
+            },
+            {
+                "namedGrade": "0",
+                "percentage": 0.0
+            }
+        ]
+    },
+    {
+        "country": "Mexico",
+        "gradeScaleName": "SEP",
+        "grades": [
+            {
+                "namedGrade": "10 - IV (Sobresaliente)",
+                "percentage": 1.0
+            },
+            {
+                "namedGrade": "9 - III (Satisfactorio)",
+                "percentage": 0.9
+            },
+            {
+                "namedGrade": "8 - III (Satisfactorio)",
+                "percentage": 0.8
+            },
+            {
+                "namedGrade": "7 - II (Básico)",
+                "percentage": 0.7
+            },
+            {
+                "namedGrade": "6 - II (Básico)",
+                "percentage": 0.6
+            },
+            {
+                "namedGrade": "5 - I (Insuficiente)",
+                "percentage": 0.5
+            },
+            {
+                "namedGrade": "4 - I (Insuficiente)",
+                "percentage": 0.4
+            },
+            {
+                "namedGrade": "3 - I (Insuficiente)",
+                "percentage": 0.3
+            },
+            {
+                "namedGrade": "2 - I (Insuficiente)",
+                "percentage": 0.2
+            },
+            {
+                "namedGrade": "1 - I (Insuficiente)",
+                "percentage": 0.1
+            }
+        ]
+    }
+]

@@ -1,12 +1,12 @@
 [**/generated/**/*]
-ktlint = disabled
+ktlint = enabled
 
 [*]
 charset = utf-8
 indent_size = 4
 indent_style = space
 insert_final_newline = true
-max_line_length = 100
+max_line_length = 140
 tab_width = 4
 ij_continuation_indent_size = 8
 
@@ -17,7 +17,6 @@ ktlint_code_style = android_studio
 ktlint_standard_discouraged-comment-location=disabled
 ktlint_ignore_back_ticked_identifier = true
 
-max_line_length = 140
 ij_kotlin_align_in_columns_case_branch = false
 ij_kotlin_align_multiline_binary_operation = false
 ij_kotlin_align_multiline_extends_list = false
