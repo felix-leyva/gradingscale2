@@ -1,9 +1,10 @@
 @file:Suppress("UnstableApiUsage")
-@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class, ExperimentalWasmDsl::class)
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
@@ -38,12 +39,15 @@ kotlin {
     js(IR) {
         outputModuleName = "composeApp"
         browser {
+            val rootDirPath = project.rootDir.path
+            val projectDirPath = project.projectDir.path
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
                 // Simplified webpack config to avoid potential conflicts
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
-                        add(project.projectDir.path)
+                        add(rootDirPath)
+                        add(projectDirPath)
                     }
                 }
             }
@@ -61,12 +65,15 @@ kotlin {
 //    wasmJs {
 //        moduleName = "composeApp"
 //        browser {
+//            val rootDirPath = project.rootDir.path
+//            val projectDirPath = project.projectDir.path
 //            commonWebpackConfig {
 //                outputFileName = "composeApp.js"
 //                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
 //                    static = (static ?: mutableListOf()).apply {
 //                        // Serve sources to debug inside browser
-//                        add(project.projectDir.path)
+//                        add(rootDirPath)
+//                        add(projectDirPath)
 //                    }
 //                }
 //            }
@@ -104,7 +111,6 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs2.androidx.activity.compose)
-            implementation(libs2.ktor.client.okhttp)
             implementation(libs2.koin.android)
         }
 
@@ -150,12 +156,9 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs2.kotlinx.coroutines.swing)
-            implementation(libs2.ktor.client.okhttp)
         }
 
-        iosMain.dependencies {
-            implementation(libs2.ktor.client.darwin)
-        }
+
     }
 }
 android {

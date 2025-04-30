@@ -43,7 +43,8 @@ kotlin {
         }
 
         jsMain.dependencies {
-            implementation(devNpm("copy-webpack-plugin", "9.1.0"))
+            implementation(npm("webpack", "5.94.0"))
+            implementation(npm("copy-webpack-plugin", "9.1.0"))
             implementation(libs2.kstore)
             implementation(libs2.kstore.storage)
         }

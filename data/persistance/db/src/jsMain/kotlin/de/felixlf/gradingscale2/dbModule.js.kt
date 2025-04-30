@@ -6,7 +6,6 @@ import de.felixlf.gradingscale2.daosimpl.GradeScaleDaoStoreImpl
 import de.felixlf.gradingscale2.daosimpl.GradesDaoStoreImpl
 import de.felixlf.gradingscale2.entities.daos.GradeScaleDao
 import de.felixlf.gradingscale2.entities.daos.GradesDao
-import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.store.GradeScaleStoreProvider
 import de.felixlf.gradingscale2.store.GradeScalesStore
 import io.github.xxfast.kstore.storage.storeOf
@@ -20,7 +19,7 @@ internal actual fun getDbPlatformModule(): Module =
     module {
         val gradeScaleStorage: GradeScalesStore = storeOf(
             key = GRADE_SCALES_KEY,
-            default = persistentListOf<GradeScale>(),
+            default = persistentListOf(),
         )
         single { GradeScaleStoreProvider(gradeScalesStore = gradeScaleStorage) }
         singleOf(::GradeScaleDaoStoreImpl).bind<GradeScaleDao>()

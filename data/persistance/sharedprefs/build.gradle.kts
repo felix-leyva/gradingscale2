@@ -4,6 +4,17 @@ plugins {
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
 }
 kotlin {
+    js {
+        outputModuleName = "sharedprefs"
+        browser {
+            testTask {
+                onlyIf { !System.getenv().containsKey("CI") }
+                useKarma {
+                    useFirefox()
+                }
+            }
+        }
+    }
     sourceSets {
         commonMain.dependencies {
             implementation(project(":entities"))

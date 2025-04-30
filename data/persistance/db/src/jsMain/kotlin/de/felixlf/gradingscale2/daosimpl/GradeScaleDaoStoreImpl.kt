@@ -24,12 +24,12 @@ internal class GradeScaleDaoStoreImpl(private val gradeScaleStoreProvider: Grade
     override suspend fun upsertGradeScale(gradeScale: GradeScale): Option<Unit> = option {
         gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
             gradeScales?.map { if (it.id == gradeScale.id) gradeScale else it }?.toImmutableList()
-        }
+        }.bind()
     }
 
     override suspend fun deleteGradeScale(gradeScaleId: String): Option<Unit> = option {
         gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
             gradeScales?.filterNot { it.id == gradeScaleId }?.toImmutableList()
-        }
+        }.bind()
     }
 }

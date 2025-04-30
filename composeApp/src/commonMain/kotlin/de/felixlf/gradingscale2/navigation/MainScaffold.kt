@@ -31,7 +31,9 @@ import org.koin.core.parameter.parametersOf
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MainScaffold() {
+    // Create a NavController - our PlatformNavHost will handle ViewModelStore setup
     val navController = rememberNavController()
+
     val appNavController: AppNavController = koinInject { parametersOf(navController) }
     val currentDestination = appNavController.controller.currentBackStackEntryAsState()
 

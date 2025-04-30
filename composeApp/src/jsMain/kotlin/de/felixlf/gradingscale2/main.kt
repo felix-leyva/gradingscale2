@@ -4,19 +4,22 @@ package de.felixlf.gradingscale2
 
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.window.CanvasBasedWindow
-import androidx.compose.ui.window.ComposeViewport
 import de.felixlf.gradingscale2.di.koinSetup
-import kotlinx.browser.document
 import org.koin.compose.KoinContext
 
+/**
+ * Main entry point for the application
+ * Uses CanvasBasedWindow for rendering with Skiko
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
+    // Initialize Koin
     koinSetup()
+
+    // Use CanvasBasedWindow which requires skiko.js to be loaded
     CanvasBasedWindow(canvasElementId = "ComposeTarget") {
-        ComposeViewport(document.body!!) {
-            KoinContext {
-                App()
-            }
+        KoinContext {
+            App()
         }
     }
 }
