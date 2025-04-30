@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.features.list
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -106,7 +107,6 @@ private fun GradeScaleListScreen(
     ) {
         Row(
             modifier = Modifier.padding(8.dp),
-            // verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -118,14 +118,14 @@ private fun GradeScaleListScreen(
                     elements = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
                     selectedElement = uiState.selectedGradeScale?.gradeScaleName,
                     onSelectElement = onSelectGradeScale,
-                    modifier = Modifier.weight(0.5f),
+                    modifier = Modifier.weight(0.7f),
                     label = stringResource(Res.string.gradescale_list_select_grade_scale),
                 )
 
                 if (gradeScale != null) {
                     Spacer(modifier = Modifier.width(8.dp))
                     CalculatorTextField(
-                        modifier = Modifier.weight(0.5f),
+                        modifier = Modifier.weight(0.3f).height(IntrinsicSize.Max),
                         state = textFieldValue,
                         textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
                         label = stringResource(Res.string.gradescale_list_total_points),
@@ -152,7 +152,7 @@ private fun GradeScaleListScreen(
                         .height(16.dp)
                         .fillMaxWidth(),
 
-                )
+                    )
             }
             itemsIndexed(gradeScale.sortedPointedGrades) { _, grade ->
                 Column(

@@ -6,6 +6,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.MenuDefaults
@@ -60,6 +61,7 @@ internal fun DropboxSelector(
             modifier = Modifier,
             expanded = expandedDropdown,
             onDismissRequest = { expandedDropdown = false },
+            matchTextFieldWidth = false,
         ) {
             elements.forEach { string ->
                 DropdownMenuItem(
@@ -72,6 +74,7 @@ internal fun DropboxSelector(
                     },
                     colors = MenuDefaults.itemColors(),
                 )
+                HorizontalDivider()
             }
         }
     }
