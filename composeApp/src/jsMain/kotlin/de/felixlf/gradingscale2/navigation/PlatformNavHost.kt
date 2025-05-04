@@ -20,7 +20,7 @@ actual fun PlatformNavHost(
     startDestination: String,
     modifier: Modifier,
     route: String?,
-    builder: NavGraphBuilder.() -> Unit
+    builder: NavGraphBuilder.() -> Unit,
 ) {
     // Create a ViewModelStore for this NavHost
     val viewModelStore = remember { ViewModelStore() }

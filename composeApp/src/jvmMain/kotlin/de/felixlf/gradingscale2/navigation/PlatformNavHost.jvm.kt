@@ -12,7 +12,7 @@ actual fun PlatformNavHost(
     startDestination: String,
     modifier: Modifier,
     route: String?,
-    builder: NavGraphBuilder.() -> Unit
+    builder: NavGraphBuilder.() -> Unit,
 ) {
     NavHost(
         navController = navController,

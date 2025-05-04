@@ -31,7 +31,6 @@ fun DialogActionsMenu(
             GradeScaleListDialogCommand.AddNewGradeInCurrentGradeScale(gradeScaleId),
             GradeScaleListDialogCommand.EditGradeScale(gradeScaleId),
             GradeScaleListDialogCommand.AddNewGradeScale,
-            GradeScaleListDialogCommand.Help,
         )
     }
 

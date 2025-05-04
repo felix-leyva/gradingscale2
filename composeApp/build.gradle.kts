@@ -157,8 +157,6 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs2.kotlinx.coroutines.swing)
         }
-
-
     }
 }
 android {

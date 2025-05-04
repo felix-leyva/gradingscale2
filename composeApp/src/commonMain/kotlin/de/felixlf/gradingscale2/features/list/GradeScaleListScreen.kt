@@ -88,8 +88,6 @@ fun GradeScaleListScreen() {
                 onDismiss = { activeDialogCommand = null },
                 operation = UpsertGradeScaleUIState.State.Operation.Update(command.gradeScaleId),
             )
-
-            GradeScaleListDialogCommand.Help -> TODO()
         }
     }
 }
@@ -152,7 +150,7 @@ private fun GradeScaleListScreen(
                         .height(16.dp)
                         .fillMaxWidth(),
 
-                    )
+                )
             }
             itemsIndexed(gradeScale.sortedPointedGrades) { _, grade ->
                 Column(
