@@ -95,13 +95,14 @@ fun GradeScaleListScreen() {
 @Composable
 private fun GradeScaleListScreen(
     uiState: GradeScaleListUIState,
+    modifier: Modifier = Modifier.padding(top = 6.dp),
     onSelectGradeScale: (String) -> Unit = {},
     onSetTotalPoints: (Double) -> Unit = {},
     onOpenDialog: (GradeScaleListDialogCommand) -> Unit = {},
 ) {
     val gradeScale = remember(uiState.selectedGradeScale) { uiState.selectedGradeScale }
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         Row(
             modifier = Modifier.padding(8.dp),
@@ -150,7 +151,7 @@ private fun GradeScaleListScreen(
                         .height(16.dp)
                         .fillMaxWidth(),
 
-                )
+                    )
             }
             itemsIndexed(gradeScale.sortedPointedGrades) { _, grade ->
                 Column(
