@@ -19,5 +19,5 @@ dependencyResolutionManagement {
 }
 
 plugins {
-    id("de.felixlf.libs-catalog-generator") version "1.1"
+    id("de.felixlf.libs-catalog-generator") version "1.3"
 }
