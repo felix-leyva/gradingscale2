@@ -19,7 +19,7 @@ versionCode = "1"
 versionName = "1.0"
 java = "17"
 
-agp = "8.9.1"
+agp = "8.10.0"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
@@ -30,7 +30,7 @@ androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.4"
 androidx-test-junit = "1.2.1"
 android-desugar = "2.1.5"
-compose-plugin = "1.7.3"
+compose-plugin = "1.8.0"
 junit = "4.13.2"
 kotlin = "2.1.20"
 kotlin-compiler = "2.1.20"
@@ -39,7 +39,6 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-dateTime = "0.6.0"
 koin = "4.0.4"
 ktor = "2.3.12"
-ktlintGradle = "12.1.1" # https://github.com/JLLeitschuh/ktlint-gradle/releases
 # TODO: Cannot update to 5.6.0 and aboutlibraries, due the incompatibility with the Kotlin version
 gmazzoBuildConfig = "5.4.0" # https://github.com/gmazzo/gradle-buildconfig-plugin
 aboutLibraries = "11.1.4" # https://github.com/mikepenz/AboutLibraries/releases

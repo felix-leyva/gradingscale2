@@ -118,6 +118,7 @@ kotlin {
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(libs2.material3.adaptive.navigation.suite)
             implementation(compose.ui)
             implementation(compose.components.resources)
