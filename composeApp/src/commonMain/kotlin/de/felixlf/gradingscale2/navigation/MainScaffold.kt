@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
@@ -48,7 +49,12 @@ fun MainScaffold() {
                     selected = currentDestination.value?.destination?.route?.substringAfterLast(".") == it.name,
                     onClick = { appNavController.controller.navigate(it.name) },
                     icon = { Icon(imageVector = it.icon, contentDescription = null) },
-                    label = { Text(stringResource(it.label)) },
+                    label = {
+                        Text(
+                            text = stringResource(it.label),
+                            textAlign = TextAlign.Center,
+                        )
+                    },
                 )
             }
         },

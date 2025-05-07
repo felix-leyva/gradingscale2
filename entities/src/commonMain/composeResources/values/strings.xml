@@ -5,9 +5,9 @@
     <string name="edit_grade_name">Name of the grade</string>
     <string name="edit_grade_percentage">Percentage of the grade</string>
     <string name="edit_grade_save_button">Save changes</string>
-    <string name="destinations_menu_grade_scale_list">Gradescales</string>
-    <string name="destinations_menu_grade_scale_detail">Details</string>
-    <string name="destinations_menu_weighted_grade_calculator">Weighted Grade Calculator</string>
+    <string name="destinations_menu_grade_scale_list">Grades List</string>
+    <string name="destinations_menu_grade_scale_detail">Calculator</string>
+    <string name="destinations_menu_weighted_grade_calculator">Weighted Calculator</string>
     <string name="destinations_menu_grade_importerr">Grade Importer</string>
     <string name="calculator_screen_no_grade_selected">No grade selected</string>
     <string name="calculator_screen_total_points_input">Total points</string>
