@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface WeightedGradeDao {
     fun getAllWeightedGrades(): Flow<List<WeightedGrade>>
-    suspend fun upsertWeightedGrade(weightedGrade: WeightedGrade): Option<Unit>
+    suspend fun upsertWeightedGrade(weightedGrade: WeightedGrade): Option<Long>
     suspend fun deleteWeightedGrade(weightedGradeId: String): Option<Unit>
 }

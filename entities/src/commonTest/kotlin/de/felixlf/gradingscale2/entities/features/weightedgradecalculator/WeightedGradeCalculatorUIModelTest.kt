@@ -101,8 +101,10 @@ class WeightedGradeCalculatorUIModelTest {
                     val updatedList = grades.value.toMutableList()
                     updatedList[existingGradeIndex] = grade
                     grades.value = updatedList
+                    1
                 } else {
                     grades.value = grades.value + grade
+                    1
                 }
             }
         }

@@ -145,7 +145,7 @@ private fun GradeScaleListScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             state = listState,
-            contentPadding = PaddingValues(top = 16.dp)
+            contentPadding = PaddingValues(top = 16.dp),
         ) {
             itemsIndexed(gradeScale.sortedPointedGrades) { _, grade ->
                 Column(
