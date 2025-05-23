@@ -39,11 +39,14 @@ import org.koin.compose.viewmodel.koinViewModel
  * selected grade scale.
  */
 @Composable
-fun GradeScaleCalculatorScreen() {
-    val viewModel: CalculatorViewModel = koinViewModel()
+internal fun GradeScaleCalculatorScreen(
+    modifier: Modifier = Modifier,
+    viewModel: CalculatorViewModel = koinViewModel(),
+) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
     GradeScaleCalculatorScreen(
+        modifier = modifier,
         uiState = uiState.value,
         onSelectGradeScale = { viewModel.onEvent(CalculatorUIEvent.SelectGradeScale(it)) },
         onSetTotalPoints = { viewModel.onEvent(CalculatorUIEvent.SetTotalPoints(it)) },
@@ -55,6 +58,7 @@ fun GradeScaleCalculatorScreen() {
 
 @Composable
 private fun GradeScaleCalculatorScreen(
+    modifier: Modifier = Modifier,
     uiState: GradeScaleCalculatorUIState,
     onSelectGradeScale: (String) -> Unit = {},
     onSetTotalPoints: (Double) -> Unit = {},
@@ -64,7 +68,7 @@ private fun GradeScaleCalculatorScreen(
 ) {
     val gradeScale = remember(uiState.selectedGradeScale) { uiState.selectedGradeScale }
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = modifier.fillMaxSize().padding(16.dp),
     ) {
         DropboxSelector(
             elements = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
@@ -138,7 +142,7 @@ private fun GradeScaleCalculatorScreen(
 @Composable
 private fun CalculatorScreenPreview() {
     GradeScaleCalculatorScreen(
-        GradeScaleCalculatorUIState(
+        uiState = GradeScaleCalculatorUIState(
             selectedGradeScale = MockGradeScalesGenerator().gradeScales.first(),
             gradeScalesNamesWithId = MockGradeScalesGenerator()
                 .gradeScales

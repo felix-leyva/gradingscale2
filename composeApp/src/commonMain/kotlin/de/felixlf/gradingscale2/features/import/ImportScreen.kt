@@ -35,11 +35,14 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-internal fun ImportScreen() {
-    val viewModel: ImportViewModel = koinViewModel<ImportViewModel>()
+internal fun ImportScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ImportViewModel = koinViewModel<ImportViewModel>(),
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     ImportScreen(
+        modifier = modifier,
         uiState = uiState,
         onSendCommand = viewModel::sendCommand,
     )
@@ -47,10 +50,11 @@ internal fun ImportScreen() {
 
 @Composable
 fun ImportScreen(
+    modifier: Modifier = Modifier,
     uiState: ImportUIState,
     onSendCommand: (ImportCommand) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         when {
             uiState.isLoading && uiState.countryGradingScales.isEmpty() -> LoadingContent()
 

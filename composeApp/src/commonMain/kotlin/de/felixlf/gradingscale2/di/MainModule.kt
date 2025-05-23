@@ -1,7 +1,10 @@
 package de.felixlf.gradingscale2.di
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.SnackbarHostState
 import androidx.navigation.NavHostController
+import de.felixlf.gradingscale2.AppState
 import de.felixlf.gradingscale2.dbModule
 import de.felixlf.gradingscale2.entities.entitiesModule
 import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
@@ -17,9 +20,12 @@ import de.felixlf.gradingscale2.navigation.AppNavControllerImpl
 import de.felixlf.gradingscale2.network.di.networkModule
 import de.felixlf.gradingscale2.sharedprefs.preferencesModule
 import de.felixlf.gradingscale2.usecases.ShowSnackbarUseCaseImpl
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 val mainModule = module {
     includes(
         getApplicationModule(),
@@ -39,5 +45,9 @@ val mainModule = module {
     viewModelOf(::WeightedGradeDialogViewModel)
 
     single<AppNavController> { (controller: NavHostController) -> AppNavControllerImpl(controller) }
-    single<ShowSnackbarUseCase> { (snackbarHostState: SnackbarHostState) -> ShowSnackbarUseCaseImpl(snackbarHostState) }
+    singleOf(::SnackbarHostState)
+    singleOf(::ShowSnackbarUseCaseImpl).bind<ShowSnackbarUseCase>()
+    single<AppState> { (sharedTransitionScope: SharedTransitionScope) ->
+        AppState(navController = get(), sharedTransitionScope = sharedTransitionScope)
+    }
 }

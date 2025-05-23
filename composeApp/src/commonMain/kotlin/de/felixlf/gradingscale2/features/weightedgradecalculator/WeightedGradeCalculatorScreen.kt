@@ -35,11 +35,14 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
 
 @Composable
-internal fun WeightedGradeCalculatorScreen() {
-    val viewModel: WeightedCalculatorViewModel = koinViewModel<WeightedCalculatorViewModel>()
+internal fun WeightedGradeCalculatorScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WeightedCalculatorViewModel = koinViewModel<WeightedCalculatorViewModel>(),
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     WeightedGradeCalculatorScreen(
+        modifier = modifier,
         uiState = uiState,
         onSendCommand = viewModel::sendCommand,
     )
@@ -47,10 +50,11 @@ internal fun WeightedGradeCalculatorScreen() {
 
 @Composable
 fun WeightedGradeCalculatorScreen(
+    modifier: Modifier = Modifier,
     uiState: WeightCalculatorUIState,
     onSendCommand: (WeightedCalculatorCommand) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         when {
             uiState.isLoading -> LoadingContent()
             else -> MainContent(

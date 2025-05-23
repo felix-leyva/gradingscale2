@@ -8,20 +8,20 @@ import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SetTotalPoints
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
+import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
 import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
  * This class is responsible for managing the UI state of the grade scale list screen.
  */
 class GradeListUIModel(
-    private val scope: CoroutineScope,
+    private val scope: UIModelScope,
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
     private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleId,

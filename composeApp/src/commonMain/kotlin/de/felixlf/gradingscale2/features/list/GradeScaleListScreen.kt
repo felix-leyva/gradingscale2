@@ -53,12 +53,15 @@ import org.koin.compose.viewmodel.koinViewModel
  * The Grade Scale List Screen is the main screen of the grade scale list feature. It allows the user to view and edit the grades of a grade scale.
  */
 @Composable
-fun GradeScaleListScreen() {
-    val viewModel: GradeScaleListViewModel = koinViewModel()
+internal fun GradeScaleListScreen(
+    modifier: Modifier = Modifier,
+    viewModel: GradeScaleListViewModel = koinViewModel(),
+) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     var activeDialogCommand by remember { mutableStateOf<GradeScaleListDialogCommand?>(null) }
 
     GradeScaleListScreen(
+        modifier = modifier,
         uiState = uiState.value,
         onSelectGradeScale = { viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScale(it)) },
         onSetTotalPoints = { viewModel.onEvent(GradeScaleListUIEvent.SetTotalPoints(it)) },

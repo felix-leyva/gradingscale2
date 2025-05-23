@@ -206,6 +206,12 @@ composeCompiler {
     featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
 
+compose {
+    resources {
+        publicResClass = true
+    }
+}
+
 tasks.register("checkAndCreateGoogleServices") {
     val googleServicesFile = layout.projectDirectory.file("google-services.json")
     val googleServicesContent = providers.environmentVariable("GOOGLE_SERVICES")
