@@ -3,7 +3,7 @@ package de.felixlf.gradingscale2.entities.util
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import gradingscale2.entities.generated.resources.Res
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -39,7 +39,7 @@ class ResourceGradeScaleGenerator(
                         nameOfScale = jsonGradeScale.gradeScaleName,
                         uuid = Uuid.random().toString(),
                     )
-                }.toImmutableList(),
+                }.toPersistentList(),
             )
         }
     }

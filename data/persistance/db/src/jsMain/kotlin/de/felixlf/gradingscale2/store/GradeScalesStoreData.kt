@@ -1,8 +1,8 @@
 package de.felixlf.gradingscale2.store
 
 import de.felixlf.gradingscale2.entities.models.GradeScale
-import de.felixlf.gradingscale2.entities.serializers.ImmutableGradeScaleListSerializer
-import kotlinx.collections.immutable.ImmutableList
+import de.felixlf.gradingscale2.entities.serializers.PersistentListSerializer
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.serialization.Serializable
 
 /**
@@ -11,6 +11,6 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class GradeScalesStoreData(
-    @Serializable(with = ImmutableGradeScaleListSerializer::class)
-    val gradeScales: ImmutableList<GradeScale>,
+    @Serializable(with = PersistentListSerializer::class)
+    val gradeScales: PersistentList<GradeScale>,
 )

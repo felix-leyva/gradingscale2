@@ -16,7 +16,7 @@ import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeViewModel
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -56,7 +56,7 @@ class EditGradeViewModelTest {
                 it.map { gradeScale ->
                     if (gradeScale.id == gradeScaleId) {
                         gradeScale.copy(
-                            grades = (gradeScale.grades + newGrade).toImmutableList(),
+                            grades = (gradeScale.grades + newGrade).toPersistentList(),
                         )
                     } else {
                         gradeScale
@@ -77,7 +77,7 @@ class EditGradeViewModelTest {
                     totalPoints = modifiedGradeScale.totalPoints,
                     grades = modifiedGradeScale.grades.map { existingGrade ->
                         if (existingGrade.uuid == grade.uuid) grade else existingGrade
-                    }.toImmutableList(),
+                    }.toPersistentList(),
                 )
                 it.map { gradeScale -> if (gradeScale.gradeScaleName == newGradeScale.gradeScaleName) newGradeScale else gradeScale }
             }

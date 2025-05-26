@@ -5,7 +5,7 @@ import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.daos.GradesDao
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.store.GradeScaleStoreProvider
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -28,11 +28,11 @@ internal class GradesDaoStoreImpl(private val gradeScaleStoreProvider: GradeScal
             val updatedGrades = gradeScales?.gradeScales?.map { gradeScale ->
                 if (gradeScale.id == grade.idOfGradeScale) {
                     val updatedGrades = gradeScale.grades.filterNot { it.uuid == grade.uuid } + grade
-                    gradeScale.copy(grades = updatedGrades.toImmutableList())
+                    gradeScale.copy(grades = updatedGrades.toPersistentList())
                 } else {
                     gradeScale
                 }
-            }?.toImmutableList()
+            }?.toPersistentList()
             updatedGrades?.let(gradeScales::copy)
         }
         1
@@ -43,11 +43,11 @@ internal class GradesDaoStoreImpl(private val gradeScaleStoreProvider: GradeScal
             val updatedGrades = gradeScales?.gradeScales?.map { gradeScale ->
                 if (gradeScale.grades.any { it.uuid == gradeId }) {
                     val updatedGrades = gradeScale.grades.filterNot { it.uuid == gradeId }
-                    gradeScale.copy(grades = updatedGrades.toImmutableList())
+                    gradeScale.copy(grades = updatedGrades.toPersistentList())
                 } else {
                     gradeScale
                 }
-            }?.toImmutableList()
+            }?.toPersistentList()
             updatedGrades?.let(gradeScales::copy)
         }
     }
