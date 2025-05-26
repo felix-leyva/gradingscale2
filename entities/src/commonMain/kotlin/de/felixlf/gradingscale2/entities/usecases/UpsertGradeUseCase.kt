@@ -10,6 +10,6 @@ fun interface UpsertGradeUseCase {
 
 internal class UpsertGradeUseCaseImpl(private val gradesRepository: GradesRepository) : UpsertGradeUseCase {
     override suspend fun invoke(grade: Grade): Option<Unit> {
-        return gradesRepository.upsertGrade(grade)
+        return gradesRepository.upsertGrade(grade).map { Unit }
     }
 }

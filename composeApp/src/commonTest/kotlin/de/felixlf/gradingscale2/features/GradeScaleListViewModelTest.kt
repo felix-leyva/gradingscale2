@@ -5,8 +5,8 @@ import arrow.core.Option
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
-import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -32,15 +32,15 @@ class GradeScaleListViewModelTest {
     private val dispatcher = TestDispatcherProvider()
 
     private fun setupSUT(
-        getLastSelectedGradeScaleId: GetLastSelectedGradeScaleId = GetLastSelectedGradeScaleId { null },
-        setLastSelectedGradeScaleId: SetLastSelectedGradeScaleId = SetLastSelectedGradeScaleId { Option(Unit) },
+        getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase = GetLastSelectedGradeScaleIdUseCase { null },
+        setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase = SetLastSelectedGradeScaleIdUseCase { Option(Unit) },
     ) {
         viewModel = GradeScaleListViewModel(
             dispatcherProvider = dispatcher,
             allGradeScalesUseCase = getAllGradeScalesUseCase,
             getGradeScaleByIdUseCase = gradeScaleById,
-            getLastSelectedGradeScaleIdUseCase = getLastSelectedGradeScaleId,
-            setLastSelectedGradeScaleIdUseCase = setLastSelectedGradeScaleId,
+            getLastSelectedGradeScaleIdUseCase = getLastSelectedGradeScaleIdUseCase,
+            setLastSelectedGradeScaleIdUseCase = setLastSelectedGradeScaleIdUseCase,
         )
     }
 

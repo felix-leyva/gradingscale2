@@ -23,9 +23,9 @@ internal class GradesDaoStoreImpl(private val gradeScaleStoreProvider: GradeScal
         }
     }
 
-    override suspend fun upsertGrade(grade: Grade): Option<Unit> = option {
+    override suspend fun upsertGrade(grade: Grade): Option<Long> = option {
         gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
-            gradeScales?.map { gradeScale ->
+            val updatedGrades = gradeScales?.gradeScales?.map { gradeScale ->
                 if (gradeScale.id == grade.idOfGradeScale) {
                     val updatedGrades = gradeScale.grades.filterNot { it.uuid == grade.uuid } + grade
                     gradeScale.copy(grades = updatedGrades.toImmutableList())
@@ -33,12 +33,14 @@ internal class GradesDaoStoreImpl(private val gradeScaleStoreProvider: GradeScal
                     gradeScale
                 }
             }?.toImmutableList()
+            updatedGrades?.let(gradeScales::copy)
         }
+        1
     }
 
     override suspend fun deleteGrade(gradeId: String): Option<Unit> = option {
         gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
-            gradeScales?.map { gradeScale ->
+            val updatedGrades = gradeScales?.gradeScales?.map { gradeScale ->
                 if (gradeScale.grades.any { it.uuid == gradeId }) {
                     val updatedGrades = gradeScale.grades.filterNot { it.uuid == gradeId }
                     gradeScale.copy(grades = updatedGrades.toImmutableList())
@@ -46,6 +48,7 @@ internal class GradesDaoStoreImpl(private val gradeScaleStoreProvider: GradeScal
                     gradeScale
                 }
             }?.toImmutableList()
+            updatedGrades?.let(gradeScales::copy)
         }
     }
 }

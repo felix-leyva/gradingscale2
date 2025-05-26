@@ -2,6 +2,7 @@ plugins {
     id("gs-android-library")
     id("org.jetbrains.kotlin.multiplatform")
     id("multiplatform-plugin")
+    id(libs2.plugins.kotlinxSerialization.get().pluginId)
     id(
         libs2.plugins.sqldelight
             .get()
@@ -20,6 +21,12 @@ kotlin {
             }
         }
         useCommonJs()
+        // Ensure serializers are generated for JS
+        compilations.all {
+            kotlinOptions {
+                moduleKind = "commonjs"
+            }
+        }
     }
     sourceSets {
         androidMain.dependencies {

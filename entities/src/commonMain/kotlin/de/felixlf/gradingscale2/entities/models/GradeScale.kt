@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.entities.models
 
+import de.felixlf.gradingscale2.entities.serializers.ImmutableGradeListSerializer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
@@ -17,6 +18,7 @@ data class GradeScale(
     val id: String,
     val gradeScaleName: String,
     val totalPoints: Double,
+    @Serializable(with = ImmutableGradeListSerializer::class)
     val grades: ImmutableList<Grade>,
 ) {
     init {

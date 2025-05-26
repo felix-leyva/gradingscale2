@@ -28,15 +28,13 @@ internal class GradesDaoImpl(
             .mapToOneOrNull(dispatcher)
     }
 
-    override suspend fun upsertGrade(grade: Grade): Option<Unit> = option {
+    override suspend fun upsertGrade(grade: Grade): Option<Long> = option {
         gradeScaleQueries.upsertGrade(
             uuid = grade.uuid,
             named_grade = grade.namedGrade,
             percentage = grade.percentage,
             scale_id = grade.idOfGradeScale,
         )
-        //        TODO: Select changes() is not being supported anymore
-        //        ensure(driver.execute(null, "SELECT changes() AS affected_rows", 0).await() == 0L)
     }
 
     override suspend fun deleteGrade(gradeId: String): Option<Unit> = option {

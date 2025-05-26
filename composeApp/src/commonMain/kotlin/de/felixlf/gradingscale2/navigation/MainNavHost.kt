@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.navigation
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import de.felixlf.gradingscale2.features.calculator.GradeScaleCalculatorScreen
 import de.felixlf.gradingscale2.features.import.ImportScreen
@@ -15,7 +16,7 @@ fun MainNavHost(
     modifier: Modifier = Modifier,
     appNavController: AppNavController,
 ) {
-    PlatformNavHost(
+    NavHost(
         navController = appNavController.controller,
         startDestination = Destinations.GradeScaleList.name,
         modifier = modifier,

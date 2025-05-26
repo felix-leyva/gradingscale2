@@ -5,6 +5,7 @@ import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.daos.GradeScaleDao
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.store.GradeScaleStoreProvider
+import de.felixlf.gradingscale2.store.GradeScalesStoreData
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -22,14 +23,24 @@ internal class GradeScaleDaoStoreImpl(private val gradeScaleStoreProvider: Grade
     }
 
     override suspend fun upsertGradeScale(gradeScale: GradeScale): Option<Unit> = option {
-        gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
-            gradeScales?.map { if (it.id == gradeScale.id) gradeScale else it }?.toImmutableList()
+        gradeScaleStoreProvider.gradeScalesStore.update { storeData ->
+            storeData?.let {
+                val updatedList = it.gradeScales
+                    .map { scale -> if (scale.id == gradeScale.id) gradeScale else scale }
+                    .toImmutableList()
+                GradeScalesStoreData(updatedList)
+            }
         }.bind()
     }
 
     override suspend fun deleteGradeScale(gradeScaleId: String): Option<Unit> = option {
-        gradeScaleStoreProvider.gradeScalesStore.update { gradeScales ->
-            gradeScales?.filterNot { it.id == gradeScaleId }?.toImmutableList()
+        gradeScaleStoreProvider.gradeScalesStore.update { storeData ->
+            storeData?.let {
+                val updatedList = it.gradeScales
+                    .filterNot { scale -> scale.id == gradeScaleId }
+                    .toImmutableList()
+                GradeScalesStoreData(updatedList)
+            }
         }.bind()
     }
 }

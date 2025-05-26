@@ -11,8 +11,8 @@ import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
-import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.launch
@@ -24,8 +24,8 @@ class GradeListUIModel(
     private val scope: UIModelScope,
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
-    private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleId,
-    private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleId,
+    private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase,
+    private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase,
 ) : MoleculePresenter<GradeScaleListUIState, GradeScaleListUIEvent> {
 
     // MutableStateOf causes inside the produceUI function recomposition which is helpful to update the State. If we wish to "observe" this
@@ -38,7 +38,44 @@ class GradeListUIModel(
 
     @Composable
     override fun produceUI(): GradeScaleListUIState {
-        LaunchedEffect(Unit) { getLastSelectedGradeScaleIdUseCase()?.let { gradeScaleId = it } }
+        LaunchedEffect(Unit) {
+            try {
+                println("[DEBUG] GradeListUIModel: Entered LaunchedEffect for fetching last selected ID.")
+                val useCaseInstance = getLastSelectedGradeScaleIdUseCase
+
+                // Log the useCaseInstance to the JS console for inspection
+                @Suppress("UNUSED_VARIABLE") // To avoid warnings if only used in js()
+                val instanceForJsLog = useCaseInstance
+                println("console.log('[DEBUG] getLastSelectedGradeScaleIdUseCase object:', instanceForJsLog);")
+
+                if (useCaseInstance == null) {
+                    println("[DEBUG] GetLastSelectedGradeScaleIdUseCase IS NULL!")
+                    // Handle null case if it's possible and not an error
+                    return@LaunchedEffect
+                }
+
+                // You can also try to check if invoke is present, though this is tricky with mangled names
+                // js("console.log('[DEBUG] Does it have an invoke-like method?', typeof instanceForJsLog?.get_lastSelectedGradeScaleId_5wlpnc_k$);")
+                // More generically:
+                // js("console.log('[DEBUG] Keys on useCaseInstance:', Object.keys(instanceForJsLog));")
+
+                println("[DEBUG] Attempting to call invoke() on useCaseInstance.")
+                val idFromUseCase = useCaseInstance.invoke() // This is the line that likely fails
+                println("[DEBUG] Successfully called invoke(), result: $idFromUseCase")
+
+                idFromUseCase?.let {
+                    gradeScaleId = it
+                    println("[DEBUG] Set gradeScaleId to: $it")
+                } ?: println("[DEBUG] Result from useCaseInstance.invoke() was null.")
+            } catch (e: Exception) {
+                println("[ERROR] GradeListUIModel - Error in LaunchedEffect: ${e.message}")
+                // Log the full JS error object to the console
+                @Suppress("UNUSED_VARIABLE")
+                val errorForJsLog = e
+                println("console.error('[DEBUG] Full JS error object in LaunchedEffect catch block:', errorForJsLog);")
+                println("console.error('[DEBUG] Stack trace:', errorForJsLog.stack);")
+            }
+        }
         val selectedGradeScale = gradeScaleId?.let { getGradeScaleByIdUseCase(it).asState(null) }
         val modifiedGradeScale = selectedGradeScale?.copy(totalPoints = totalPoints)
         val gradeScalesNamesWithId = allGradeScalesUseCase().asState(persistentListOf()).map {
@@ -58,7 +95,7 @@ class GradeListUIModel(
         when (command) {
             is SelectGradeScale -> {
                 gradeScaleId = state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == command.gradeScaleName }?.gradeScaleId
-                scope.launch { gradeScaleId?.let { setLastSelectedGradeScaleIdUseCase(it) } }
+                scope.launch { gradeScaleId?.let { setLastSelectedGradeScaleIdUseCase.invoke(it) } }
             }
 
             is SetTotalPoints -> {

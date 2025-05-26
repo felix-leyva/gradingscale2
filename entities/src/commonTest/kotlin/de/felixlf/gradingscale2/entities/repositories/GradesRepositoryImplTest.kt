@@ -227,7 +227,7 @@ class FakeGradesDao : GradesDao {
         emit(grades.find { it.uuid == gradeId })
     }
 
-    override suspend fun upsertGrade(grade: Grade): Option<Unit> {
+    override suspend fun upsertGrade(grade: Grade): Option<Long> {
         if (!success) return None
 
         val existingIndex = grades.indexOfFirst { it.uuid == grade.uuid }
@@ -236,7 +236,7 @@ class FakeGradesDao : GradesDao {
         } else {
             grades.add(grade)
         }
-        return Some(Unit)
+        return Some(1)
     }
 
     override suspend fun deleteGrade(gradeId: String): Option<Unit> {

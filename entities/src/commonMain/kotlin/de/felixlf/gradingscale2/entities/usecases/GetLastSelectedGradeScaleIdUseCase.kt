@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.first
  * Use case to get the last selected grade scale ID.
  * Retrieves the ID of the last selected grade scale from the preferences repository.
  */
-fun interface GetLastSelectedGradeScaleId {
+fun interface GetLastSelectedGradeScaleIdUseCase {
     suspend operator fun invoke(): String?
 }
 
-internal class GetLastSelectedGradeScaleIdImpl(private val preferencesRepository: PreferencesRepository) : GetLastSelectedGradeScaleId {
+internal class GetLastSelectedGradeScaleIdUseCaseImpl(private val preferencesRepository: PreferencesRepository) : GetLastSelectedGradeScaleIdUseCase {
     override suspend fun invoke(): String? {
         return preferencesRepository.getLastSelectedGradeScaleId().first()
     }

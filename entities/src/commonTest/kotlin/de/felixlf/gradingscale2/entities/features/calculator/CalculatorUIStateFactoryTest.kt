@@ -7,8 +7,8 @@ import arrow.core.Option
 import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
-import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.flowOf
@@ -31,15 +31,15 @@ class CalculatorUIStateFactoryTest {
     private lateinit var factory: CalculatorUIModel
 
     private fun TestScope.setupSUT(
-        getLastSelectedGradeScaleId: GetLastSelectedGradeScaleId = GetLastSelectedGradeScaleId { null },
-        setLastSelectedGradeScaleId: SetLastSelectedGradeScaleId = SetLastSelectedGradeScaleId { Option(Unit) },
+        getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase = GetLastSelectedGradeScaleIdUseCase { null },
+        setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase = SetLastSelectedGradeScaleIdUseCase { Option(Unit) },
     ) {
         factory = CalculatorUIModel(
             scope = this,
             allGradeScalesUseCase = getAllGradeScalesUseCase,
             getGradeScaleByIdUseCase = gradeScaleByIdUseCase,
-            getLastSelectedGradeScaleIdUseCase = getLastSelectedGradeScaleId,
-            setLastSelectedGradeScaleIdUseCase = setLastSelectedGradeScaleId,
+            getLastSelectedGradeScaleIdUseCase = getLastSelectedGradeScaleIdUseCase,
+            setLastSelectedGradeScaleIdUseCase = setLastSelectedGradeScaleIdUseCase,
         )
     }
 

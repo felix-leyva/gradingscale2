@@ -16,6 +16,12 @@ kotlin {
                 }
             }
         }
+        // Ensure serializers are generated for JS
+        compilations.all {
+            kotlinOptions {
+                moduleKind = "commonjs"
+            }
+        }
     }
     sourceSets {
         commonMain.dependencies {

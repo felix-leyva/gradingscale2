@@ -16,8 +16,8 @@ import de.felixlf.gradingscale2.entities.usecases.DeleteWeightedGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllWeightedGradesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
-import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCase
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -32,8 +32,8 @@ class WeightCalculatorUIModel(
     private val getAllWeightedGradesUseCase: GetAllWeightedGradesUseCase,
     private val upsertWeightedGradeUseCase: UpsertWeightedGradeUseCase,
     private val deleteWeightedGradeUseCase: DeleteWeightedGradeUseCase,
-    private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleId,
-    private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleId,
+    private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase,
+    private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase,
 ) : UIModel<WeightCalculatorUIState, WeightedCalculatorCommand, WeightedCalculatorEvent> {
     override val events: Channel<WeightedCalculatorEvent> = Channel()
     override val uiState: StateFlow<WeightCalculatorUIState> by moleculeUIState()

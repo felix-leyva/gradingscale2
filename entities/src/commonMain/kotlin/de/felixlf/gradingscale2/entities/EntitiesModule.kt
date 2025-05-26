@@ -30,8 +30,8 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCaseImpl
-import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
-import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdImpl
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCase
@@ -42,8 +42,8 @@ import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCaseImpl
-import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
-import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdImpl
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
@@ -83,8 +83,8 @@ val entitiesModule =
         singleOf(::GetAllWeightedGradesUseCaseImpl).bind<GetAllWeightedGradesUseCase>()
         singleOf(::DeleteWeightedGradeUseCaseImpl).bind<DeleteWeightedGradeUseCase>()
         singleOf(::UpsertWeightedGradeUseCaseImpl).bind<UpsertWeightedGradeUseCase>()
-        singleOf(::GetLastSelectedGradeScaleIdImpl).bind<GetLastSelectedGradeScaleId>()
-        singleOf(::SetLastSelectedGradeScaleIdImpl).bind<SetLastSelectedGradeScaleId>()
+        singleOf(::GetLastSelectedGradeScaleIdUseCaseImpl).bind<GetLastSelectedGradeScaleIdUseCase>()
+        singleOf(::SetLastSelectedGradeScaleIdUseCaseImpl).bind<SetLastSelectedGradeScaleIdUseCase>()
 
         // UI Model
         factory { get<DispatcherProvider>().newUIScope() }.bind<UIModelScope>()
