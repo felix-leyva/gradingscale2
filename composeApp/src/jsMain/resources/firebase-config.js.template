@@ -1,0 +1,27 @@
+// Firebase configuration template
+// Copy this file to firebase-config.js and fill in your Firebase project settings
+// IMPORTANT: Never commit firebase-config.js to the repository!
+
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY_HERE",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+
+// Initialize Analytics
+firebase.analytics();
+
+// Sign in anonymously
+firebase.auth().signInAnonymously()
+    .then(() => {
+        console.log("Anonymous auth successful");
+    })
+    .catch((error) => {
+        console.error("Anonymous auth error:", error);
+    });

@@ -39,9 +39,11 @@ kotlin {
             implementation(projects.entities)
         }
 
-        jsMain.dependencies {
-//            implementation(npm("@gitliveapp/firebase-auth", "1.5.19-beta"))
-//            implementation(npm("@gitliveapp/firebase-common", "1.5.19-beta"))
+        jsMain {
+            dependsOn(firebaseAvailable)
+            dependencies {
+                implementation(npm("firebase", "10.7.1"))
+            }
         }
         iosMain {
             dependsOn(firebaseAvailable)
