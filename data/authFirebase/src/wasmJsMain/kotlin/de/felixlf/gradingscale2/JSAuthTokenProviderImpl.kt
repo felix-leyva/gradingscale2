@@ -15,13 +15,13 @@ class JSAuthTokenProviderImpl(
         // For WasmJS, use a simple fallback approach since Firebase interop is complex
         val console = getConsole()
         console.log("JSAuthTokenProviderImpl initialized for WasmJS")
-        
+
         if (isFirebaseInitialized()) {
             console.log("Firebase detected, but using fallback tokens for WasmJS compatibility")
         } else {
             console.log("Firebase not available, using anonymous tokens")
         }
-        
+
         // Always use fallback token for WasmJS to avoid Promise compatibility issues
         tokenFlow.value = "wasmjs-anonymous-token-${kotlin.random.Random.nextInt(10000)}"
     }

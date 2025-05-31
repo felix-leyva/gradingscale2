@@ -133,7 +133,7 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs2.kotlinx.coroutines.swing)
         }
-        
+
         // WasmJS currently shares most dependencies with JS
         val wasmJsMain by getting {
             dependencies {
@@ -243,7 +243,6 @@ tasks.named("preBuild") {
 tasks.withType<Test>().configureEach {
     enabled = false
 }
-
 
 dependencies {
     ksp(libs2.arrow.optics.ksp.plugin)

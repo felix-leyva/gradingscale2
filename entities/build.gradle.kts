@@ -25,7 +25,7 @@ kotlin {
             }
         }
     }
-    
+
     wasmJs {
         browser {
             testTask {

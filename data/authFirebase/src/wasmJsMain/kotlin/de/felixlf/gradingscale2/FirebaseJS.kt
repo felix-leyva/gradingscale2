@@ -5,9 +5,9 @@ class MockFirebaseAuth {
     fun signOut() {
         // No-op for WasmJS
     }
-    
+
     fun getCurrentUser(): String? = null
-    
+
     fun getIdToken(): String? = null
 }
 
@@ -19,13 +19,13 @@ class MockFirebaseAnalytics {
 
 class MockConsole {
     fun log(message: String) {
-        // No-op for WasmJS 
+        // No-op for WasmJS
     }
-    
+
     fun warn(message: String) {
         // No-op for WasmJS
     }
-    
+
     fun error(message: String) {
         // No-op for WasmJS
     }

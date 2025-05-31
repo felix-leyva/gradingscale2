@@ -22,7 +22,7 @@ kotlin {
             }
         }
     }
-    
+
     wasmJs {
         browser {
             testTask {
@@ -61,7 +61,7 @@ kotlin {
         jsMain.dependencies {
             implementation(libs2.ktor.client.js)
         }
-        
+
         val wasmJsMain by getting {
             dependencies {
                 implementation(libs2.ktor.client.js)

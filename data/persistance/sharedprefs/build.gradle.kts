@@ -23,7 +23,7 @@ kotlin {
             }
         }
     }
-    
+
     wasmJs {
         browser {
             testTask {
@@ -50,11 +50,12 @@ kotlin {
         jsMain.dependencies {
             implementation(libs2.kstore.storage)
         }
-        
+
         val wasmJsMain by getting {
             dependencies {
                 // Use basic kstore without storage dependency for WasmJS
                 implementation(libs2.kstore)
+                implementation(project(":data:persistance:wasmjs-storage"))
             }
         }
     }

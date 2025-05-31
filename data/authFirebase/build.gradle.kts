@@ -18,7 +18,7 @@ kotlin {
         outputModuleName = "authfirebase"
         browser()
     }
-    
+
     wasmJs {
         browser {
             testTask {
@@ -55,7 +55,7 @@ kotlin {
                 implementation(npm("firebase", "10.7.1"))
             }
         }
-        
+
         val wasmJsMain by getting {
             // WasmJS doesn't use firebaseAvailable since GitLive Firebase doesn't support WasmJS
             // Remove Firebase dependency to avoid JS interop issues
