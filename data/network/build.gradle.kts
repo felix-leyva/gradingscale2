@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
@@ -17,6 +19,14 @@ kotlin {
                 useKarma {
                     useFirefox()
                 }
+            }
+        }
+    }
+    
+    wasmJs {
+        browser {
+            testTask {
+                enabled = false
             }
         }
     }
@@ -50,6 +60,12 @@ kotlin {
 
         jsMain.dependencies {
             implementation(libs2.ktor.client.js)
+        }
+        
+        val wasmJsMain by getting {
+            dependencies {
+                implementation(libs2.ktor.client.js)
+            }
         }
     }
 }

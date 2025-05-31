@@ -35,58 +35,31 @@ plugins {
 
 kotlin {
     version = "1.0"
-    // Configure JS target with more conservative options
-    js(IR) {
-        outputModuleName = "composeApp"
+
+    jvm()
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "composeApp"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
-                // Simplified webpack config to avoid potential conflicts
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
+                        // Serve sources to debug inside browser
                         add(rootDirPath)
                         add(projectDirPath)
                     }
                 }
             }
-            // Disable tests to simplify build
             testTask {
                 enabled = false
             }
         }
         binaries.executable()
-        useEsModules()
     }
-
-    jvm()
-
-//    wasmJs {
-//        moduleName = "composeApp"
-//        browser {
-//            val rootDirPath = project.rootDir.path
-//            val projectDirPath = project.projectDir.path
-//            commonWebpackConfig {
-//                outputFileName = "composeApp.js"
-//                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-//                    static = (static ?: mutableListOf()).apply {
-//                        // Serve sources to debug inside browser
-//                        add(rootDirPath)
-//                        add(projectDirPath)
-//                    }
-//                }
-//            }
-//            testTask {
-//                onlyIf { !System.getenv().containsKey("CI") }
-//                useKarma {
-//                    useFirefox()
-//                }
-//            }
-//        }
-//        useCommonJs()
-//        binaries.executable()
-//    }
 
     androidTarget {
         compilerOptions {
@@ -104,14 +77,6 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
-        }
-        // Disable iOS tests to avoid linking issues
-        iosTarget.binaries.all {
-            if (this.name.contains("test", ignoreCase = true)) {
-                linkTaskProvider.configure {
-                    enabled = false
-                }
-            }
         }
     }
 
@@ -167,6 +132,13 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs2.kotlinx.coroutines.swing)
+        }
+        
+        // WasmJS currently shares most dependencies with JS
+        val wasmJsMain by getting {
+            dependencies {
+                // WasmJS specific dependencies if needed
+            }
         }
     }
 }
@@ -272,13 +244,6 @@ tasks.withType<Test>().configureEach {
     enabled = false
 }
 
-// Disable test compilation tasks
-tasks.matching {
-    it.name.contains("Test", ignoreCase = true) &&
-        (it.name.contains("compile") || it.name.contains("link"))
-}.configureEach {
-    enabled = false
-}
 
 dependencies {
     ksp(libs2.arrow.optics.ksp.plugin)

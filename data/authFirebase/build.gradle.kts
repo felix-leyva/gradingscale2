@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.google.gson.Gson
 import com.google.gson.JsonObject
@@ -15,6 +17,14 @@ kotlin {
     js {
         outputModuleName = "authfirebase"
         browser()
+    }
+    
+    wasmJs {
+        browser {
+            testTask {
+                enabled = false
+            }
+        }
     }
     sourceSets {
         val firebaseAvailable by creating {
@@ -43,6 +53,14 @@ kotlin {
             dependsOn(firebaseAvailable)
             dependencies {
                 implementation(npm("firebase", "10.7.1"))
+            }
+        }
+        
+        val wasmJsMain by getting {
+            // WasmJS doesn't use firebaseAvailable since GitLive Firebase doesn't support WasmJS
+            // Remove Firebase dependency to avoid JS interop issues
+            dependencies {
+                // No Firebase dependencies for WasmJS to avoid runtime errors
             }
         }
         iosMain {

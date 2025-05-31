@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 plugins {
     id("gs-android-library")
     id("org.jetbrains.kotlin.multiplatform")
@@ -28,6 +30,14 @@ kotlin {
             }
         }
     }
+    
+    wasmJs {
+        browser {
+            testTask {
+                enabled = false
+            }
+        }
+    }
     sourceSets {
         androidMain.dependencies {
             implementation(libs2.android.driver)
@@ -54,6 +64,13 @@ kotlin {
             implementation(npm("copy-webpack-plugin", "9.1.0"))
             implementation(libs2.kstore)
             implementation(libs2.kstore.storage)
+        }
+        
+        val wasmJsMain by getting {
+            dependencies {
+                // Use basic kstore without storage dependency for WasmJS
+                implementation(libs2.kstore)
+            }
         }
     }
 }

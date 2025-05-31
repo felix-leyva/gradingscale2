@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 plugins {
     id("multiplatform-plugin")
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
@@ -20,6 +22,14 @@ kotlin {
         compilations.all {
             kotlinOptions {
                 moduleKind = "commonjs"
+            }
+        }
+    }
+    
+    wasmJs {
+        browser {
+            testTask {
+                enabled = false
             }
         }
     }

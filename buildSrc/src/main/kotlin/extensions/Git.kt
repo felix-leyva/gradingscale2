@@ -1,19 +1,22 @@
 package extensions
 
-fun commitCount(): Int? {
-    val command = "git rev-list --count HEAD".split(" ")
-    val process =
-        ProcessBuilder(command)
-            .redirectOutput(ProcessBuilder.Redirect.PIPE)
-            .start()
-    return String(process.inputStream.readBytes()).filter { it.isDigit() }.toIntOrNull()
-}
-
 fun gitBranch(): String {
-    val command = "git rev-parse --abbrev-ref HEAD".split(" ")
-    val process =
-        ProcessBuilder(command)
+    return try {
+        val command = "git rev-parse --abbrev-ref HEAD".split(" ")
+        val process = ProcessBuilder(command)
             .redirectOutput(ProcessBuilder.Redirect.PIPE)
+            .redirectError(ProcessBuilder.Redirect.PIPE)
             .start()
-    return String(process.inputStream.readBytes())
+        
+        val exitCode = process.waitFor()
+        if (exitCode == 0) {
+            process.inputStream.bufferedReader().readText().trim()
+        } else {
+            println("Git command failed with exit code: $exitCode")
+            "unknown"
+        }
+    } catch (e: Exception) {
+        println("Failed to get git branch: ${e.message}")
+        "unknown"
+    }
 }
