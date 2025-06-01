@@ -57,10 +57,9 @@ kotlin {
         }
 
         val wasmJsMain by getting {
-            // WasmJS doesn't use firebaseAvailable since GitLive Firebase doesn't support WasmJS
-            // Remove Firebase dependency to avoid JS interop issues
+            // WasmJS now has its own Firebase implementation using JS interop
             dependencies {
-                // No Firebase dependencies for WasmJS to avoid runtime errors
+                // Uses Firebase loaded via CDN in index.html
             }
         }
         iosMain {
