@@ -132,6 +132,11 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs2.kotlinx.coroutines.swing)
+
+            // Enable by default, disable with: -Pcompose.desktop.production=true
+            if (project.findProperty("compose.desktop.production")?.toString()?.toBoolean() != true) {
+                implementation(libs2.slf4j.simple)
+            }
         }
 
         // WasmJS currently shares most dependencies with JS

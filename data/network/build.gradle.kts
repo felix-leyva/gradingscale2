@@ -75,18 +75,14 @@ android {
 }
 
 // Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration
-val buildUrls = buildConfig.forClass("BuildBaseUrls")
-val generateBuildUrls by tasks.registering {
-    val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("GRADINGSCALE_BASE_URL")
-
-    doFirst {
-        buildUrls.apply {
-            packageName("de.felixlf.gradingscale2")
-            buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
-        }
+buildConfig {
+    forClass("BuildBaseUrls") {
+        packageName("de.felixlf.gradingscale2")
+        
+        // Read the property at configuration time, not task execution time
+        val localProperties = gradleLocalProperties(rootDir, providers)
+        val baseUrl = localProperties.getProperty("GRADINGSCALE_BASE_URL") ?: ""
+        
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
-}
-
-tasks.matching { it.name.startsWith("compile") }.configureEach {
-    dependsOn(generateBuildUrls)
 }

@@ -41,6 +41,7 @@ aboutLibraries = "11.1.4" # https://github.com/mikepenz/AboutLibraries/releases
 
 sonarqubeGradlePlugin = "6.1.0.5360" # https://github.com/SonarSource/sonar-scanner-gradle/releases
 turbineVersion = "1.2.0" # https://github.com/cashapp/turbine/releases
+slf4j = "2.0.17" # https://www.slf4j.org/
 
 ksp = "2.1.21-2.0.1" # https://github.com/google/ksp/releases
 sqlDelightPlugin = "2.1.0" # https://github.com/cashapp/sqldelight/releases
@@ -107,6 +108,9 @@ sqljs-driver = { module = "app.cash.sqldelight:sqljs-driver", version.ref = "sql
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
 kstore-storage = { module = "io.github.xxfast:kstore-storage", version.ref = "kstore" }
 kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
+
+# Logging
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 # Firebase
 firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase-kotlin" }

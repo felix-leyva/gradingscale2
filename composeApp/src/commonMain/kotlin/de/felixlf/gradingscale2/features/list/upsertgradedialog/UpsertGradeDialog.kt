@@ -120,7 +120,10 @@ private fun UpsertGradeDialog(
                 value = uiState.percentage ?: "",
                 onValueChange = onSetPercentage,
                 label = stringResource(Res.string.edit_grade_percentage),
-                error = uiState.error.any { it == UpsertGradeUIState.Error.INVALID_PERCENTAGE || it == UpsertGradeUIState.Error.DUPLICATE_PERCENTAGE },
+                error = uiState.error.any {
+                    it == UpsertGradeUIState.Error.INVALID_PERCENTAGE ||
+                        it == UpsertGradeUIState.Error.DUPLICATE_PERCENTAGE
+                },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             )
             uiState.error.joinToString { it.name }.ifBlank { null }?.let {

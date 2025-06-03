@@ -26,7 +26,7 @@ import androidx.compose.ui.zIndex
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun AnimatedContentScope.PersistentScaffold(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxSize(),
     topBar: @Composable ScaffoldState.() -> Unit = {},
     floatingActionButton: @Composable ScaffoldState.() -> Unit = {},
     bottomBar: @Composable ScaffoldState.() -> Unit = { DefaultNavigationBar() },
@@ -74,6 +74,7 @@ fun AnimatedContentScope.PersistentScaffold(
 /**
  * Helper composable to render a navigation rail alongside the main content
  */
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 private inline fun ScaffoldState.NavigationRailScaffold(
     modifier: Modifier = Modifier,

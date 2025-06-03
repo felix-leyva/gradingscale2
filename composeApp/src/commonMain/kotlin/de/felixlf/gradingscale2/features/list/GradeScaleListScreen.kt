@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIState
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState
+import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.entities.util.stringWithDecimals
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
@@ -38,13 +39,15 @@ import de.felixlf.gradingscale2.features.list.upsertgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.InsertGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleDialog
 import de.felixlf.gradingscale2.theme.AppTheme
-import de.felixlf.gradingscale2.uicomponents.DropboxSelector
+import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
+import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
+import de.felixlf.gradingscale2.utils.isLargeScreenWidthLocal
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_list_no_grade_scale_selected
-import gradingscale2.entities.generated.resources.gradescale_list_select_grade_scale
 import gradingscale2.entities.generated.resources.gradescale_list_total_points
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -105,67 +108,96 @@ private fun GradeScaleListScreen(
     onOpenDialog: (GradeScaleListDialogCommand) -> Unit = {},
 ) {
     val gradeScale = remember(uiState.selectedGradeScale) { uiState.selectedGradeScale }
-    Column(
-        modifier = modifier.fillMaxSize(),
+    val isLargeScreen by isLargeScreenWidthLocal()
+
+    // Convert UI state to GradeScaleNameAndId list for the adaptive selector
+    val gradeScaleItems = remember(uiState.gradeScalesNamesWithId) {
+        uiState.gradeScalesNamesWithId.map {
+            GradeScaleNameAndId(id = it.gradeScaleId, name = it.gradeScaleName)
+        }.toPersistentList()
+    }
+
+    AdaptiveGradeScaleSelector(
+        items = gradeScaleItems,
+        selectedItemId = uiState.selectedGradeScale?.id,
+        onSelectionChange = { id ->
+            id?.let {
+                val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
+                selectedName?.let { onSelectGradeScale(it) }
+            }
+        },
     ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
+        Column(
+            modifier = modifier.fillMaxSize(),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.padding(8.dp),
             ) {
-                val textFieldValue = textFieldManager(uiState.selectedGradeScale?.totalPoints?.stringWithDecimals() ?: "") {
-                    onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
-                }
-                DropboxSelector(
-                    elements = uiState.gradeScalesNamesWithId.map { it.gradeScaleName }.toImmutableList(),
-                    selectedElement = uiState.selectedGradeScale?.gradeScaleName,
-                    onSelectElement = onSelectGradeScale,
-                    modifier = Modifier.weight(0.7f),
-                    label = stringResource(Res.string.gradescale_list_select_grade_scale),
-                )
-
-                if (gradeScale != null) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    CalculatorTextField(
-                        modifier = Modifier.weight(0.3f).height(IntrinsicSize.Max),
-                        state = textFieldValue,
-                        textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                        label = stringResource(Res.string.gradescale_list_total_points),
-                    )
-                    DialogActionsMenu(gradeScaleId = gradeScale.id, onAction = onOpenDialog)
-                }
-            }
-        }
-        HorizontalDivider()
-        if (gradeScale == null) {
-            Text(text = stringResource(Res.string.gradescale_list_no_grade_scale_selected))
-            return
-        }
-        // Using column, due a bug in CMP where on overscrolling the list, the list is not more clickable
-        val listState = rememberLazyListState()
-
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            state = listState,
-            contentPadding = PaddingValues(top = 16.dp),
-        ) {
-            itemsIndexed(gradeScale.sortedPointedGrades) { _, grade ->
-                Column(
-                    modifier = Modifier.clickable(
-                        onClick = { onOpenDialog(GradeScaleListDialogCommand.EditCurrentGrade(grade.uuid)) },
-                    ),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    GradeScaleListItem(grade = grade)
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
+                    val textFieldValue = textFieldManager(uiState.selectedGradeScale?.totalPoints?.stringWithDecimals() ?: "") {
+                        onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
+                    }
+
+                    // Only show dropdown on non-large screens
+                    GradeScaleSelectorDropdown(
+                        items = gradeScaleItems,
+                        selectedItemId = uiState.selectedGradeScale?.id,
+                        onSelectionChange = { id ->
+                            id?.let {
+                                val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
+                                selectedName?.let { onSelectGradeScale(it) }
+                            }
+                        },
+                        modifier = Modifier.weight(0.7f),
+                    )
+
+                    if (gradeScale != null) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        CalculatorTextField(
+                            modifier = Modifier.weight(0.3f).height(IntrinsicSize.Max),
+                            state = textFieldValue,
+                            textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                            label = stringResource(Res.string.gradescale_list_total_points),
+                        )
+                        DialogActionsMenu(gradeScaleId = gradeScale.id, onAction = onOpenDialog)
+                    }
                 }
             }
-            item {
-                Box(
-                    modifier = Modifier
-                        .height(16.dp)
-                        .fillMaxWidth(),
-                )
+
+            if (!isLargeScreen) {
+                HorizontalDivider()
+            }
+
+            if (gradeScale == null) {
+                Text(text = stringResource(Res.string.gradescale_list_no_grade_scale_selected))
+                return@AdaptiveGradeScaleSelector
+            }
+            val listState = rememberLazyListState()
+
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = listState,
+                contentPadding = PaddingValues(top = 16.dp),
+            ) {
+                itemsIndexed(gradeScale.sortedPointedGrades) { _, grade ->
+                    Column(
+                        modifier = Modifier.clickable(
+                            onClick = { onOpenDialog(GradeScaleListDialogCommand.EditCurrentGrade(grade.uuid)) },
+                        ),
+                    ) {
+                        GradeScaleListItem(grade = grade)
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 10.dp))
+                    }
+                }
+                item {
+                    Box(
+                        modifier = Modifier
+                            .height(16.dp)
+                            .fillMaxWidth(),
+                    )
+                }
             }
         }
     }

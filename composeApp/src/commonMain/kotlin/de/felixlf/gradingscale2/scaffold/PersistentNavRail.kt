@@ -12,13 +12,14 @@ import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.compose.currentBackStackEntryAsState
 import de.felixlf.gradingscale2.AppState
 import de.felixlf.gradingscale2.navigation.Destinations
-import de.felixlf.gradingscale2.utils.isAtLeastMediumScreenWidth
+import de.felixlf.gradingscale2.utils.isAtLeastMediumScreenWidthLocal
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -44,6 +45,7 @@ fun ScaffoldState.PersistentNavigationRail(
     exitTransition: ExitTransition,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val visible by isAtLeastMediumScreenWidthLocal()
     AnimatedVisibility(
         modifier = modifier
             .sharedElement(
@@ -51,7 +53,7 @@ fun ScaffoldState.PersistentNavigationRail(
                 animatedVisibilityScope = this,
                 zIndexInOverlay = SideNavSharedElementZIndex,
             ),
-        visible = isAtLeastMediumScreenWidth().value,
+        visible = visible,
         enter = enterTransition,
         exit = exitTransition,
         content = {
