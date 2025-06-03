@@ -11,18 +11,6 @@ plugins {
 
 kotlin {
 
-    js {
-        outputModuleName = "network"
-        browser {
-            testTask {
-                onlyIf { !System.getenv().containsKey("CI") }
-                useKarma {
-                    useFirefox()
-                }
-            }
-        }
-    }
-
     wasmJs {
         browser {
             testTask {
@@ -56,10 +44,6 @@ kotlin {
 
         iosMain.dependencies {
             implementation(libs2.ktor.client.darwin)
-        }
-
-        jsMain.dependencies {
-            implementation(libs2.ktor.client.js)
         }
 
         val wasmJsMain by getting {

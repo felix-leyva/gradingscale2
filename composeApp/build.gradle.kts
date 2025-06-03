@@ -54,9 +54,6 @@ kotlin {
                     }
                 }
             }
-            testTask {
-                enabled = false
-            }
         }
         binaries.executable()
     }
@@ -139,12 +136,6 @@ kotlin {
             }
         }
 
-        // WasmJS currently shares most dependencies with JS
-        val wasmJsMain by getting {
-            dependencies {
-                // WasmJS specific dependencies if needed
-            }
-        }
     }
 }
 android {
@@ -244,10 +235,6 @@ tasks.named("preBuild") {
     dependsOn("checkAndCreateGoogleServices", "checkAndCreateIosGoogleServices")
 }
 
-// Disable all test tasks to avoid compilation issues
-tasks.withType<Test>().configureEach {
-    enabled = false
-}
 
 dependencies {
     ksp(libs2.arrow.optics.ksp.plugin)

@@ -14,11 +14,6 @@ plugins {
 kotlin {
     applyDefaultHierarchyTemplate()
 
-    js {
-        outputModuleName = "authfirebase"
-        browser()
-    }
-
     wasmJs {
         browser {
             testTask {
@@ -47,13 +42,6 @@ kotlin {
 
         commonMain.dependencies {
             implementation(projects.entities)
-        }
-
-        jsMain {
-            dependsOn(firebaseAvailable)
-            dependencies {
-                implementation(npm("firebase", "10.7.1"))
-            }
         }
 
         val wasmJsMain by getting {

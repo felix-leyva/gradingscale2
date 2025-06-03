@@ -13,23 +13,6 @@ plugins {
 }
 
 kotlin {
-    js {
-        browser {
-            testTask {
-                onlyIf { !System.getenv().containsKey("CI") }
-                useKarma {
-                    useFirefox()
-                }
-            }
-        }
-        useCommonJs()
-        // Ensure serializers are generated for JS
-        compilations.all {
-            kotlinOptions {
-                moduleKind = "commonjs"
-            }
-        }
-    }
 
     wasmJs {
         browser {
@@ -57,13 +40,6 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(libs2.sqlite.driver)
-        }
-
-        jsMain.dependencies {
-            implementation(npm("webpack", "5.94.0"))
-            implementation(npm("copy-webpack-plugin", "9.1.0"))
-            implementation(libs2.kstore)
-            implementation(libs2.kstore.storage)
         }
 
         val wasmJsMain by getting {

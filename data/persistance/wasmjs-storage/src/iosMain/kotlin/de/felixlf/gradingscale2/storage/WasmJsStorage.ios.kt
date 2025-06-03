@@ -7,12 +7,12 @@ actual object WasmJsStorage {
     actual fun getItem(key: String): String? =
         throw UnsupportedOperationException("WasmJsStorage is only for WasmJS platform")
 
-    actual fun setItem(key: String, value: String) =
+    actual fun setItem(key: String, value: String): Unit =
         throw UnsupportedOperationException("WasmJsStorage is only for WasmJS platform")
 
-    actual fun removeItem(key: String) =
+    actual fun removeItem(key: String): Unit =
         throw UnsupportedOperationException("WasmJsStorage is only for WasmJS platform")
 
-    actual fun clear() =
+    actual fun clear(): Unit =
         throw UnsupportedOperationException("WasmJsStorage is only for WasmJS platform")
 }

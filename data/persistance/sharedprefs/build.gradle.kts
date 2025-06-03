@@ -6,23 +6,6 @@ plugins {
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
 }
 kotlin {
-    js {
-        outputModuleName = "sharedprefs"
-        browser {
-            testTask {
-                onlyIf { !System.getenv().containsKey("CI") }
-                useKarma {
-                    useFirefox()
-                }
-            }
-        }
-        // Ensure serializers are generated for JS
-        compilations.all {
-            kotlinOptions {
-                moduleKind = "commonjs"
-            }
-        }
-    }
 
     wasmJs {
         browser {
@@ -46,9 +29,6 @@ kotlin {
         jvmMain.dependencies {
             implementation(libs2.kstore.file)
             implementation(libs2.appdirs)
-        }
-        jsMain.dependencies {
-            implementation(libs2.kstore.storage)
         }
 
         val wasmJsMain by getting {

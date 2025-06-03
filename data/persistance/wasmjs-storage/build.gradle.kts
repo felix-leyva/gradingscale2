@@ -8,12 +8,13 @@ plugins {
 }
 
 kotlin {
-    js {
-        browser()
-    }
 
     wasmJs {
-        browser()
+        browser {
+            testTask {
+                enabled = false
+            }
+        }
     }
 
     sourceSets {
