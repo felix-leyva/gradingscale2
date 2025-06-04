@@ -6,6 +6,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 
 /**
  * Comfort class to generate a grade scale with a given size. This should only be used for Compose previews generation and testing.
@@ -35,7 +36,7 @@ class MockGradeScalesGenerator(
                                 nameOfScale = gradeScaleName,
                                 uuid = "${gradeNames[percentagesIndex]}_${gradeScaleName}_$percentagesIndex",
                             )
-                        }.toImmutableList(),
+                        }.toPersistentList(),
                 )
             }.toImmutableList()
     }

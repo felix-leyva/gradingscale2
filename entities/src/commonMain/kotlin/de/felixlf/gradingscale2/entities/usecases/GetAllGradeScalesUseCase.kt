@@ -20,7 +20,8 @@ internal class GetAllGradeScalesUseCaseImpl(
         gradeScaleRepository.getGradeScales()
             .onStart {
                 if (gradeScaleRepository.getGradeScales().first().isEmpty()) {
-                    generator.getGradeScales().forEach { gradeScaleRepository.upsertGradeScale(it) }
+                    generator.getGradeScales()
+                        .forEach { gradeScaleRepository.upsertGradeScale(it) }
                 }
             }
 }

@@ -1,8 +1,11 @@
 package de.felixlf.gradingscale2.entities.models
 
+import de.felixlf.gradingscale2.entities.serializers.PersistentListSerializer
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 
 /**
  * Represents a grade scale with a list of grades.
@@ -17,16 +20,21 @@ data class GradeScale(
     val id: String,
     val gradeScaleName: String,
     val totalPoints: Double,
-    val grades: ImmutableList<Grade>,
+    @Serializable(with = PersistentListSerializer::class)
+    val grades: PersistentList<Grade>,
 ) {
     init {
         require(totalPoints > 0) { "Total points must be greater than 0" }
     }
 
+    @Transient
     val sortedGrades = grades.sortedByDescending { it.percentage }.toImmutableList()
+
+    @Transient
     val sortedPointedGrades: ImmutableList<PointedGrade> =
         sortedGrades.map { it.toPointedGrade(totalPoints) }.toImmutableList()
 
+    @Transient
     val gradesNamesList = sortedGrades.map { it.namedGrade }.toImmutableList()
 
     fun getPercentageOrNull(gradeName: String): Double? =

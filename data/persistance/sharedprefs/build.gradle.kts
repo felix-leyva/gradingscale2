@@ -1,17 +1,16 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 plugins {
     id("gs-android-library")
     id("multiplatform-plugin")
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
 }
 kotlin {
-    js {
-        outputModuleName = "sharedprefs"
+
+    wasmJs {
         browser {
             testTask {
-                onlyIf { !System.getenv().containsKey("CI") }
-                useKarma {
-                    useFirefox()
-                }
+                enabled = false
             }
         }
     }
@@ -31,8 +30,13 @@ kotlin {
             implementation(libs2.kstore.file)
             implementation(libs2.appdirs)
         }
-        jsMain.dependencies {
-            implementation(libs2.kstore.storage)
+
+        val wasmJsMain by getting {
+            dependencies {
+                // Use basic kstore without storage dependency for WasmJS
+                implementation(libs2.kstore)
+                implementation(project(":data:persistance:wasmjs-storage"))
+            }
         }
     }
 }

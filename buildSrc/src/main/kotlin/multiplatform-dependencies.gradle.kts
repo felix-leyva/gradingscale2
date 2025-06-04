@@ -27,8 +27,5 @@ kotlin {
 
         iosMain.dependencies {
         }
-
-        jsMain.dependencies {
-        }
     }
 }

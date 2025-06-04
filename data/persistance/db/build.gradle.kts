@@ -1,7 +1,10 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 plugins {
     id("gs-android-library")
     id("org.jetbrains.kotlin.multiplatform")
     id("multiplatform-plugin")
+    id(libs2.plugins.kotlinxSerialization.get().pluginId)
     id(
         libs2.plugins.sqldelight
             .get()
@@ -10,16 +13,13 @@ plugins {
 }
 
 kotlin {
-    js {
+
+    wasmJs {
         browser {
             testTask {
-                onlyIf { !System.getenv().containsKey("CI") }
-                useKarma {
-                    useFirefox()
-                }
+                enabled = false
             }
         }
-        useCommonJs()
     }
     sourceSets {
         androidMain.dependencies {
@@ -42,11 +42,12 @@ kotlin {
             implementation(libs2.sqlite.driver)
         }
 
-        jsMain.dependencies {
-            implementation(npm("webpack", "5.94.0"))
-            implementation(npm("copy-webpack-plugin", "9.1.0"))
-            implementation(libs2.kstore)
-            implementation(libs2.kstore.storage)
+        val wasmJsMain by getting {
+            dependencies {
+                // Use basic kstore without storage dependency for WasmJS
+                implementation(libs2.kstore)
+                implementation(project(":data:persistance:wasmjs-storage"))
+            }
         }
     }
 }

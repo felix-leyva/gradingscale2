@@ -33,58 +33,28 @@ plugins {
 
 kotlin {
     version = "1.0"
-    // Configure JS target with more conservative options
-    js(IR) {
-        outputModuleName = "composeApp"
+
+    jvm()
+
+    @OptIn(ExperimentalWasmDsl::class)
+    wasmJs {
+        moduleName = "composeApp"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
             commonWebpackConfig {
                 outputFileName = "composeApp.js"
-                // Simplified webpack config to avoid potential conflicts
                 devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
                     static = (static ?: mutableListOf()).apply {
+                        // Serve sources to debug inside browser
                         add(rootDirPath)
                         add(projectDirPath)
                     }
                 }
             }
-            // Disable tests to simplify build
-            testTask {
-                enabled = false
-            }
         }
         binaries.executable()
-        useEsModules()
     }
-
-    jvm()
-
-//    wasmJs {
-//        moduleName = "composeApp"
-//        browser {
-//            val rootDirPath = project.rootDir.path
-//            val projectDirPath = project.projectDir.path
-//            commonWebpackConfig {
-//                outputFileName = "composeApp.js"
-//                devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
-//                    static = (static ?: mutableListOf()).apply {
-//                        // Serve sources to debug inside browser
-//                        add(rootDirPath)
-//                        add(projectDirPath)
-//                    }
-//                }
-//            }
-//            testTask {
-//                onlyIf { !System.getenv().containsKey("CI") }
-//                useKarma {
-//                    useFirefox()
-//                }
-//            }
-//        }
-//        useCommonJs()
-//        binaries.executable()
-//    }
 
     androidTarget {
         compilerOptions {
@@ -117,11 +87,13 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.materialIconsExtended)
-            implementation(libs2.material3.adaptive.navigation.suite)
+            implementation(compose.material3)
+            implementation(compose.material3AdaptiveNavigationSuite)
             implementation(compose.ui)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(libs2.navigation.compose)
+            implementation(libs2.material3.window.size)
 
             implementation(libs2.napier)
             implementation(libs2.androidx.lifecycle.viewmodel)
@@ -155,7 +127,13 @@ kotlin {
         jvmMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs2.kotlinx.coroutines.swing)
+
+            // Enable by default, disable with: -Pcompose.desktop.production=true
+            if (project.findProperty("compose.desktop.production")?.toString()?.toBoolean() != true) {
+                implementation(libs2.slf4j.simple)
+            }
         }
+
     }
 }
 android {
@@ -204,6 +182,12 @@ composeCompiler {
     featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
 
+compose {
+    resources {
+        publicResClass = true
+    }
+}
+
 tasks.register("checkAndCreateGoogleServices") {
     val googleServicesFile = layout.projectDirectory.file("google-services.json")
     val googleServicesContent = providers.environmentVariable("GOOGLE_SERVICES")
@@ -248,6 +232,7 @@ tasks.register("checkAndCreateIosGoogleServices") {
 tasks.named("preBuild") {
     dependsOn("checkAndCreateGoogleServices", "checkAndCreateIosGoogleServices")
 }
+
 
 dependencies {
     ksp(libs2.arrow.optics.ksp.plugin)

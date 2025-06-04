@@ -23,23 +23,26 @@ import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.features.weightedgradecalculator.components.GlobalGradeSummary
 import de.felixlf.gradingscale2.features.weightedgradecalculator.components.PartialGradesList
 import de.felixlf.gradingscale2.features.weightedgradecalculator.dialogs.GradeEditDialog
-import de.felixlf.gradingscale2.uicomponents.DropboxSelector
+import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
+import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
 import de.felixlf.gradingscale2.uicomponents.LoadingContent
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.add_grade
-import gradingscale2.entities.generated.resources.weighted_calculator_selected_grade_scale
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
 
 @Composable
-internal fun WeightedGradeCalculatorScreen() {
-    val viewModel: WeightedCalculatorViewModel = koinViewModel<WeightedCalculatorViewModel>()
+internal fun WeightedGradeCalculatorScreen(
+    modifier: Modifier = Modifier,
+    viewModel: WeightedCalculatorViewModel = koinViewModel<WeightedCalculatorViewModel>(),
+) {
     val uiState by viewModel.uiState.collectAsState()
 
     WeightedGradeCalculatorScreen(
+        modifier = modifier,
         uiState = uiState,
         onSendCommand = viewModel::sendCommand,
     )
@@ -47,10 +50,11 @@ internal fun WeightedGradeCalculatorScreen() {
 
 @Composable
 fun WeightedGradeCalculatorScreen(
+    modifier: Modifier = Modifier,
     uiState: WeightCalculatorUIState,
     onSendCommand: (WeightedCalculatorCommand) -> Unit,
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier.fillMaxSize()) {
         when {
             uiState.isLoading -> LoadingContent()
             else -> MainContent(
@@ -113,34 +117,43 @@ private fun MainContent(
     uiState: WeightCalculatorUIState,
     onSendCommand: (WeightedCalculatorCommand) -> Unit,
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+    // Convert UI state to persistent list for the adaptive selector
+    val gradeScaleItems = uiState.gradeScaleNameAndIds.toPersistentList()
+
+    AdaptiveGradeScaleSelector(
+        items = gradeScaleItems,
+        selectedItemId = uiState.selectedGradeScale?.id,
+        onSelectionChange = { id ->
+            onSendCommand(WeightedCalculatorCommand.SelectGradeScale(id))
+        },
     ) {
-        // Grade scale selector dropdown
-        DropboxSelector(
-            elements = uiState.gradeScaleNameAndIds.map { it.name }.toImmutableList(),
-            selectedElement = uiState.selectedGradeScale?.gradeScaleName,
-            onSelectElement = { selectedName ->
-                val selectedId = uiState.gradeScaleNameAndIds.find { it.name == selectedName }?.id
-                onSendCommand(WeightedCalculatorCommand.SelectGradeScale(selectedId))
-            },
-            modifier = Modifier.fillMaxWidth(),
-            label = stringResource(Res.string.weighted_calculator_selected_grade_scale),
-        )
+        Column(
+            modifier = Modifier.fillMaxSize().padding(16.dp),
+        ) {
+            // Only show dropdown on non-large screens
+            GradeScaleSelectorDropdown(
+                items = gradeScaleItems,
+                selectedItemId = uiState.selectedGradeScale?.id,
+                onSelectionChange = { id ->
+                    onSendCommand(WeightedCalculatorCommand.SelectGradeScale(id))
+                },
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-        GlobalGradeSummary(
-            weightedGradesSummary = uiState.weightedGradeSummary,
-            modifier = Modifier.fillMaxWidth(),
-        )
+            GlobalGradeSummary(
+                weightedGradesSummary = uiState.weightedGradeSummary,
+                modifier = Modifier.fillMaxWidth(),
+            )
 
-        // List of partial grades
-        PartialGradesList(
-            weightedGrades = uiState.weightedGrades,
-            onGradeClick = { id ->
-                onSendCommand(WeightedCalculatorCommand.SelectGrade(id))
-            },
-            modifier = Modifier.fillMaxWidth().weight(1f),
-        )
+            // List of partial grades
+            PartialGradesList(
+                weightedGrades = uiState.weightedGrades,
+                onGradeClick = { id ->
+                    onSendCommand(WeightedCalculatorCommand.SelectGrade(id))
+                },
+                modifier = Modifier.fillMaxWidth().weight(1f),
+            )
+        }
     }
 }
 

@@ -1,5 +1,8 @@
 package de.felixlf.gradingscale2.entities.models.weightedgrade
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class WeightedGrade(
     val percentage: Double,
     val weight: Double,

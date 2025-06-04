@@ -8,24 +8,24 @@ import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SetTotalPoints
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
+import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
-import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleId
-import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleId
+import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
+import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
  * This class is responsible for managing the UI state of the grade scale list screen.
  */
 class GradeListUIModel(
-    private val scope: CoroutineScope,
+    private val scope: UIModelScope,
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
-    private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleId,
-    private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleId,
+    private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase,
+    private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase,
 ) : MoleculePresenter<GradeScaleListUIState, GradeScaleListUIEvent> {
 
     // MutableStateOf causes inside the produceUI function recomposition which is helpful to update the State. If we wish to "observe" this
@@ -38,7 +38,11 @@ class GradeListUIModel(
 
     @Composable
     override fun produceUI(): GradeScaleListUIState {
-        LaunchedEffect(Unit) { getLastSelectedGradeScaleIdUseCase()?.let { gradeScaleId = it } }
+        LaunchedEffect(Unit) {
+            getLastSelectedGradeScaleIdUseCase()?.let {
+                gradeScaleId = it
+            }
+        }
         val selectedGradeScale = gradeScaleId?.let { getGradeScaleByIdUseCase(it).asState(null) }
         val modifiedGradeScale = selectedGradeScale?.copy(totalPoints = totalPoints)
         val gradeScalesNamesWithId = allGradeScalesUseCase().asState(persistentListOf()).map {
@@ -58,7 +62,7 @@ class GradeListUIModel(
         when (command) {
             is SelectGradeScale -> {
                 gradeScaleId = state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == command.gradeScaleName }?.gradeScaleId
-                scope.launch { gradeScaleId?.let { setLastSelectedGradeScaleIdUseCase(it) } }
+                scope.launch { gradeScaleId?.let { setLastSelectedGradeScaleIdUseCase.invoke(it) } }
             }
 
             is SetTotalPoints -> {

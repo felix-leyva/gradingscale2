@@ -37,7 +37,9 @@ internal interface MoleculeViewModelHelper<UIState, UIEvent> : UIStateProvider<U
     /**
      * Helper function to create the UI State [kotlinx.coroutines.flow.StateFlow].
      */
-    fun <ViewModel, UIState, UIEvent> ViewModel.moleculeState(): StateFlow<UIState> where ViewModel : androidx.lifecycle.ViewModel, ViewModel : MoleculeViewModelHelper<UIState, UIEvent> {
+    fun <ViewModel, UIState, UIEvent> ViewModel.moleculeState(): StateFlow<UIState>
+        where ViewModel : androidx.lifecycle.ViewModel,
+              ViewModel : MoleculeViewModelHelper<UIState, UIEvent> {
         return viewModelScope.launchMolecule(RecompositionMode.Immediate) {
             factory.produceUI()
         }

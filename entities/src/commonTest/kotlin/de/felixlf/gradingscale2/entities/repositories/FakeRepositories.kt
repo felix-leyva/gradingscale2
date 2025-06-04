@@ -15,7 +15,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.map
 
 /**
  * Fake implementation of GradeScaleRepository for testing.
@@ -120,7 +119,7 @@ class FakeGradesRepository : GradesRepository {
         return resultFlow
     }
 
-    override suspend fun upsertGrade(grade: Grade): Option<Unit> = option {
+    override suspend fun upsertGrade(grade: Grade): Option<Long> = option {
         ensure(!shouldFail)
 
         val existingGrade = gradesFlow.value.find { it.uuid == grade.uuid }
@@ -135,6 +134,7 @@ class FakeGradesRepository : GradesRepository {
         }
 
         gradesFlow.value = updatedList
+        1
     }
 
     override suspend fun deleteGrade(gradeId: String): Option<Unit> = option {

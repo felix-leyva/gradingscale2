@@ -7,7 +7,7 @@ import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepository
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.firstOrNull
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -57,7 +57,7 @@ internal class ImportRemoteGradeScaleIntoDbUseCaseImpl(
                     idOfGradeScale = "$maxAvailableId",
                     uuid = Uuid.random().toString(),
                 )
-            }.toImmutableList(),
+            }.toPersistentList(),
         )
         gradeScaleRepository.upsertGradeScale(newGradeScale).bind()
     }

@@ -16,4 +16,5 @@ dependencies {
     implementation(libs.gradle.sonarqube)
     implementation(libs.gradle.firebase.crashlytics.buildtools)
     implementation(libs.gradle.sqldelight)
+    implementation(libs.gson)
 }

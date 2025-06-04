@@ -2,7 +2,7 @@
 # Project specific
 appdirs = "1.4.0" # https://github.com/harawata/appdirs/releases
 arrowCore = "2.1.2" # https://github.com/arrow-kt/arrow/releases
-material3AdaptiveNavigationSuite = "1.8.1" # https://github.com/JetBrains/compose-multiplatform/releases
+gson = "2.13.1"
 moleculeRuntime = "2.1.0" # https://github.com/cashapp/molecule/releases
 napier = "2.7.1" # https://github.com/AAkira/Napier/releases - 2.8.1 exists but not for JS target (May 21, 2025)
 navigationCompose = "2.8.0-alpha13" # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html
@@ -10,11 +10,9 @@ sqlDelightVersion = "2.1.0" # https://github.com/cashapp/sqldelight/releases
 firebaseBom = "33.14.0" # https://firebase.google.com/support/release-notes/android
 kotlinxCollectionsImmutable = "0.4.0" # https://github.com/Kotlin/kotlinx.collections.immutable/releases
 multiplatformSettingsNoArg = "1.3.0" # https://github.com/russhwolf/multiplatform-settings/releases
-nativeDriver = "2.1.0" # https://github.com/cashapp/sqldelight/releases
 organization = "de.felixlf" # Project specific
 packagename = "de.felixlf.gradingscale" # Project specific
 applicationId = "de.felixlf.gradingscale2" # Project specific
-sqliteDriver = "2.1.0" # https://github.com/cashapp/sqldelight/releases
 versionCode = "1" # Project specific
 versionName = "1.0" # Project specific
 java = "17" # Java version
@@ -33,18 +31,18 @@ android-desugar = "2.1.5" # https://maven.google.com/web/index.html#com.android.
 compose-plugin = "1.8.1" # https://github.com/JetBrains/compose-multiplatform/releases
 junit = "4.13.2" # https://github.com/junit-team/junit4/releases
 kotlin = "2.1.21" # https://github.com/JetBrains/kotlin/releases
-kotlin-compiler = "2.1.21" # https://github.com/JetBrains/kotlin/releases
 compose-reload = "1.0.0-alpha10" # https://github.com/JetBrains/compose-multiplatform/releases
 kotlinx-coroutines = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines/releases
 kotlinx-dateTime = "0.6.0" # https://github.com/Kotlin/kotlinx-datetime/releases
 koin = "4.0.4" # https://insert-koin.io/ - 4.0.6 exists but not for JS target (May 21, 2025)
-ktor = "2.3.12" # https://github.com/ktorio/ktor/releases
+ktor = "3.0.0" # https://github.com/ktorio/ktor/releases - 3.0.0+ supports WasmJS
 # TODO: Cannot update to 5.6.0 and aboutlibraries, due the incompatibility with the Kotlin version
 gmazzoBuildConfig = "5.4.0" # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 aboutLibraries = "11.1.4" # https://github.com/mikepenz/AboutLibraries/releases
 
 sonarqubeGradlePlugin = "6.1.0.5360" # https://github.com/SonarSource/sonar-scanner-gradle/releases
 turbineVersion = "1.2.0" # https://github.com/cashapp/turbine/releases
+slf4j = "2.0.17" # https://www.slf4j.org/
 
 ksp = "2.1.21-2.0.1" # https://github.com/google/ksp/releases
 sqlDelightPlugin = "2.1.0" # https://github.com/cashapp/sqldelight/releases
@@ -66,8 +64,8 @@ appdirs = { module = "net.harawata:appdirs", version.ref = "appdirs" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowCore" }
 arrow-optics = { module = "io.arrow-kt:arrow-optics", version.ref = "arrowCore" }
 arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrowCore" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
-material3-adaptive-navigation-suite = { module = "org.jetbrains.compose.material3:material3-adaptive-navigation-suite", version.ref = "material3AdaptiveNavigationSuite" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" } # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html#sample-project
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelightVersion" }
@@ -95,6 +93,7 @@ android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", vers
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 compose-preview-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", version.ref = "compose-plugin" }
+material3-window-size = { group = "org.jetbrains.compose.material3", name = "material3-window-size-class", version.ref = "compose-plugin"}
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "moleculeRuntime" }
 
 # ViewModel & Coroutines
@@ -105,12 +104,15 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 
 # Persistence
 multiplatform-settings-no-arg = { module = "com.russhwolf:multiplatform-settings-no-arg", version.ref = "multiplatformSettingsNoArg" }
-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "nativeDriver" }
-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqliteDriver" }
-sqljs-driver = { module = "app.cash.sqldelight:sqljs-driver", version.ref = "sqliteDriver" }
+native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqlDelightVersion" }
+sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqlDelightVersion" }
+sqljs-driver = { module = "app.cash.sqldelight:sqljs-driver", version.ref = "sqlDelightVersion" }
 kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
 kstore-storage = { module = "io.github.xxfast:kstore-storage", version.ref = "kstore" }
 kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
+
+# Logging
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 # Firebase
 firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase-kotlin" }
@@ -139,8 +141,8 @@ koin-compose-viewmodel-nav = { module = "io.insert-koin:koin-compose-viewmodel-n
 # Plugins for buildSrc see: https://discuss.gradle.org/t/using-version-catalogs-with-precompiled-script-plugins/45417
 gradle-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" } # https://maven.google.com/web/index.html#com.android.tools.build:gradle
 gradle-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-plugin" } # https://plugins.gradle.org/plugin/org.jetbrains.compose
-gradle-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin-compiler" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.compose
-gradle-kotlinMultiplatform = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin-compiler" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.multiplatform
+gradle-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.compose
+gradle-kotlinMultiplatform = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.multiplatform
 gradle-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" } # https://maven.google.com/web/index.html#com.google.devtools.ksp
 gradle-google-services = { module = "com.google.gms.google-services:com.google.gms.google-services.gradle.plugin", version.ref = "google-services" } # https://maven.google.com/web/index.html#com.google.gms.google-services:com.google.gms.google-services.gradle.plugin
 gradle-kotlinxSerialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.serialization
@@ -152,15 +154,14 @@ gradle-sqldelight = { group = "app.cash.sqldelight", name = "app.cash.sqldelight
 gradle-hotreload = { group = "org.jetbrains.compose-hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelightVersion" }
-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin-compiler" } # https://mvnrepository.com/artifact/org.jetbrains.compose/org.jetbrains.compose.gradle.plugin
-kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin-compiler" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" } # https://mvnrepository.com/artifact/org.jetbrains.compose/org.jetbrains.compose.gradle.plugin
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 google-services = { id = "com.google.gms.google-services", version.ref = "google-services" }
 crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "firebaseCrashlyticsBuildtools" }
@@ -169,5 +170,6 @@ gmazzoBuildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "gmazz
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqubeGradlePlugin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightPlugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-compiler" }
+hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-reload" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 conveyor = { id = "dev.hydraulic.conveyor", version.ref = "conveyorVersion" }

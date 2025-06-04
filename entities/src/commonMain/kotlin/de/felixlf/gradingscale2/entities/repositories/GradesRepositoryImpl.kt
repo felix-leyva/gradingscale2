@@ -23,7 +23,7 @@ internal class GradesRepositoryImpl(
             .shareIn(scope = scope, started = SharingStarted.Lazily, replay = 1)
     }
 
-    override suspend fun upsertGrade(grade: Grade): Option<Unit> {
+    override suspend fun upsertGrade(grade: Grade): Option<Long> {
         return gradesDao.upsertGrade(grade)
     }
 

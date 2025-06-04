@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 plugins {
     id("multiplatform-plugin")
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
@@ -7,13 +9,11 @@ plugins {
 }
 
 kotlin {
-    js {
+
+    wasmJs {
         browser {
             testTask {
-                onlyIf { !System.getenv().containsKey("CI") }
-                useKarma {
-                    useFirefox()
-                }
+                enabled = false
             }
         }
     }

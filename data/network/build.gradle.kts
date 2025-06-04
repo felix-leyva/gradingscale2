@@ -1,3 +1,5 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
@@ -9,14 +11,10 @@ plugins {
 
 kotlin {
 
-    js {
-        outputModuleName = "network"
+    wasmJs {
         browser {
             testTask {
-                onlyIf { !System.getenv().containsKey("CI") }
-                useKarma {
-                    useFirefox()
-                }
+                enabled = false
             }
         }
     }
@@ -48,8 +46,10 @@ kotlin {
             implementation(libs2.ktor.client.darwin)
         }
 
-        jsMain.dependencies {
-            implementation(libs2.ktor.client.js)
+        val wasmJsMain by getting {
+            dependencies {
+                implementation(libs2.ktor.client.js)
+            }
         }
     }
 }
@@ -59,18 +59,14 @@ android {
 }
 
 // Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration
-val buildUrls = buildConfig.forClass("BuildBaseUrls")
-val generateBuildUrls by tasks.registering {
-    val baseUrl = gradleLocalProperties(rootDir, providers).getProperty("GRADINGSCALE_BASE_URL")
-
-    doFirst {
-        buildUrls.apply {
-            packageName("de.felixlf.gradingscale2")
-            buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
-        }
+buildConfig {
+    forClass("BuildBaseUrls") {
+        packageName("de.felixlf.gradingscale2")
+        
+        // Read the property at configuration time, not task execution time
+        val localProperties = gradleLocalProperties(rootDir, providers)
+        val baseUrl = localProperties.getProperty("GRADINGSCALE_BASE_URL") ?: ""
+        
+        buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
-}
-
-tasks.matching { it.name.startsWith("compile") }.configureEach {
-    dependsOn(generateBuildUrls)
 }

@@ -1,7 +1,6 @@
 package de.felixlf.gradingscale2.features.import.components
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -15,16 +14,9 @@ internal fun GradeScaleItem(
     gradeName: String,
     onClick: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier.Companion
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp),
-    ) {
-        Text(
-            text = gradeName,
-            modifier = Modifier.padding(vertical = 24.dp),
-            style = MaterialTheme.typography.bodyMedium,
-        )
-    }
+    Text(
+        text = gradeName,
+        modifier = Modifier.clickable(onClick = onClick).padding(vertical = 24.dp, horizontal = 16.dp).fillMaxWidth(),
+        style = MaterialTheme.typography.bodyMedium,
+    )
 }
