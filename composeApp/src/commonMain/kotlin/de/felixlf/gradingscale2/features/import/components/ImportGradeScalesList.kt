@@ -6,9 +6,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -22,20 +25,28 @@ internal fun ImportGradeScalesList(
     onGradeScaleClick: (String, String) -> Unit,
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(horizontal = 8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), // Added a bit more padding
     ) {
-        // Flatten all country grading scales into pairs of country and grade scale name
         countryGradingScales.forEach { countryScale ->
             val country = countryScale.country
             stickyHeader {
                 Card(
-                    modifier = Modifier.fillParentMaxWidth(),
+                    modifier = Modifier
+                        .fillParentMaxWidth()
+                        .padding(vertical = 4.dp), // Added some vertical padding around the card
+                    shape = RoundedCornerShape(12.dp), // New shape
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp) // New container color
+                    )
                 ) {
                     Text(
                         text = country,
-                        modifier = Modifier.fillMaxWidth().padding(8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp), // Increased padding for text
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant // Ensure good contrast
                     )
                 }
             }

@@ -8,14 +8,18 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme // Added
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemDefaults // Added
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation // Added
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp // Added
 import androidx.navigation.compose.currentBackStackEntryAsState
 import de.felixlf.gradingscale2.AppState
 import de.felixlf.gradingscale2.navigation.Destinations
@@ -57,7 +61,10 @@ fun ScaffoldState.PersistentNavigationRail(
         enter = enterTransition,
         exit = exitTransition,
         content = {
-            NavigationRail {
+            NavigationRail(
+                // Added for a subtle elevation effect
+                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
+            ) {
                 content()
             }
         },
@@ -101,6 +108,14 @@ fun ScaffoldState.DefaultNavigationRail(
                         textAlign = TextAlign.Center,
                     )
                 },
+                // Added for custom item colors
+                colors = NavigationRailItemDefaults.colors(
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f), // Slightly transparent indicator
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                ),
             )
         }
     }

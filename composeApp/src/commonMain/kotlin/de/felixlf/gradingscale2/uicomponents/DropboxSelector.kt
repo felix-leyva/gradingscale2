@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.uicomponents
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -11,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.theme.AppTheme
 import kotlinx.collections.immutable.ImmutableList
@@ -58,7 +61,7 @@ internal fun DropboxSelector(
             interactionSource = remember { MutableInteractionSource() },
         )
         ExposedDropdownMenu(
-            modifier = Modifier,
+            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)), // Added background color
             expanded = expandedDropdown,
             onDismissRequest = { expandedDropdown = false },
             matchTextFieldWidth = false,
@@ -72,9 +75,9 @@ internal fun DropboxSelector(
                     text = {
                         Text(text = string, style = textStyle)
                     },
-                    colors = MenuDefaults.itemColors(),
+                    colors = MenuDefaults.itemColors(), // You might want to customize item colors if the new background clashes
                 )
-                HorizontalDivider()
+                HorizontalDivider() // Consider if this divider is still needed or if its color needs adjustment
             }
         }
     }
