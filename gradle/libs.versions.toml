@@ -169,6 +169,5 @@ gmazzoBuildConfig = { id = "com.github.gmazzo.buildconfig", version.ref = "gmazz
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }
 sonarqube = { id = "org.sonarqube", version.ref = "sonarqubeGradlePlugin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightPlugin" }
-hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-reload" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-compiler" }
 conveyor = { id = "dev.hydraulic.conveyor", version.ref = "conveyorVersion" }

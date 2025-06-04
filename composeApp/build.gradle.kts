@@ -28,8 +28,6 @@ plugins {
     id(
         libs2.plugins.kotlinxSerialization.get().pluginId,
     )
-    // We add here alias, due that we do not add this buildSrc, as the Kotlin version would be enforced also there to 2.1
-    alias(libs2.plugins.hot.reload)
     alias(libs2.plugins.conveyor)
 }
 
