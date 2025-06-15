@@ -28,10 +28,10 @@ class JSAnalyticsProviderImpl : AnalyticsProvider {
                 } else {
                     null
                 }
-                
+
                 // Log event to Firebase Analytics
                 analytics.logEvent(name, jsParams)
-                
+
                 // Also log to console for debugging
                 val paramsStr = params?.entries?.joinToString(", ") { "${it.key}=${it.value}" } ?: ""
                 logToConsole("Firebase Analytics Event: $name${if (paramsStr.isNotEmpty()) " [$paramsStr]" else ""}")

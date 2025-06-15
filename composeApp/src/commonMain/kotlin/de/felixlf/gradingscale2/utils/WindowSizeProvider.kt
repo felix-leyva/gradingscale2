@@ -39,7 +39,6 @@ fun ProvideWindowSizeClass(
     val currentWindowSizeClass = getWindowSizeClass()
     val debouncedWindowSizeClass = remember { mutableStateOf(currentWindowSizeClass) }
 
-
     LaunchedEffect(currentWindowSizeClass) {
         snapshotFlow { currentWindowSizeClass }
             .distinctUntilChanged()

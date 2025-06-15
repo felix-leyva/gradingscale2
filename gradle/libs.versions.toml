@@ -3,6 +3,7 @@
 appdirs = "1.4.0" # https://github.com/harawata/appdirs/releases
 arrowCore = "2.1.2" # https://github.com/arrow-kt/arrow/releases
 gson = "2.13.1"
+haze = "1.6.4"
 moleculeRuntime = "2.1.0" # https://github.com/cashapp/molecule/releases
 napier = "2.7.1" # https://github.com/AAkira/Napier/releases - 2.8.1 exists but not for JS target (May 21, 2025)
 navigationCompose = "2.8.0-alpha13" # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html
@@ -65,6 +66,8 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrowCore" }
 arrow-optics = { module = "io.arrow-kt:arrow-optics", version.ref = "arrowCore" }
 arrow-optics-ksp-plugin = { module = "io.arrow-kt:arrow-optics-ksp-plugin", version.ref = "arrowCore" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
+haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" } # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html#sample-project

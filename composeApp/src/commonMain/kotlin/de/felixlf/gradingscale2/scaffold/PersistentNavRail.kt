@@ -63,7 +63,7 @@ fun ScaffoldState.PersistentNavigationRail(
         content = {
             NavigationRail(
                 // Added for a subtle elevation effect
-                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)
+                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
             ) {
                 content()
             }

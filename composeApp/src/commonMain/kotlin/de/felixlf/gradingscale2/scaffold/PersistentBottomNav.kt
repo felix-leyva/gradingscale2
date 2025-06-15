@@ -64,7 +64,7 @@ fun ScaffoldState.PersistentNavigationBar(
             NavigationBar(
                 // Added for a subtle elevation effect and shape
                 containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
-                modifier = Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                modifier = Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
             ) {
                 content()
             }

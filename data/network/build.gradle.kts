@@ -62,11 +62,11 @@ android {
 buildConfig {
     forClass("BuildBaseUrls") {
         packageName("de.felixlf.gradingscale2")
-        
+
         // Read the property at configuration time, not task execution time
         val localProperties = gradleLocalProperties(rootDir, providers)
         val baseUrl = localProperties.getProperty("GRADINGSCALE_BASE_URL") ?: ""
-        
+
         buildConfigField("String", "BASE_URL", "\"$baseUrl\"")
     }
 }

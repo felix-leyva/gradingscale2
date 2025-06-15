@@ -29,6 +29,7 @@ plugins {
         libs2.plugins.kotlinxSerialization.get().pluginId,
     )
     alias(libs2.plugins.conveyor)
+    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha10"
 }
 
 kotlin {
@@ -94,6 +95,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs2.navigation.compose)
             implementation(libs2.material3.window.size)
+            implementation(libs2.haze)
+            implementation(libs2.haze.materials)
 
             implementation(libs2.napier)
             implementation(libs2.androidx.lifecycle.viewmodel)
@@ -133,7 +136,6 @@ kotlin {
                 implementation(libs2.slf4j.simple)
             }
         }
-
     }
 }
 android {
@@ -232,7 +234,6 @@ tasks.register("checkAndCreateIosGoogleServices") {
 tasks.named("preBuild") {
     dependsOn("checkAndCreateGoogleServices", "checkAndCreateIosGoogleServices")
 }
-
 
 dependencies {
     ksp(libs2.arrow.optics.ksp.plugin)

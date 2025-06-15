@@ -1,7 +1,7 @@
 package de.felixlf.gradingscale2
 
-import kotlin.js.Promise as JsPromise
 import kotlinx.coroutines.await
+import kotlin.js.Promise as JsPromise
 
 // External declarations for Firebase JS SDK loaded via CDN
 external interface FirebaseApp : JsAny {
@@ -29,7 +29,9 @@ external interface FirebaseAnalytics : JsAny {
 }
 
 // Package-level functions required for js() usage in Kotlin/WASM
-fun getFirebaseApp(): FirebaseApp? = js("(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) ? firebase.apps[0] : null")
+fun getFirebaseApp(): FirebaseApp? = js(
+    "(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0) ? firebase.apps[0] : null",
+)
 fun getFirebaseAuth(): FirebaseAuth? = js("(typeof firebase !== 'undefined' && firebase.auth) ? firebase.auth() : null")
 fun getFirebaseAnalytics(): FirebaseAnalytics? = js("(typeof firebase !== 'undefined' && firebase.analytics) ? firebase.analytics() : null")
 fun isFirebaseInitialized(): Boolean = js("!!(typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length > 0)")
