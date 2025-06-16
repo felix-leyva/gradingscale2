@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.theme.LocalHazeState
+import de.felixlf.gradingscale2.theme.transparentHaze
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
-import dev.chrisbanes.haze.materials.HazeMaterials
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -66,7 +66,7 @@ internal fun DropboxSelector(
         ExposedDropdownMenu(
             modifier = Modifier.hazeEffect(
                 LocalHazeState.current,
-                HazeMaterials.ultraThin(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)),
+                transparentHaze(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)),
             ),
             expanded = expandedDropdown,
             onDismissRequest = { expandedDropdown = false },
