@@ -39,10 +39,12 @@ import de.felixlf.gradingscale2.features.list.upsertgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.InsertGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleDialog
 import de.felixlf.gradingscale2.theme.AppTheme
+import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
 import de.felixlf.gradingscale2.utils.isLargeScreenWidthLocal
 import de.felixlf.gradingscale2.utils.textFieldManager
+import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_list_no_grade_scale_selected
 import gradingscale2.entities.generated.resources.gradescale_list_total_points
@@ -128,7 +130,7 @@ private fun GradeScaleListScreen(
         },
     ) {
         Column(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize(),
         ) {
             Row(
                 modifier = Modifier.padding(8.dp),

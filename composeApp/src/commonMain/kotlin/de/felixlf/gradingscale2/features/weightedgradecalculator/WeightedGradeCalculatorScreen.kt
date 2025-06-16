@@ -23,9 +23,11 @@ import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.features.weightedgradecalculator.components.GlobalGradeSummary
 import de.felixlf.gradingscale2.features.weightedgradecalculator.components.PartialGradesList
 import de.felixlf.gradingscale2.features.weightedgradecalculator.dialogs.GradeEditDialog
+import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
 import de.felixlf.gradingscale2.uicomponents.LoadingContent
+import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.add_grade
 import kotlinx.collections.immutable.toPersistentList
@@ -54,7 +56,7 @@ fun WeightedGradeCalculatorScreen(
     uiState: WeightCalculatorUIState,
     onSendCommand: (WeightedCalculatorCommand) -> Unit,
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize()) {
         when {
             uiState.isLoading -> LoadingContent()
             else -> MainContent(

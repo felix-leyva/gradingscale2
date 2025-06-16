@@ -1,6 +1,5 @@
 package de.felixlf.gradingscale2.uicomponents
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
@@ -24,11 +23,15 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.theme.AppTheme
+import de.felixlf.gradingscale2.theme.LocalHazeState
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.materials.HazeMaterials
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
 @Composable
 internal fun DropboxSelector(
     elements: ImmutableList<String>,
@@ -61,7 +64,10 @@ internal fun DropboxSelector(
             interactionSource = remember { MutableInteractionSource() },
         )
         ExposedDropdownMenu(
-            modifier = Modifier.background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)), // Added background color
+            modifier = Modifier.hazeEffect(
+                LocalHazeState.current,
+                HazeMaterials.ultraThin(MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp)),
+            ),
             expanded = expandedDropdown,
             onDismissRequest = { expandedDropdown = false },
             matchTextFieldWidth = false,

@@ -35,7 +35,7 @@ kotlin = "2.1.21" # https://github.com/JetBrains/kotlin/releases
 compose-reload = "1.0.0-alpha10" # https://github.com/JetBrains/compose-multiplatform/releases
 kotlinx-coroutines = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines/releases
 kotlinx-dateTime = "0.6.0" # https://github.com/Kotlin/kotlinx-datetime/releases
-koin = "4.0.4" # https://insert-koin.io/ - 4.0.6 exists but not for JS target (May 21, 2025)
+koin = "4.1.0" # https://insert-koin.io/ - 4.0.6 exists but not for JS target (May 21, 2025)
 ktor = "3.0.0" # https://github.com/ktorio/ktor/releases - 3.0.0+ supports WasmJS
 # TODO: Cannot update to 5.6.0 and aboutlibraries, due the incompatibility with the Kotlin version
 gmazzoBuildConfig = "5.4.0" # https://github.com/gmazzo/gradle-buildconfig-plugin/releases

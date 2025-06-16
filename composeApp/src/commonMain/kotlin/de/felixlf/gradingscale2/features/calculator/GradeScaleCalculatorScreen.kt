@@ -21,11 +21,13 @@ import de.felixlf.gradingscale2.entities.features.calculator.GradeScaleCalculato
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.entities.util.stringWithDecimals
+import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
 import de.felixlf.gradingscale2.utils.isLargeScreenWidthLocal
 import de.felixlf.gradingscale2.utils.textFieldManager
+import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.calculator_screen_grade_name_dropbox_default
 import gradingscale2.entities.generated.resources.calculator_screen_grade_name_dropbox_label
@@ -81,7 +83,6 @@ private fun GradeScaleCalculatorScreen(
             GradeScaleNameAndId(id = it.gradeScaleId, name = it.gradeScaleName)
         }.toPersistentList()
     }
-
     AdaptiveGradeScaleSelector(
         items = gradeScaleItems,
         selectedItemId = uiState.selectedGradeScale?.id,
@@ -93,7 +94,7 @@ private fun GradeScaleCalculatorScreen(
         },
     ) {
         Column(
-            modifier = modifier.fillMaxSize().padding(16.dp),
+            modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize().padding(16.dp),
         ) {
             // Only show dropdown on non-large screens
             GradeScaleSelectorDropdown(

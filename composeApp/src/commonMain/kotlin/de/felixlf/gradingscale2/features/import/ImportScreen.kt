@@ -24,8 +24,10 @@ import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
 import de.felixlf.gradingscale2.features.import.components.ImportErrorContent
 import de.felixlf.gradingscale2.features.import.components.ImportGradeScalesList
 import de.felixlf.gradingscale2.features.import.dialogs.ImportDialog
+import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.uicomponents.LoadingContent
+import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.import_country_and_scale_name
 import gradingscale2.entities.generated.resources.import_filter_by_country
@@ -54,7 +56,7 @@ fun ImportScreen(
     uiState: ImportUIState,
     onSendCommand: (ImportCommand) -> Unit,
 ) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize(), contentAlignment = Alignment.Center) {
         when {
             uiState.isLoading && uiState.countryGradingScales.isEmpty() -> LoadingContent()
 
