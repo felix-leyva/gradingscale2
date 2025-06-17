@@ -103,8 +103,7 @@ private fun UpsertGradeScaleDialog(
                     }
                 }
 
-                UpsertGradeScaleUIState.State.SaveError -> Unit // TODO: Implement error message
-                is UpsertGradeScaleUIState.State.Success -> Unit // TODO: define if implement success message
+                UpsertGradeScaleUIState.State.SaveError, is UpsertGradeScaleUIState.State.Success -> Unit
             }
         }
     }

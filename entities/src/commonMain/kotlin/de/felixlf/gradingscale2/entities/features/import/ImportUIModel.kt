@@ -14,11 +14,17 @@ import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.ImportRemoteGradeScaleIntoDbUseCase
 import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
+import de.felixlf.gradingscale2.entities.usecases.TrackErrorUseCase
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.import_grade_get_remote_grades_error
+import gradingscale2.entities.generated.resources.import_grade_open_import_dialog_error
+import gradingscale2.entities.generated.resources.import_grade_save_success_message
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 
 class ImportUIModel(
     override val scope: UIModelScope,
@@ -26,6 +32,7 @@ class ImportUIModel(
     private val getRemoteGradeScaleUseCase: GetRemoteGradeScaleUseCase,
     private val importRemoteGradeScaleIntoDbUseCase: ImportRemoteGradeScaleIntoDbUseCase,
     private val showSnackbarUseCase: ShowSnackbarUseCase,
+    private val trackErrorUseCase: TrackErrorUseCase,
 ) : UIModel<ImportUIState, ImportCommand, ImportUIEvent> {
 
     override val events: Channel<ImportUIEvent> = Channel()
@@ -33,7 +40,7 @@ class ImportUIModel(
     internal var countriesAndGrades: ImmutableList<CountryGradingScales> by mutableStateOf(persistentListOf())
     internal var displayedGradeScaleDTO: GradeScaleDTO? by mutableStateOf(null)
     private var selectedCountry: Country? by mutableStateOf(null)
-    private var error: String? by mutableStateOf(null)
+    private var error: StringResource? by mutableStateOf(null)
     private var isLoading by mutableStateOf(true)
 
     @Composable
@@ -53,7 +60,10 @@ class ImportUIModel(
             isLoading = true
             getRemoteGradeScalesUseCase()
                 .onRight { countriesAndGrades = it }
-                .onLeft { error = it.message } // TODO: handle error with string resources
+                .onLeft {
+                    trackErrorUseCase("$TAG#loadGrades", it.message, it.code)
+                    error = Res.string.import_grade_get_remote_grades_error
+                }
             isLoading = false
         }
     }
@@ -67,7 +77,7 @@ class ImportUIModel(
                             scope.launch {
                                 displayedGradeScaleDTO = null
                                 showSnackbarUseCase(
-                                    message = "Grade scale imported successfully",
+                                    message = Res.string.import_grade_save_success_message,
                                     actionLabel = null,
                                     duration = ShowSnackbarUseCase.SnackbarDuration.Short,
                                 )
@@ -79,7 +89,10 @@ class ImportUIModel(
             is ImportCommand.OpenImportDialog -> doLoadingOperation {
                 getRemoteGradeScaleUseCase(command.countryAndName)
                     .onRight { displayedGradeScaleDTO = it }
-                    .onLeft { error = it.message } // TODO: handle error with string resources
+                    .onLeft {
+                        trackErrorUseCase("$TAG#loadGrades", it.message, it.code)
+                        error = Res.string.import_grade_open_import_dialog_error
+                    }
             }
 
             is ImportCommand.SelectCountry -> selectedCountry = command.country
@@ -98,5 +111,9 @@ class ImportUIModel(
             operation()
             isLoading = false
         }
+    }
+
+    private companion object {
+        const val TAG = "ImportUIModel"
     }
 }

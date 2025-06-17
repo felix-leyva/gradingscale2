@@ -4,13 +4,15 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.getString
 
 internal class ShowSnackbarUseCaseImpl(
     private val snackbarHostState: SnackbarHostState,
 ) : ShowSnackbarUseCase {
     override suspend fun invoke(
-        message: String,
-        actionLabel: String?,
+        message: StringResource,
+        actionLabel: StringResource?,
         duration: ShowSnackbarUseCase.SnackbarDuration?,
     ): ShowSnackbarUseCase.SnackbarResult {
         val duration = when (duration) {
@@ -18,8 +20,8 @@ internal class ShowSnackbarUseCaseImpl(
             else -> SnackbarDuration.Short
         }
         val result = snackbarHostState.showSnackbar(
-            message = message,
-            actionLabel = actionLabel,
+            message = getString(message),
+            actionLabel = actionLabel?.let { getString(it) },
             duration = duration,
         )
         return when (result) {

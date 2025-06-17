@@ -10,7 +10,10 @@ import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
+import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.gradescale_list_dialog_error_saving
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +23,7 @@ class UpsertGradeScaleUIStateFactory(
     private val getAllGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val insertGradeScaleUseCase: InsertGradeScaleUseCase,
     private val updateGradeScaleUseCase: UpdateGradeScaleUseCase,
+    private val showSnackbarUseCase: ShowSnackbarUseCase,
     private val scope: CoroutineScope,
 ) : MoleculePresenter<UpsertGradeScaleUIState, UpserGradeScaleUIEvent> {
     private var newGradeScaleName by mutableStateOf("")
@@ -74,8 +78,8 @@ class UpsertGradeScaleUIStateFactory(
                     defaultGradeName = event.defaultGradeName,
                 )
             }.onSome { uiSaveState = State.Success(it) }.onNone {
-                uiSaveState =
-                    State.SaveError
+                uiSaveState = State.SaveError
+                showSnackbarUseCase(message = Res.string.gradescale_list_dialog_error_saving, actionLabel = null, duration = null)
             }
         }
     }

@@ -44,6 +44,8 @@ import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.TrackErrorUseCase
+import de.felixlf.gradingscale2.entities.usecases.TrackErrorUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
@@ -85,6 +87,7 @@ val entitiesModule =
         singleOf(::UpsertWeightedGradeUseCaseImpl).bind<UpsertWeightedGradeUseCase>()
         singleOf(::GetLastSelectedGradeScaleIdUseCaseImpl).bind<GetLastSelectedGradeScaleIdUseCase>()
         singleOf(::SetLastSelectedGradeScaleIdUseCaseImpl).bind<SetLastSelectedGradeScaleIdUseCase>()
+        singleOf(::TrackErrorUseCaseImpl).bind<TrackErrorUseCase>()
 
         // UI Model
         factory { get<DispatcherProvider>().newUIScope() }.bind<UIModelScope>()

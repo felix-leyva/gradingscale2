@@ -13,6 +13,7 @@ import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
+import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import kotlinx.collections.immutable.persistentListOf
@@ -61,6 +62,10 @@ class UpsertGradeScaleUIStateFactoryTest {
         )
     }.toImmutableList()
 
+    private val mockShowSnackbarUseCase = ShowSnackbarUseCase { _, _, _ ->
+        ShowSnackbarUseCase.SnackbarResult.ActionPerformed
+    }
+
     private fun TestScope.setUseCase(
         insertGradeScaleUseCase: InsertGradeScaleUseCase = defaultInsertGradeScaleUseCase,
         updateGradeScaleUseCase: UpdateGradeScaleUseCase = defaultUpdateGradeScaleUseCase,
@@ -68,6 +73,7 @@ class UpsertGradeScaleUIStateFactoryTest {
         getAllGradeScalesUseCase = getAllGradeScalesUseCase,
         insertGradeScaleUseCase = insertGradeScaleUseCase,
         updateGradeScaleUseCase = updateGradeScaleUseCase,
+        showSnackbarUseCase = mockShowSnackbarUseCase,
         scope = this,
     )
 

@@ -24,6 +24,7 @@ kotlin {
             implementation(libs2.molecule.runtime)
             implementation(libs2.kotlinx.collections.immutable)
             implementation(libs2.kotlinx.serialization)
+            implementation(libs2.napier)
         }
     }
 }

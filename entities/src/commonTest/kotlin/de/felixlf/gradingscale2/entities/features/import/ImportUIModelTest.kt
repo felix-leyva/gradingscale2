@@ -10,10 +10,14 @@ import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
 import de.felixlf.gradingscale2.entities.models.remote.RemoteError
 import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.testMoleculeFlow
+import de.felixlf.gradingscale2.entities.usecases.FakeTrackerUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.ImportRemoteGradeScaleIntoDbUseCase
 import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.import_grade_get_remote_grades_error
+import gradingscale2.entities.generated.resources.import_grade_open_import_dialog_error
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -65,6 +69,8 @@ class ImportUIModelTest {
 
     private lateinit var showSnackbarUseCase: ShowSnackbarUseCase
 
+    private lateinit var fakeTrackerUseCase: FakeTrackerUseCase
+
     // Subject under test
     private lateinit var importUIModel: ImportUIModel
 
@@ -98,6 +104,8 @@ class ImportUIModelTest {
         showSnackbarUseCase = ShowSnackbarUseCase { _, _, _ ->
             ShowSnackbarUseCase.SnackbarResult.Dismissed
         }
+
+        fakeTrackerUseCase = FakeTrackerUseCase()
     }
 
     private fun TestScope.initSUT() {
@@ -108,6 +116,7 @@ class ImportUIModelTest {
             getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
             importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
             showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
         )
     }
 
@@ -150,6 +159,7 @@ class ImportUIModelTest {
             getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
             importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
             showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
         )
 
         // Observe states
@@ -161,7 +171,8 @@ class ImportUIModelTest {
             val errorState = if (loadingState.error == null) awaitItem() else loadingState
 
             // Verify error is captured
-            assertEquals(testRemoteError.message, errorState.error)
+            assertEquals(testRemoteError.message, fakeTrackerUseCase.reportedErrors.value?.message)
+            assertEquals(Res.string.import_grade_get_remote_grades_error, errorState.error)
 
             // Clean up
             cancelAndIgnoreRemainingEvents()
@@ -248,6 +259,7 @@ class ImportUIModelTest {
             getRemoteGradeScaleUseCase = errorUseCase,
             importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
             showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
         )
 
         testMoleculeFlow(errorModel) {
@@ -269,7 +281,8 @@ class ImportUIModelTest {
             val errorState = if (nextState.error == null) awaitItem() else nextState
 
             // Verify
-            assertEquals(testRemoteError.message, errorState.error)
+            assertEquals(testRemoteError.message, fakeTrackerUseCase.reportedErrors.value?.message)
+            assertEquals(Res.string.import_grade_open_import_dialog_error, errorState.error)
             assertFalse(errorState.isLoading)
 
             // Clean up
@@ -358,6 +371,7 @@ class ImportUIModelTest {
             getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
             importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
             showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
         )
 
         testMoleculeFlow(multiCountryModel) {

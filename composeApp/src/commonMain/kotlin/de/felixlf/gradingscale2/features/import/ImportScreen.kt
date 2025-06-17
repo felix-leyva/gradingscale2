@@ -31,7 +31,9 @@ import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.import_country_and_scale_name
 import gradingscale2.entities.generated.resources.import_filter_by_country
+import gradingscale2.entities.generated.resources.import_grade_get_remote_grades_error
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -60,7 +62,7 @@ fun ImportScreen(
         when {
             uiState.isLoading && uiState.countryGradingScales.isEmpty() -> LoadingContent()
 
-            uiState.error != null -> ImportErrorContent(error = uiState.error!!) {
+            uiState.error != null -> ImportErrorContent(error = stringResource(uiState.error!!)) {
                 onSendCommand(ImportCommand.Refresh)
             }
 
@@ -138,6 +140,7 @@ fun ImportScreenPreviewLoadingInitial() {
     }
 }
 
+@OptIn(InternalResourceApi::class)
 @Preview
 @Composable
 fun ImportScreenPreviewError() {
@@ -145,7 +148,7 @@ fun ImportScreenPreviewError() {
         Surface {
             ImportScreen(
                 uiState = ImportUIState(
-                    error = "Network error",
+                    error = Res.string.import_grade_get_remote_grades_error,
                     isLoading = false,
                     countryGradingScales = persistentListOf(),
                     displayedGradeScaleDTO = null,

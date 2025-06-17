@@ -13,6 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.import_grade_data_loading_error
+import gradingscale2.entities.generated.resources.import_grade_retry_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun ImportErrorContent(error: String, onRetry: () -> Unit) {
@@ -25,7 +29,7 @@ fun ImportErrorContent(error: String, onRetry: () -> Unit) {
         Spacer(modifier = Modifier.Companion.weight(1f))
 
         Text(
-            text = "Error loading data",
+            text = stringResource(Res.string.import_grade_data_loading_error),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Companion.Center,
         )
@@ -41,7 +45,7 @@ fun ImportErrorContent(error: String, onRetry: () -> Unit) {
         Spacer(modifier = Modifier.Companion.height(16.dp))
 
         Button(onClick = onRetry) {
-            Text("Retry")
+            Text(stringResource(Res.string.import_grade_retry_button))
         }
 
         Spacer(modifier = Modifier.Companion.weight(1f))

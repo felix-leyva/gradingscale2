@@ -20,6 +20,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeSummary
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.weighted_grade_summary_percentage
+import gradingscale2.entities.generated.resources.weighted_grade_summary_points
+import gradingscale2.entities.generated.resources.weighted_grade_summary_title
+import gradingscale2.entities.generated.resources.weighted_grade_summary_total
+import gradingscale2.entities.generated.resources.weighted_grade_summary_total_points
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun GlobalGradeSummary(
@@ -34,7 +41,7 @@ internal fun GlobalGradeSummary(
     ) {
         Column(modifier = modifier) {
             Text(
-                text = "Global grade",
+                text = stringResource(Res.string.weighted_grade_summary_title),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
@@ -45,22 +52,22 @@ internal fun GlobalGradeSummary(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 GlobalGradeItem(
-                    label = "Total grade",
+                    label = stringResource(Res.string.weighted_grade_summary_total),
                     value = weightedGradesSummary?.totalGradeName,
                 )
                 Divider()
                 GlobalGradeItem(
-                    label = "Percentage",
+                    label = stringResource(Res.string.weighted_grade_summary_percentage),
                     value = weightedGradesSummary?.weightedPercentage,
                 )
                 Divider()
                 GlobalGradeItem(
-                    label = "Points",
+                    label = stringResource(Res.string.weighted_grade_summary_points),
                     value = weightedGradesSummary?.earnedPoints,
                 )
                 Divider()
                 GlobalGradeItem(
-                    label = "Total points",
+                    label = stringResource(Res.string.weighted_grade_summary_total_points),
                     value = weightedGradesSummary?.totalPoints,
                 )
             }

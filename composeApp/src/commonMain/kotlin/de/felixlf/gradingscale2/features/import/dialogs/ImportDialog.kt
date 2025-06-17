@@ -17,6 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.import_dialog_no_button
+import gradingscale2.entities.generated.resources.import_dialog_title
+import gradingscale2.entities.generated.resources.import_dialog_yes_button
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 internal fun ImportDialog(
@@ -26,7 +31,7 @@ internal fun ImportDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Import the selected grade scale?") },
+        title = { Text(stringResource(Res.string.import_dialog_title)) },
         text = {
             Column {
                 Text(
@@ -63,12 +68,12 @@ internal fun ImportDialog(
         },
         confirmButton = {
             TextButton(onClick = onConfirm) {
-                Text("YES")
+                Text(stringResource(Res.string.import_dialog_yes_button))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("NO")
+                Text(stringResource(Res.string.import_dialog_no_button))
             }
         },
     )
