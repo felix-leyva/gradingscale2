@@ -2,8 +2,8 @@
 # Project specific
 appdirs = "1.4.0" # https://github.com/harawata/appdirs/releases
 arrowCore = "2.1.2" # https://github.com/arrow-kt/arrow/releases
-gson = "2.13.1"
-haze = "1.6.4"
+gson = "2.13.1" # https://search.maven.org/artifact/com.google.code.gson/gson
+haze = "1.6.4" # https://github.com/chrisbanes/haze/releases
 moleculeRuntime = "2.1.0" # https://github.com/cashapp/molecule/releases
 napier = "2.7.1" # https://github.com/AAkira/Napier/releases - 2.8.1 exists but not for JS target (May 21, 2025)
 navigationCompose = "2.8.0-alpha13" # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html
@@ -44,7 +44,6 @@ aboutLibraries = "11.1.4" # https://github.com/mikepenz/AboutLibraries/releases
 sonarqubeGradlePlugin = "6.1.0.5360" # https://github.com/SonarSource/sonar-scanner-gradle/releases
 turbineVersion = "1.2.0" # https://github.com/cashapp/turbine/releases
 slf4j = "2.0.17" # https://www.slf4j.org/
-
 ksp = "2.1.21-2.0.1" # https://github.com/google/ksp/releases
 sqlDelightPlugin = "2.1.0" # https://github.com/cashapp/sqldelight/releases
 kstore = "0.9.1" # https://github.com/xxfast/KStore/releases
@@ -56,7 +55,6 @@ google-services = "4.4.2" # https://developers.google.com/android/guides/google-
 firebaseCrashlyticsBuildtools = "3.0.3" # https://firebase.google.com/support/release-notes/android
 foundationAndroid = "1.8.2" # https://developer.android.com/jetpack/androidx/releases/compose-foundation
 coreKtx = "1.16.0" # https://developer.android.com/jetpack/androidx/releases/core
-
 conveyorVersion = "1.12" # https://github.com/hydraulic-software/conveyor/releases
 
 [libraries]
