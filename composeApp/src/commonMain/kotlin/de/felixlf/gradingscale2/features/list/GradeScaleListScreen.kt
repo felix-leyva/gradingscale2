@@ -24,6 +24,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent
@@ -157,6 +158,7 @@ private fun GradeScaleListScreen(
 
                     if (gradeScale != null) {
                         Spacer(modifier = Modifier.width(8.dp))
+                        val keyboardController = LocalSoftwareKeyboardController.current
                         CalculatorTextField(
                             modifier = Modifier.weight(0.3f).height(IntrinsicSize.Max),
                             state = textFieldValue,

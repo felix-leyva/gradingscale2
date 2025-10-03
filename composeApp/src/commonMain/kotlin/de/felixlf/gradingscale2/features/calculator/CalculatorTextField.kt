@@ -17,6 +17,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 
@@ -31,7 +32,10 @@ internal fun CalculatorTextField(
     readOnly: Boolean = false,
     singleLine: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
+        keyboardType = KeyboardType.Number,
+        imeAction = ImeAction.Done,
+    ),
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     inputTransformation: InputTransformation? = null,

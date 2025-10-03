@@ -12,23 +12,11 @@ import kotlinx.browser.document
  */
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    println("=== WasmJS App Starting ===")
-
     try {
-        println("Step 1: Initializing Koin...")
-
-        // Initialize Koin dependency injection
         de.felixlf.gradingscale2.di.koinSetup()
-
-        println("Step 2: Creating ComposeViewport...")
-
         ComposeViewport(document.body!!) {
-            org.koin.compose.KoinContext {
-                App()
-            }
+            App()
         }
-
-        println("Step 3: ComposeViewport created successfully")
     } catch (e: Throwable) {
         println("=== ERROR in main ===")
         println("Error type: ${e::class.simpleName}")

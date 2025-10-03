@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalWasmJsInterop::class)
+
 package de.felixlf.gradingscale2
 
 import kotlinx.coroutines.await

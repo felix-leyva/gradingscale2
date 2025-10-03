@@ -29,17 +29,15 @@ plugins {
         libs2.plugins.kotlinxSerialization.get().pluginId,
     )
     alias(libs2.plugins.conveyor)
-    id("org.jetbrains.compose.hot-reload") version "1.0.0-alpha10"
+    alias(libs2.plugins.hot.reload)
 }
 
 kotlin {
-    version = "1.0"
-
     jvm()
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        moduleName = "composeApp"
+        outputModuleName = "composeApp"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
@@ -139,7 +137,7 @@ kotlin {
     }
 }
 android {
-    namespace = "de.felixlf.gradingscale2"
+    namespace = libs2.versions.applicationId.get()
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
@@ -147,7 +145,7 @@ android {
 
 compose.desktop {
     application {
-        mainClass = "de.felixlf.gradingscale2.MainKt"
+        mainClass = libs2.versions.mainClassName.get()
         buildTypes {
             release {
                 proguard {
@@ -158,14 +156,14 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "grading-scale"
-            packageVersion = "1.0.0"
+            packageName = libs2.versions.desktopPackageName.get()
+            packageVersion = libs2.versions.appVersion.get()
             modules("java.instrument", "java.management", "java.sql", "jdk.unsupported")
 
             macOS {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.icns"))
-                bundleID = "de.felixlf.gradingscale2"
-                packageName = "Grading Scale"
+                bundleID = libs2.versions.applicationId.get()
+                packageName = libs2.versions.appDisplayName.get()
                 appStore = true
                 appCategory = "public.app-category.utilities"
             }
@@ -178,10 +176,6 @@ compose.desktop {
             }
         }
     }
-}
-
-composeCompiler {
-    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
 
 compose {
