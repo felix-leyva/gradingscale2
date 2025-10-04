@@ -21,33 +21,33 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ImportErrorContent(error: String, onRetry: () -> Unit) {
     Column(
-        modifier = Modifier.Companion
+        modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.Companion.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.Companion.weight(1f))
+        Spacer(modifier = Modifier.weight(1f))
 
         Text(
             text = stringResource(Res.string.import_grade_data_loading_error),
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Companion.Center,
+            textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.Companion.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = error,
             style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Companion.Center,
+            textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.Companion.height(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(onClick = onRetry) {
             Text(stringResource(Res.string.import_grade_retry_button))
         }
 
-        Spacer(modifier = Modifier.Companion.weight(1f))
+        Spacer(modifier = Modifier.weight(1f))
     }
 }

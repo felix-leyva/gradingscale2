@@ -26,7 +26,7 @@ internal val FirebaseAuthPlugin =
             originalCall.response.run {
                 val updatedIdToken = provider.refreshToken().getOrNull()
                 when {
-                    status == HttpStatusCode.Companion.Unauthorized && updatedIdToken != null -> {
+                    status == HttpStatusCode.Unauthorized && updatedIdToken != null -> {
                         request.addAuthToken(updatedIdToken)
                         proceed(request)
                     }

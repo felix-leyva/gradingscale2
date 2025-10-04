@@ -37,10 +37,10 @@ internal fun ImportDialog(
                 Text(
                     text = "${gradeScale.country}: ${gradeScale.gradeScaleName}",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Companion.Bold,
+                    fontWeight = FontWeight.Bold,
                 )
 
-                Spacer(modifier = Modifier.Companion.height(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -48,17 +48,17 @@ internal fun ImportDialog(
                     gradeScale.grades.forEach { grade ->
                         item {
                             Row(
-                                modifier = Modifier.Companion
+                                modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp),
                             ) {
                                 Text(
                                     text = grade.gradeName,
-                                    modifier = Modifier.Companion.weight(1f),
+                                    modifier = Modifier.weight(1f),
                                 )
                                 Text(
                                     text = "${(grade.percentage * 100).toInt()}%",
-                                    modifier = Modifier.Companion.weight(1f),
+                                    modifier = Modifier.weight(1f),
                                 )
                             }
                         }
