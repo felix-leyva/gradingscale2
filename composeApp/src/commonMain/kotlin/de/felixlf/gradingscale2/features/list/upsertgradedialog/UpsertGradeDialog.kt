@@ -110,7 +110,7 @@ private fun UpsertGradeDialog(
                 CircularProgressIndicator(modifier = Modifier.padding(32.dp))
                 return@Card
             }
-            
+
             val keyboardController = LocalSoftwareKeyboardController.current
             val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
 
