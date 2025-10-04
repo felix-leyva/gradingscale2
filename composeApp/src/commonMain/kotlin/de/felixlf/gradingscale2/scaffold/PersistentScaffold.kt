@@ -44,7 +44,7 @@ fun AnimatedContentScope.PersistentScaffold(
         navigationRail = navigationRail,
         content = {
             Scaffold(
-                modifier = modifier,
+                modifier = Modifier,
                 topBar = { scaffoldState.topBar() },
                 floatingActionButton = { scaffoldState.floatingActionButton() },
                 bottomBar = { bottomBar() },
