@@ -73,6 +73,19 @@ kotlin {
         }
     }
 
+    // Disable iOS tests due to Firebase framework linking issues in test binaries
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+        if (name.startsWith("ios")) {
+            binaries.all {
+                if (this is org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable) {
+                    linkTaskProvider.configure {
+                        enabled = false
+                    }
+                }
+            }
+        }
+    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
