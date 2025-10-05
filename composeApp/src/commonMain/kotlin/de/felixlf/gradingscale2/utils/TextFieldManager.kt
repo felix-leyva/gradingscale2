@@ -19,8 +19,8 @@ import kotlinx.coroutines.delay
 @Composable
 fun textFieldManager(
     externalFieldValue: String,
-    delay: Long = 200,
-    onChangeExternalFieldValue: (String) -> Unit,
+    delay: Long = 400,
+    onChangeExternalFieldValue: TextFieldState.(String) -> Unit,
 ): TextFieldState {
     val textFieldState = rememberTextFieldState(externalFieldValue)
 
@@ -28,7 +28,7 @@ fun textFieldManager(
         delay(delay)
         val fieldText = textFieldState.text.toString()
         if (fieldText != externalFieldValue) {
-            onChangeExternalFieldValue(fieldText)
+            textFieldState.onChangeExternalFieldValue(fieldText)
         }
     }
 

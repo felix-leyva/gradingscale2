@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.selectAll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,6 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIEvent
@@ -116,6 +124,11 @@ private fun GradeScaleCalculatorScreen(
             if (gradeScale == null) {
                 Text(text = stringResource(Res.string.gradescale_list_select_grade_scale))
             } else {
+                // Create focus requesters for all fields
+                val totalPointsFocusRequester = remember { FocusRequester() }
+                val pointsFocusRequester = remember { FocusRequester() }
+                val percentageFocusRequester = remember { FocusRequester() }
+
                 Column(
                     modifier = Modifier.wrapContentWidth(),
                     verticalArrangement = Arrangement.SpaceBetween,
@@ -125,22 +138,37 @@ private fun GradeScaleCalculatorScreen(
                     ) {
                         val totalPointsState = textFieldManager(uiState.totalPoints?.stringWithDecimals() ?: "") {
                             onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
+                            edit { selectAll() }
                         }
 
                         CalculatorTextField(
                             modifier = Modifier.padding(vertical = 16.dp).weight(1f),
                             state = totalPointsState,
                             label = stringResource(Res.string.calculator_screen_total_points_input),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next,
+                            ),
+                            onKeyboardAction = { pointsFocusRequester.requestFocus() },
+                            focusRequester = totalPointsFocusRequester,
                         )
 
                         val pointState = textFieldManager(uiState.currentGrade?.points?.stringWithDecimals() ?: "") {
                             onSetPoints(it.toDoubleOrNull() ?: 0.0)
+                            edit { selectAll() }
                         }
 
                         CalculatorTextField(
                             modifier = Modifier.padding(vertical = 16.dp).weight(1f),
                             state = pointState,
                             label = stringResource(Res.string.calculator_screen_points_input),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next,
+                            ),
+                            onKeyboardAction = { percentageFocusRequester.requestFocus() },
+                            onKeyboardActionPrevious = { totalPointsFocusRequester.requestFocus() },
+                            focusRequester = pointsFocusRequester,
                         )
                     }
 
@@ -149,12 +177,19 @@ private fun GradeScaleCalculatorScreen(
                     ) {
                         val percentageState = textFieldManager((uiState.currentPercentage)?.times(100)?.stringWithDecimals() ?: "") {
                             onSetPercentage((it.toDoubleOrNull()?.div(100)) ?: 0.0)
+                            edit { selectAll() }
                         }
 
                         CalculatorTextField(
                             modifier = Modifier.padding(vertical = 16.dp).weight(1f),
                             state = percentageState,
                             label = stringResource(Res.string.calculator_screen_percentage_input),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Done,
+                                keyboardType = KeyboardType.Number,
+                            ),
+                            onKeyboardActionPrevious = { pointsFocusRequester.requestFocus() },
+                            focusRequester = percentageFocusRequester,
                         )
 
                         DropboxSelector(
