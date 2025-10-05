@@ -16,18 +16,12 @@ private object TabNavigationRegistry {
     private val handlers = mutableMapOf<Int, TabHandler>()
     private var nextId = 0
     private var listenerAttached = false
-    private var pendingAction: (() -> Unit)? = null
 
     data class TabHandler(
         val onTab: (() -> Boolean)?,
         val onShiftTab: (() -> Boolean)?,
         var isFocused: Boolean = false,
     )
-
-    fun executePendingAction() {
-        pendingAction?.invoke()
-        pendingAction = null
-    }
 
     fun register(onTab: (() -> Boolean)?, onShiftTab: (() -> Boolean)?): Int {
         val id = nextId++
@@ -38,12 +32,6 @@ private object TabNavigationRegistry {
 
     fun unregister(id: Int) {
         handlers.remove(id)
-    }
-
-    fun updateHandlers(id: Int, onTab: (() -> Boolean)?, onShiftTab: (() -> Boolean)?) {
-        handlers[id]?.let { handler ->
-            handlers[id] = handler.copy(onTab = onTab, onShiftTab = onShiftTab)
-        }
     }
 
     fun updateFocus(id: Int, focused: Boolean) {

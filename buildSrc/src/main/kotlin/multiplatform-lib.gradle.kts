@@ -8,6 +8,8 @@ plugins {
 }
 
 kotlin {
+    applyDefaultHierarchyTemplate()
+
     wasmJs {
         browser()
     }
