@@ -10,7 +10,7 @@ import androidx.compose.ui.text.input.KeyboardType
  * Based on the pattern from Compose Foundation's AllCapsTransformation
  */
 data class NumericInputFilter(private val allowNegative: Boolean = false) : InputTransformation {
-    override val keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Companion.Number)
+    override val keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
 
     override fun TextFieldBuffer.transformInput() {
         val hasInvalidChars = asCharSequence().any { char ->
@@ -22,9 +22,9 @@ data class NumericInputFilter(private val allowNegative: Boolean = false) : Inpu
 
     private fun isValidNumericChar(char: Char): Boolean {
         return char.isDigit() ||
-               char == '.' ||
-               char == ',' ||
-               (allowNegative && char == '-')
+            char == '.' ||
+            char == ',' ||
+            (allowNegative && char == '-')
     }
 
     override fun toString(): String = "InputTransformation.numericOnly(allowNegative=$allowNegative)"

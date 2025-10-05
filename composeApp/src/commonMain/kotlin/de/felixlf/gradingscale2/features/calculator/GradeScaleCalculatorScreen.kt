@@ -17,9 +17,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -124,7 +124,6 @@ private fun GradeScaleCalculatorScreen(
             if (gradeScale == null) {
                 Text(text = stringResource(Res.string.gradescale_list_select_grade_scale))
             } else {
-                // Create focus requesters for all fields
                 val totalPointsFocusRequester = remember { FocusRequester() }
                 val pointsFocusRequester = remember { FocusRequester() }
                 val percentageFocusRequester = remember { FocusRequester() }
@@ -142,15 +141,19 @@ private fun GradeScaleCalculatorScreen(
                         }
 
                         CalculatorTextField(
-                            modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                            modifier = Modifier
+                                .padding(vertical = 16.dp)
+                                .weight(1f)
+                                .focusRequester(totalPointsFocusRequester)
+                                .focusProperties {
+                                    next = pointsFocusRequester
+                                },
                             state = totalPointsState,
                             label = stringResource(Res.string.calculator_screen_total_points_input),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number,
                                 imeAction = ImeAction.Next,
                             ),
-                            onKeyboardAction = { pointsFocusRequester.requestFocus() },
-                            focusRequester = totalPointsFocusRequester,
                         )
 
                         val pointState = textFieldManager(uiState.currentGrade?.points?.stringWithDecimals() ?: "") {
@@ -159,16 +162,20 @@ private fun GradeScaleCalculatorScreen(
                         }
 
                         CalculatorTextField(
-                            modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                            modifier = Modifier
+                                .padding(vertical = 16.dp)
+                                .weight(1f)
+                                .focusRequester(pointsFocusRequester)
+                                .focusProperties {
+                                    next = percentageFocusRequester
+                                    previous = totalPointsFocusRequester
+                                },
                             state = pointState,
                             label = stringResource(Res.string.calculator_screen_points_input),
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Number,
                                 imeAction = ImeAction.Next,
                             ),
-                            onKeyboardAction = { percentageFocusRequester.requestFocus() },
-                            onKeyboardActionPrevious = { totalPointsFocusRequester.requestFocus() },
-                            focusRequester = pointsFocusRequester,
                         )
                     }
 
@@ -181,15 +188,19 @@ private fun GradeScaleCalculatorScreen(
                         }
 
                         CalculatorTextField(
-                            modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                            modifier = Modifier
+                                .padding(vertical = 16.dp)
+                                .weight(1f)
+                                .focusRequester(percentageFocusRequester)
+                                .focusProperties {
+                                    previous = pointsFocusRequester
+                                },
                             state = percentageState,
                             label = stringResource(Res.string.calculator_screen_percentage_input),
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 imeAction = ImeAction.Done,
                                 keyboardType = KeyboardType.Number,
                             ),
-                            onKeyboardActionPrevious = { pointsFocusRequester.requestFocus() },
-                            focusRequester = percentageFocusRequester,
                         )
 
                         DropboxSelector(

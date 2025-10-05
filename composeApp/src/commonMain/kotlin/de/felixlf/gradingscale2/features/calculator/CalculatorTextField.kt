@@ -16,19 +16,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.isShiftPressed
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onPreviewKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import de.felixlf.gradingscale2.utils.NumericInputFilter
+import de.felixlf.gradingscale2.utils.onPreviewTab
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,12 +38,9 @@ internal fun CalculatorTextField(
         keyboardType = KeyboardType.Number,
         imeAction = ImeAction.Done,
     ),
-    onKeyboardAction: (() -> Unit)? = null,
-    onKeyboardActionPrevious: (() -> Unit)? = null,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     inputTransformation: InputTransformation? = null,
-    focusRequester: FocusRequester? = null,
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
     LaunchedEffect(isFocused, selectAllOnFocus) {
@@ -76,30 +66,14 @@ internal fun CalculatorTextField(
         }
     }
 
-    val modifierWithKeyHandler = (focusRequester?.let { modifier.focusRequester(it) } ?: modifier)
-        .onPreviewKeyEvent { keyEvent ->
-            if (keyEvent.key == Key.Tab) {
-                // Consume both KeyDown and KeyUp, but only trigger action on KeyUp
-                if (keyEvent.type == KeyEventType.KeyUp) {
-                    if (keyEvent.isShiftPressed && onKeyboardActionPrevious != null) {
-                        onKeyboardActionPrevious()
-                    } else if (!keyEvent.isShiftPressed && onKeyboardAction != null) {
-                        onKeyboardAction()
-                    }
-                }
-                true // Always consume Tab to prevent it from being inserted
-            } else {
-                false
-            }
-        }
+    val modifierWithTabHandler = modifier.onPreviewTab()
 
     BasicTextField(
-        modifier = modifierWithKeyHandler,
+        modifier = modifierWithTabHandler,
         state = state,
         enabled = enabled,
         readOnly = readOnly,
         keyboardOptions = keyboardOptions,
-        onKeyboardAction = onKeyboardAction?.let { action -> { action() } },
         textStyle = textStyle,
         interactionSource = interactionSource,
         inputTransformation = combinedTransformation,
