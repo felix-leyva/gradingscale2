@@ -44,8 +44,8 @@
     <string name="weighted_grade_dialog_title">Grade</string>
     <string name="weighted_grade_dialog_grade_name">Name of grade</string>
     <string name="weighted_grade_dialog_percentage">Percentage</string>
-    <string name="weighted_grade_dialog_points">Points</string>
-    <string name="weighted_grade_dialog_total_points">Total points</string>
+    <string name="weighted_grade_dialog_points">Score</string>
+    <string name="weighted_grade_dialog_total_points">Weight</string>
     <string name="weighted_grade_dialog_save">SAVE</string>
     <string name="weighted_grade_dialog_cancel">CANCEL</string>
     <string name="weighted_grade_dialog_delete">DELETE</string>
@@ -53,12 +53,12 @@
     <string name="weighted_grade_summary_title">Global grade</string>
     <string name="weighted_grade_summary_total">Total grade</string>
     <string name="weighted_grade_summary_percentage">Percentage</string>
-    <string name="weighted_grade_summary_points">Points</string>
-    <string name="weighted_grade_summary_total_points">Total points</string>
+    <string name="weighted_grade_summary_points">Total Score</string>
+    <string name="weighted_grade_summary_total_points">Total Weight</string>
     <string name="weighted_grade_list_label_title">Partial grades</string>
     <string name="weighted_grade_list_label_name">Name</string>
     <string name="weighted_grade_list_label_percentage">Percentage</string>
-    <string name="weighted_grade_list_label_points">Points</string>
-    <string name="weighted_grade_list_label_total_points">Total points</string>
+    <string name="weighted_grade_list_label_points">Score</string>
+    <string name="weighted_grade_list_label_total_points">Weight</string>
 
 </resources>
