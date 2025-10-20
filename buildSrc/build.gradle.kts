@@ -17,4 +17,6 @@ dependencies {
     implementation(libs.gradle.firebase.crashlytics.buildtools)
     implementation(libs.gradle.sqldelight)
     implementation(libs.gson)
+    implementation(libs.gradle.sentry)
+    implementation(libs.gradle.sentryandroid)
 }

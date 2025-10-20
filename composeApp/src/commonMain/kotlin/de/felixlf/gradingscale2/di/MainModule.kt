@@ -34,6 +34,7 @@ val mainModule = module {
         networkModule,
         entitiesModule,
         preferencesModule,
+        diagnosticsModule,
     )
 
     viewModelOf(::GradeScaleListViewModel)

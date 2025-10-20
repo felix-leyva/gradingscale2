@@ -21,7 +21,6 @@ kotlin {
             dependsOn(commonMain.get())
             dependencies {
                 implementation(libs2.firebase.auth)
-                implementation(libs2.firebase.analytics)
             }
         }
 
@@ -47,9 +46,6 @@ kotlin {
         }
         iosMain {
             dependsOn(firebaseAvailable)
-            dependencies {
-                implementation(libs2.firebase.crashlytics)
-            }
         }
         jvmMain.get().dependsOn(firebaseAvailable)
     }

@@ -9,6 +9,11 @@ name: Java CI with Gradle
 env:
   GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
   GOOGLE_IOS_SECRET: ${{ secrets.GOOGLE_IOS_SECRET }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+  SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+  SENTRY_PROJECT_NAME: ${{ secrets.SENTRY_PROJECT_NAME }}
+  SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+
 on:
   push:
     branches: [ "main" ]

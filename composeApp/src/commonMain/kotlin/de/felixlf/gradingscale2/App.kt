@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import de.felixlf.gradingscale2.entities.network.DiagnosticsProvider
 import de.felixlf.gradingscale2.navigation.AppNavController
 import de.felixlf.gradingscale2.navigation.MainNavHost
 import de.felixlf.gradingscale2.theme.AppTheme
@@ -21,6 +22,8 @@ import org.koin.core.parameter.parametersOf
 @Composable
 @Preview
 internal fun App() {
+    val diagnosticsProvider = koinInject<DiagnosticsProvider>()
+    LaunchedEffect(Unit) { diagnosticsProvider.initDiagnostics() }
     LaunchedEffect(Unit) { Napier.base(DebugAntilog()) }
     val navController = rememberNavController()
     val appNavController = koinInject<AppNavController> { parametersOf(navController) }

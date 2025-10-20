@@ -19,8 +19,6 @@ import org.koin.dsl.module
 internal actual fun authPlatformModule(): Module =
     module {
         singleOf<AuthInitializer>(::AuthInitializerImpl)
-        singleOf<AnalyticsProvider>(::JSAnalyticsProviderImpl)
-
         single<AuthTokenProvider> {
             JSAuthTokenProviderImpl(
                 scope = CoroutineScope(

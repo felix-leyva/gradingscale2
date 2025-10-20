@@ -8,27 +8,16 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
-    id(
-        libs2.plugins.kotlinMultiplatform.get().pluginId,
-    )
+    id(libs2.plugins.kotlinMultiplatform.get().pluginId)
     id("gs-android-app")
-    id(
-        libs2.plugins.google.services.get().pluginId,
-    )
-    id(
-        libs2.plugins.jetbrainsCompose.get().pluginId,
-    )
-    id(
-        libs2.plugins.compose.compiler.get().pluginId,
-    )
-    id(
-        libs2.plugins.ksp.get().pluginId,
-    )
-    id(
-        libs2.plugins.kotlinxSerialization.get().pluginId,
-    )
+    id(libs2.plugins.google.services.get().pluginId)
+    id(libs2.plugins.jetbrainsCompose.get().pluginId)
+    id(libs2.plugins.compose.compiler.get().pluginId)
+    id(libs2.plugins.ksp.get().pluginId)
+    id(libs2.plugins.kotlinxSerialization.get().pluginId)
     alias(libs2.plugins.conveyor)
     alias(libs2.plugins.hot.reload)
+    id("sentry-android")
 }
 
 kotlin {
@@ -122,11 +111,12 @@ kotlin {
             // Arrow
             implementation(libs2.arrow.optics)
 
-            implementation(project(":entities"))
-            implementation(project(":data:authFirebase"))
-            implementation(project(":data:network"))
-            implementation(project(":data:persistance:db"))
-            implementation(project(":data:persistance:sharedprefs"))
+            implementation(projects.entities)
+            implementation(projects.data.authFirebase)
+            implementation(projects.data.network)
+            implementation(projects.data.persistance.db)
+            implementation(projects.data.persistance.sharedprefs)
+            implementation(projects.data.diagnostics)
         }
 
         commonTest.dependencies {
@@ -216,11 +206,10 @@ tasks.register("checkAndCreateGoogleServices") {
 }
 
 tasks.register("checkAndCreateIosGoogleServices") {
-    val googleServicesFile = parent?.layout?.projectDirectory?.file("iosApp/iosApp/GoogleService-Info.plist")
-        ?: run {
-            println("Parent project not found.")
-            return@register
-        }
+    val googleServicesFile = parent?.layout?.projectDirectory?.file("iosApp/iosApp/GoogleService-Info.plist") ?: run {
+        println("Parent project not found.")
+        return@register
+    }
     val googleServicesContent = providers.environmentVariable("GOOGLE_IOS_SECRET")
     doLast {
         if (!googleServicesFile.asFile.exists()) {

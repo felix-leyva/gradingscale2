@@ -59,6 +59,8 @@ google-services = "4.4.3" # https://developers.google.com/android/guides/google-
 firebaseCrashlyticsBuildtools = "3.0.6" # https://firebase.google.com/support/release-notes/android
 foundationAndroid = "1.9.2" # https://developer.android.com/jetpack/androidx/releases/compose-foundation
 conveyorVersion = "1.12" # https://github.com/hydraulic-software/conveyor/releases
+sentryVersion = "0.19.0" # https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/
+sentryAndroidVersion = "5.12.1" # https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/debug-symbols/
 
 [libraries]
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
@@ -115,8 +117,6 @@ slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 
 # Firebase
 firebase-auth = { group = "dev.gitlive", name = "firebase-auth", version.ref = "firebase-kotlin" }
-firebase-analytics = { group = "dev.gitlive", name = "firebase-analytics", version.ref = "firebase-kotlin" }
-firebase-crashlytics = { group = "dev.gitlive", name = "firebase-crashlytics", version.ref = "firebase-kotlin" }
 
 # Ktor
 ktor-client-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktor" }
@@ -153,7 +153,8 @@ gradle-sqldelight = { group = "app.cash.sqldelight", name = "app.cash.sqldelight
 gradle-hotreload = { group = "org.jetbrains.compose-hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelightVersion" }
-
+gradle-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentryVersion"}
+gradle-sentryandroid = { module = "io.sentry:sentry-android-gradle-plugin", version.ref = "sentryAndroidVersion" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -172,3 +173,5 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqlDelightPlugin" }
 hot-reload = { id = "org.jetbrains.compose.hot-reload", version.ref = "compose-reload" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 conveyor = { id = "dev.hydraulic.conveyor", version.ref = "conveyorVersion" }
+sentry = { id = "io.sentry.kotlin.multiplatform.gradle", version.ref = "sentryVersion" }
+sentryandroid = { id = "io.sentry.android.gradle", version.ref = "sentryAndroidVersion" }
