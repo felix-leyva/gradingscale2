@@ -1,13 +1,13 @@
 [versions]
 # Project specific
-appdirs = "1.4.0" # https://github.com/harawata/appdirs/releases
-arrowCore = "2.1.2" # https://github.com/arrow-kt/arrow/releases
+appdirs = "1.5.0" # https://github.com/harawata/appdirs/releases
+arrowCore = "2.2.0" # https://github.com/arrow-kt/arrow/releases
 gson = "2.13.2" # https://search.maven.org/artifact/com.google.code.gson/gson
-haze = "1.6.10" # https://github.com/chrisbanes/haze/releases
+haze = "1.7.1" # https://github.com/chrisbanes/haze/releases
 moleculeRuntime = "2.2.0" # https://github.com/cashapp/molecule/releases
 napier = "2.7.1" # https://github.com/AAkira/Napier/releases - 2.8.1 exists but not for JS target (May 21, 2025)
-navigationCompose = "2.9.0" # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html
-sqlDelightVersion = "2.1.0" # https://github.com/cashapp/sqldelight/releases
+navigationCompose = "2.9.1" # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html
+sqlDelightVersion = "2.2.1" # https://github.com/cashapp/sqldelight/releases
 firebaseBom = "33.16.0" # https://firebase.google.com/support/release-notes/android - Cannot update to 34.x (KTX modules removed, incompatible with GitLive Firebase 2.1.0)
 kotlinxCollectionsImmutable = "0.4.0" # https://github.com/Kotlin/kotlinx.collections.immutable/releases
 multiplatformSettingsNoArg = "1.3.0" # https://github.com/russhwolf/multiplatform-settings/releases
@@ -22,25 +22,25 @@ desktopPackageName = "grading-scale" # Package name for desktop distributions
 mainClassName = "de.felixlf.gradingscale2.MainKt" # Main class for JVM
 java = "17" # Java version
 
-agp = "8.13.0" # https://developer.android.com/build/releases/gradle-plugin
+agp = "8.13.1" # https://developer.android.com/build/releases/gradle-plugin
 android-compileSdk = "36" # https://developer.android.com/tools/releases/platforms
 android-minSdk = "26" # https://developer.android.com/tools/releases/platforms
 android-targetSdk = "36" # https://developer.android.com/tools/releases/platforms
-androidx-activityCompose = "1.11.0" # https://developer.android.com/jetpack/androidx/releases/activity
+androidx-activityCompose = "1.12.0" # https://developer.android.com/jetpack/androidx/releases/activity
 androidx-appcompat = "1.7.1" # https://developer.android.com/jetpack/androidx/releases/appcompat
 androidx-core-ktx = "1.17.0" # https://developer.android.com/jetpack/androidx/releases/core
 androidx-espresso-core = "3.7.0" # https://developer.android.com/jetpack/androidx/releases/test
-androidx-lifecycle = "2.9.4" # https://developer.android.com/jetpack/androidx/releases/lifecycle
+androidx-lifecycle = "2.9.6" # https://developer.android.com/jetpack/androidx/releases/lifecycle
 androidx-test-junit = "1.3.0" # https://developer.android.com/jetpack/androidx/releases/test
 android-desugar = "2.1.5" # https://maven.google.com/web/index.html#com.android.tools:desugar_jdk_libs
-compose-plugin = "1.9.0" # https://github.com/JetBrains/compose-multiplatform/releases
-material3WindowSizeClass = "1.8.2" # https://central.sonatype.com/artifact/org.jetbrains.compose.material3/material3-window-size-class
+compose-plugin = "1.9.3" # https://github.com/JetBrains/compose-multiplatform/releases
+material3WindowSizeClass = "1.9.0" # https://central.sonatype.com/artifact/org.jetbrains.compose.material3/material3-window-size-class
 junit = "4.13.2" # https://github.com/junit-team/junit4/releases
-kotlin = "2.2.20" # https://github.com/JetBrains/kotlin/releases # Cannot update to 2.2.20 with current Compose/KSP combination
-compose-reload = "1.0.0-beta09" # https://github.com/JetBrains/compose-multiplatform/releases
+kotlin = "2.2.21" # https://github.com/JetBrains/kotlin/releases # Cannot update to 2.2.20 with current Compose/KSP combination
+compose-reload = "1.0.0" # https://github.com/JetBrains/compose-multiplatform/releases
 kotlinx-coroutines = "1.10.2" # https://github.com/Kotlin/kotlinx.coroutines/releases
 koin = "4.1.1" # https://insert-koin.io/
-ktor = "3.3.0" # https://github.com/ktorio/ktor/releases
+ktor = "3.3.3" # https://github.com/ktorio/ktor/releases
 # TODO: Cannot update to 5.6.0 and aboutlibraries, due the incompatibility with the Kotlin version
 gmazzoBuildConfig = "5.6.8" # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
 aboutLibraries = "12.2.4" # https://github.com/mikepenz/AboutLibraries/releases
@@ -48,7 +48,7 @@ aboutLibraries = "12.2.4" # https://github.com/mikepenz/AboutLibraries/releases
 sonarqubeGradlePlugin = "6.3.1.5724" # https://github.com/SonarSource/sonar-scanner-gradle/releases
 turbineVersion = "1.2.1" # https://github.com/cashapp/turbine/releases
 slf4j = "2.0.17" # https://www.slf4j.org/
-ksp = "2.2.20-2.0.2" # https://github.com/google/ksp/releases
+ksp = "2.3.3" # https://github.com/google/ksp/releases
 sqlDelightPlugin = "2.1.0" # https://github.com/cashapp/sqldelight/releases
 kstore = "1.0.0" # https://github.com/xxfast/KStore/releases
 kotlinxSerialization = "1.9.0" # https://github.com/Kotlin/kotlinx.serialization/releases
@@ -57,10 +57,10 @@ kotlinxSerialization = "1.9.0" # https://github.com/Kotlin/kotlinx.serialization
 firebase-kotlin = "2.1.0" # https://github.com/GitLiveApp/firebase-kotlin-sdk/releases - Cannot update due to incompatibility with Firebase BOM 34.x (requires KTX modules) and 2.3.0 missing iosX64 support
 google-services = "4.4.3" # https://developers.google.com/android/guides/google-services-plugin
 firebaseCrashlyticsBuildtools = "3.0.6" # https://firebase.google.com/support/release-notes/android
-foundationAndroid = "1.9.2" # https://developer.android.com/jetpack/androidx/releases/compose-foundation
+foundationAndroid = "1.9.5" # https://developer.android.com/jetpack/androidx/releases/compose-foundation
 conveyorVersion = "1.12" # https://github.com/hydraulic-software/conveyor/releases
-sentryVersion = "0.19.0" # https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/
-sentryAndroidVersion = "5.12.1" # https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/debug-symbols/
+sentryVersion = "0.21.0" # https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/
+sentryAndroidVersion = "5.12.2" # https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/debug-symbols/
 
 [libraries]
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
