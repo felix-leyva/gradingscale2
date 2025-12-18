@@ -56,26 +56,37 @@ The project follows Clean Architecture principles with clear separation of conce
 The project uses [CashApp's Molecule](https://github.com/cashapp/molecule) for state management, revolutionizing how UI state is handled by treating it as a Composable function:
 
 ```kotlin
-interface MoleculePresenter<UIState, UICommand> {
+interface UIModel<UIState, UICommand> {
+    val scope: UIModelScope
+
+    val uiState: StateFlow<UIState>
+
     @Composable
     fun produceUI(): UIState
+
     fun sendCommand(command: UICommand)
 }
-
-class CalculatorViewModel : ViewModel(), MoleculeViewModelHelper<UIState, UIEvent> {
-    override val factory = CalculatorUIModel(
-        scope = viewModelScope,
-        // dependencies injected
-    )
-    override val uiState = moleculeState() // Creates StateFlow using Molecule
-}
 ```
-
 **Benefits of Molecule:**
 - **Reactive by Design**: UI state recomposes automatically when dependencies change
 - **Testable**: State logic can be tested without Android framework dependencies
 - **Composable Logic**: Leverage Compose's powerful state management primitives
 - **Clear Data Flow**: Unidirectional data flow with events and state
+
+
+It also separates the UIModel, from the Android Framework Specific UIModel, allowing easier testing and use in different platforms even without the Navigation/Jetpack ComposeUI. 
+
+In case you require to link your UIModels to the Android or Jetpack ComposeUI Navigation/Lifecycle, you can then use a ViewModel and tie its scope into the ViewModel. The functionallity can be easily added via interface implementation with the `by` class delegation.
+
+```kotlin
+class CalculatorViewModel(
+    calculatorUIModel: CalculatorUIModel,
+) : ViewModel(calculatorUIModel.scope),
+UIModel<GradeScaleCalculatorUIState, CalculatorUIEvent> by calculatorUIModel
+
+```
+This reduces boilerplate and allows to keep this logic out of the platform `:composeApp` module.
+
 
 #### 🏛️ Adaptive Layout with Persistent Scaffolds
 
