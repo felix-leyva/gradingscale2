@@ -7,12 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
-import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
+import de.felixlf.gradingscale2.entities.uimodel.UIModel
+import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
@@ -24,8 +25,8 @@ class UpsertGradeUIFactory(
     private val insertGradeUseCase: InsertGradeUseCase,
     private val upsertGradeUseCase: UpsertGradeUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
-    private val viewModelScope: CoroutineScope,
-) : MoleculePresenter<UpsertGradeUIState, UpsertGradeUIEvent> {
+    override val scope: UIModelScope,
+) : UIModel<UpsertGradeUIState, UpsertGradeUIEvent> {
 
     private var gradeScaleId by mutableStateOf<String?>(null)
     private var currentGradeScale by mutableStateOf<GradeScale?>(null)
@@ -36,6 +37,8 @@ class UpsertGradeUIFactory(
     private var gradeName by mutableStateOf<String?>(null)
     private var percentage by mutableStateOf<String?>(null)
     private var currentState by mutableStateOf<UpsertGradeUIState?>(null)
+
+    override val uiState: StateFlow<UpsertGradeUIState> by moleculeUIState()
 
     @Composable
     override fun produceUI(): UpsertGradeUIState {
@@ -81,7 +84,7 @@ class UpsertGradeUIFactory(
     }
 
     private fun save(event: UpsertGradeUIEvent) {
-        viewModelScope.launch {
+        scope.launch {
             val gradeName = requireNotNull(gradeName)
             val percentage = requireNotNull(percentage?.toDoubleOrNull()?.div(100.0))
             val gradeScaleId = requireNotNull(gradeScaleId)

@@ -3,8 +3,6 @@
 @file:DependsOn("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
 @file:DependsOn("com.github.ajalt.clikt:clikt-jvm:5.0.3")
 
-import java.time.LocalDateTime
-
 import com.github.ajalt.clikt.command.SuspendingCliktCommand
 import com.github.ajalt.clikt.command.main
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +12,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.stream.consumeAsFlow
 import java.io.File
+import java.time.LocalDateTime
 
 private val homeDir = System.getenv("HOME") ?: error("HOME environment variable is required")
 private val serverHost = System.getenv("SSH_SERVER_HOST") ?: error("SSH_SERVER_HOST environment variable is required")
@@ -30,7 +29,6 @@ private val deployDirPath = System.getenv("DEPLOY_DIR_PATH") ?: "docker/wasmjs-a
 private val deployDir = File(currentPath, deployDirPath).also { it.mkdirs() }
 private val resetColor = "\u001b[0m"
 
-
 class WasmBuilder : SuspendingCliktCommand() {
 
     init {
@@ -38,8 +36,7 @@ class WasmBuilder : SuspendingCliktCommand() {
         checkPrerequisites()
     }
 
-    private fun Process.consumeAsFlow() =
-        inputStream.bufferedReader().lines().consumeAsFlow().flowOn(Dispatchers.Default)
+    private fun Process.consumeAsFlow() = inputStream.bufferedReader().lines().consumeAsFlow().flowOn(Dispatchers.Default)
 
     private suspend fun Process.printOutput() = apply { consumeAsFlow().collect(::println) }
 
@@ -54,22 +51,28 @@ class WasmBuilder : SuspendingCliktCommand() {
     private fun timestamp(): String = "\u001b[90m[${LocalDateTime.now()}]$resetColor"
     private fun errorLog(message: String) = println("${timestamp()} \u001b[31mERROR: $message$resetColor")
     private fun successLog(message: String) = println("${timestamp()} \u001b[32mSUCCESS: $message$resetColor")
-    private fun processLog(message: String) =
-        println("${timestamp()} \u001b[94mPROCESSING: $message$resetColor")
+    private fun processLog(message: String) = println("${timestamp()} \u001b[94mPROCESSING: $message$resetColor")
 
     private val gradleCommand = ProcessBuilder(
-        "./gradlew", ":composeApp:wasmJsBrowserDistribution", "--no-daemon"
+        "./gradlew",
+        ":composeApp:wasmJsBrowserDistribution",
+        "--no-daemon",
     ).redirectErrorStream(true)
 
     private val sshCopyCommand = ProcessBuilder(
         "ssh",
-        "-i", sshKey,
+        "-i",
+        sshKey,
         "$serverUser@$serverHost",
-        "cd $serverPath && docker compose down && docker compose up -d --build"
+        "cd $serverPath && docker compose down && docker compose up -d --build",
     ).redirectErrorStream(true)
 
     private val rsyncCommand = ProcessBuilder(
-        "rsync", "-avz", "--delete", "docker/", "$serverUser@$serverHost:$serverPath/"
+        "rsync",
+        "-avz",
+        "--delete",
+        "docker/",
+        "$serverUser@$serverHost:$serverPath/",
     ).redirectErrorStream(true)
 
     private fun checkPrerequisites() {

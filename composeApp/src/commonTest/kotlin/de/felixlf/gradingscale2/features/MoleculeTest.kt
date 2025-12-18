@@ -1,10 +1,10 @@
-package de.felixlf.gradingscale2.entities
+package de.felixlf.gradingscale2.features
 
 import app.cash.molecule.RecompositionMode
 import app.cash.molecule.launchMolecule
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
-import de.felixlf.gradingscale2.entities.uimodel.UIModelWithEvents
+import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -35,7 +35,7 @@ fun moleculeTest(
  * available in the TestScope, so an exception would be thrown.
  * For tests, it is easier using instead the Immediate mode.
  */
-suspend fun <UIState, UICommand, UIEvent> TestScope.testMoleculeFlow(
-    uiModelWithEvents: UIModelWithEvents<UIState, UICommand, UIEvent>,
+suspend fun <UIState, UICommand> TestScope.testMoleculeFlow(
+    uiModel: UIModel<UIState, UICommand>,
     validate: suspend TurbineTestContext<UIState>.() -> Unit,
-) = launchMolecule(mode = RecompositionMode.Immediate, body = { uiModelWithEvents.produceUI() }).test(validate = validate)
+) = launchMolecule(mode = RecompositionMode.Immediate, body = { uiModel.produceUI() }).test(validate = validate)

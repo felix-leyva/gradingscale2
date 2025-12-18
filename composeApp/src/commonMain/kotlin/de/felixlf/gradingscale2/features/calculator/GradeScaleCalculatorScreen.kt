@@ -63,11 +63,11 @@ internal fun GradeScaleCalculatorScreen(
     GradeScaleCalculatorScreen(
         modifier = modifier,
         uiState = uiState.value,
-        onSelectGradeScale = { viewModel.onEvent(CalculatorUIEvent.SelectGradeScale(it)) },
-        onSetTotalPoints = { viewModel.onEvent(CalculatorUIEvent.SetTotalPoints(it)) },
-        onSetPoints = { viewModel.onEvent(CalculatorUIEvent.SetPoints(it)) },
-        onSetPercentage = { viewModel.onEvent(CalculatorUIEvent.SetPercentage(it)) },
-        onSelectGradeName = { viewModel.onEvent(CalculatorUIEvent.SetGradeName(it)) },
+        onSelectGradeScale = { viewModel.sendCommand(CalculatorUIEvent.SelectGradeScale(it)) },
+        onSetTotalPoints = { viewModel.sendCommand(CalculatorUIEvent.SetTotalPoints(it)) },
+        onSetPoints = { viewModel.sendCommand(CalculatorUIEvent.SetPoints(it)) },
+        onSetPercentage = { viewModel.sendCommand(CalculatorUIEvent.SetPercentage(it)) },
+        onSelectGradeName = { viewModel.sendCommand(CalculatorUIEvent.SetGradeName(it)) },
     )
 }
 

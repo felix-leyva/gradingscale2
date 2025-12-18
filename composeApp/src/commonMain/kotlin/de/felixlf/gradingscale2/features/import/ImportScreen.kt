@@ -41,7 +41,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun ImportScreen(
     modifier: Modifier = Modifier,
-    viewModel: ImportViewModel = koinViewModel<ImportViewModel>(),
+    viewModel: ImportViewModelWithEvents = koinViewModel<ImportViewModelWithEvents>(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

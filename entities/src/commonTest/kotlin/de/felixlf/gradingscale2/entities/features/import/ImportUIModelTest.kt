@@ -72,7 +72,7 @@ class ImportUIModelTest {
     private lateinit var fakeTrackerUseCase: FakeTrackerUseCase
 
     // Subject under test
-    private lateinit var importUIModel: ImportUIModel
+    private lateinit var importUIModel: ImportUIModelWithEvents
 
     @BeforeTest
     fun setup() {
@@ -110,7 +110,7 @@ class ImportUIModelTest {
 
     private fun TestScope.initSUT() {
         // Create the model with test scope from TestDispatcherProvider
-        importUIModel = ImportUIModel(
+        importUIModel = ImportUIModelWithEvents(
             scope = this,
             getRemoteGradeScalesUseCase = getRemoteGradeScalesUseCase,
             getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
@@ -153,7 +153,7 @@ class ImportUIModelTest {
         }
 
         // Create new model with error case
-        val errorModel = ImportUIModel(
+        val errorModel = ImportUIModelWithEvents(
             scope = this,
             getRemoteGradeScalesUseCase = errorUseCase,
             getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
@@ -253,7 +253,7 @@ class ImportUIModelTest {
         }
 
         // Create new model with error case
-        val errorModel = ImportUIModel(
+        val errorModel = ImportUIModelWithEvents(
             scope = this,
             getRemoteGradeScalesUseCase = getRemoteGradeScalesUseCase,
             getRemoteGradeScaleUseCase = errorUseCase,
@@ -365,7 +365,7 @@ class ImportUIModelTest {
         }
 
         // Create model with multiple countries
-        val multiCountryModel = ImportUIModel(
+        val multiCountryModel = ImportUIModelWithEvents(
             scope = this,
             getRemoteGradeScalesUseCase = multipleCountriesUseCase,
             getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,

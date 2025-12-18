@@ -5,14 +5,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.models.GradeScale
-import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
+import de.felixlf.gradingscale2.entities.uimodel.UIModelWithEvents
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
 
-class WeightedGradeDialogUIModel(
+class WeightedGradeDialogUIModelWithEvents(
     override val scope: UIModelScope,
-) : UIModel<WeightedGradeDialogUIState, WeightedGradeDialogCommand, WeightedGradeDialogEvent> {
+) : UIModelWithEvents<WeightedGradeDialogUIState, WeightedGradeDialogCommand, WeightedGradeDialogEvent> {
     override val events: Channel<WeightedGradeDialogEvent> = Channel()
     override val uiState: StateFlow<WeightedGradeDialogUIState> by moleculeUIState()
     private var gradeScale: GradeScale? by mutableStateOf(null)

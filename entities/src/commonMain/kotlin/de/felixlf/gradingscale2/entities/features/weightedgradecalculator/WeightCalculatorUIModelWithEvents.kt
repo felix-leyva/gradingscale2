@@ -10,8 +10,9 @@ import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.Weight
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.UpdateGrade
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
-import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
+import de.felixlf.gradingscale2.entities.uimodel.UIModelWithEvents
+import de.felixlf.gradingscale2.entities.uimodel.asState
 import de.felixlf.gradingscale2.entities.usecases.DeleteWeightedGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllWeightedGradesUseCase
@@ -25,7 +26,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class WeightCalculatorUIModel(
+class WeightCalculatorUIModelWithEvents(
     override val scope: UIModelScope,
     private val getAllGradeScales: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
@@ -34,7 +35,7 @@ class WeightCalculatorUIModel(
     private val deleteWeightedGradeUseCase: DeleteWeightedGradeUseCase,
     private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase,
     private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase,
-) : UIModel<WeightCalculatorUIState, WeightedCalculatorCommand, WeightedCalculatorEvent> {
+) : UIModelWithEvents<WeightCalculatorUIState, WeightedCalculatorCommand, WeightedCalculatorEvent> {
     override val events: Channel<WeightedCalculatorEvent> = Channel()
     override val uiState: StateFlow<WeightCalculatorUIState> by moleculeUIState()
 

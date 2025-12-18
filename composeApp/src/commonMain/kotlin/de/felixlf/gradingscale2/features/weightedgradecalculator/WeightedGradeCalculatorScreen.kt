@@ -39,7 +39,7 @@ import kotlin.uuid.Uuid
 @Composable
 internal fun WeightedGradeCalculatorScreen(
     modifier: Modifier = Modifier,
-    viewModel: WeightedCalculatorViewModel = koinViewModel<WeightedCalculatorViewModel>(),
+    viewModel: WeightedCalculatorViewModelWithEvents = koinViewModel<WeightedCalculatorViewModelWithEvents>(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

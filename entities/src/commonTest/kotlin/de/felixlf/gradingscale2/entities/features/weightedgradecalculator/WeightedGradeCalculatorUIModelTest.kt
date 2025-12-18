@@ -65,7 +65,7 @@ class WeightedGradeCalculatorUIModelTest {
     private lateinit var deleteWeightedGradeUseCase: DeleteWeightedGradeUseCase
 
     // Subject under test
-    private lateinit var weightedGradeCalculatorUIModel: WeightCalculatorUIModel
+    private lateinit var weightedGradeCalculatorUIModel: WeightCalculatorUIModelWithEvents
 
     private lateinit var grades: MutableStateFlow<List<WeightedGrade>>
 
@@ -118,7 +118,7 @@ class WeightedGradeCalculatorUIModelTest {
 
     private fun TestScope.initSUT() {
         // Create the model with test scope
-        weightedGradeCalculatorUIModel = WeightCalculatorUIModel(
+        weightedGradeCalculatorUIModel = WeightCalculatorUIModelWithEvents(
             scope = this,
             getAllGradeScales = getAllGradeScalesUseCase,
             getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,

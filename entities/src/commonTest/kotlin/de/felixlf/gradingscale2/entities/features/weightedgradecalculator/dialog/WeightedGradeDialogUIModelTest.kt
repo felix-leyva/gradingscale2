@@ -36,8 +36,8 @@ class WeightedGradeDialogUIModelTest {
         uuid = "TEST-UUID",
     )
 
-    private fun TestScope.createModel(): WeightedGradeDialogUIModel {
-        return WeightedGradeDialogUIModel(scope = this)
+    private fun TestScope.createModel(): WeightedGradeDialogUIModelWithEvents {
+        return WeightedGradeDialogUIModelWithEvents(scope = this)
     }
 
     @Test

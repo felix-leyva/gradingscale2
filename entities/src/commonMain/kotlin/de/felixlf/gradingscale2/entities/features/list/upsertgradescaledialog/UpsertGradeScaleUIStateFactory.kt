@@ -7,7 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
-import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
+import de.felixlf.gradingscale2.entities.uimodel.UIModel
+import de.felixlf.gradingscale2.entities.uimodel.asState
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
@@ -17,6 +18,7 @@ import gradingscale2.entities.generated.resources.gradescale_list_dialog_error_s
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class UpsertGradeScaleUIStateFactory(
@@ -24,11 +26,13 @@ class UpsertGradeScaleUIStateFactory(
     private val insertGradeScaleUseCase: InsertGradeScaleUseCase,
     private val updateGradeScaleUseCase: UpdateGradeScaleUseCase,
     private val showSnackbarUseCase: ShowSnackbarUseCase,
-    private val scope: CoroutineScope,
-) : MoleculePresenter<UpsertGradeScaleUIState, UpserGradeScaleUIEvent> {
+    override val scope: CoroutineScope,
+) : UIModel<UpsertGradeScaleUIState, UpserGradeScaleUIEvent> {
     private var newGradeScaleName by mutableStateOf("")
     private var uiSaveState by mutableStateOf<State>(State.Loading)
     private var operation by mutableStateOf<State.Operation?>(null)
+
+    override val uiState: StateFlow<UpsertGradeScaleUIState> by moleculeUIState()
 
     @Composable
     override fun produceUI(): UpsertGradeScaleUIState {

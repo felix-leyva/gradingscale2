@@ -41,7 +41,7 @@ fun GradeEditDialog(
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val viewModel = koinViewModel<WeightedGradeDialogViewModel>()
+    val viewModel = koinViewModel<WeightedGradeDialogViewModelWithEvents>()
     val uiState by viewModel.uiState.collectAsState()
     LaunchedEffect(grade, gradeScale) {
         viewModel.sendCommand(

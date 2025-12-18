@@ -44,7 +44,7 @@ internal fun UpsertGradeScaleDialog(
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(operation) {
-        viewModel.onEvent(UpserGradeScaleUIEvent.SetOperation(operation))
+        viewModel.sendCommand(UpserGradeScaleUIEvent.SetOperation(operation))
     }
 
     LaunchedEffect(uiState.value.state) {
@@ -55,8 +55,8 @@ internal fun UpsertGradeScaleDialog(
     Dialog(onDismissRequest = { onDismiss(null) }) {
         UpsertGradeScaleDialog(
             uiState = uiState.value,
-            onSetNewName = { viewModel.onEvent(UpserGradeScaleUIEvent.SetNewName(it)) },
-            onSave = { viewModel.onEvent(UpserGradeScaleUIEvent.Save(defaultGradeName)) },
+            onSetNewName = { viewModel.sendCommand(UpserGradeScaleUIEvent.SetNewName(it)) },
+            onSave = { viewModel.sendCommand(UpserGradeScaleUIEvent.Save(defaultGradeName)) },
             onDismiss = { onDismiss(null) },
         )
     }

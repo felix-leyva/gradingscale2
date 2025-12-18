@@ -5,14 +5,16 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
+import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
+import de.felixlf.gradingscale2.entities.uimodel.asState
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 /**
@@ -21,12 +23,12 @@ import kotlinx.coroutines.launch
  * @param getGradeScaleByIdUseCase UseCase for getting a grade scale by its ID.
  */
 class CalculatorUIModel(
-    private val scope: UIModelScope,
+    override val scope: UIModelScope,
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
     private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase,
     private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase,
-) : MoleculePresenter<GradeScaleCalculatorUIState, CalculatorUIEvent> {
+) : UIModel<GradeScaleCalculatorUIState, CalculatorUIEvent> {
 
     // MutableStateOf causes inside the produceUI function recomposition which is helpful to update the State. If we wish to "observe" this
     // value in other places, we need to do this inside @Composable functions.
@@ -36,6 +38,8 @@ class CalculatorUIModel(
 
     // Important exception: do not use this state value in the produceUI function, to avoid recomposition loops.
     private var state by mutableStateOf<GradeScaleCalculatorUIState?>(null)
+
+    override val uiState: StateFlow<GradeScaleCalculatorUIState> by moleculeUIState()
 
     @Composable
     override fun produceUI(): GradeScaleCalculatorUIState {

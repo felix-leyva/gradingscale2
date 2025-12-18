@@ -1,10 +1,10 @@
 package de.felixlf.gradingscale2.entities
 
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIModel
-import de.felixlf.gradingscale2.entities.features.import.ImportUIModel
+import de.felixlf.gradingscale2.entities.features.import.ImportUIModelWithEvents
 import de.felixlf.gradingscale2.entities.features.list.GradeListUIModel
-import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightCalculatorUIModel
-import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog.WeightedGradeDialogUIModel
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightCalculatorUIModelWithEvents
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog.WeightedGradeDialogUIModelWithEvents
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepository
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepositoryImpl
 import de.felixlf.gradingscale2.entities.repositories.GradesRepository
@@ -93,7 +93,7 @@ val entitiesModule =
         factory { get<DispatcherProvider>().newUIScope() }.bind<UIModelScope>()
         factoryOf(::GradeListUIModel)
         factoryOf(::CalculatorUIModel)
-        factoryOf(::ImportUIModel)
-        factoryOf(::WeightCalculatorUIModel)
-        factoryOf(::WeightedGradeDialogUIModel)
+        factoryOf(::ImportUIModelWithEvents)
+        factoryOf(::WeightCalculatorUIModelWithEvents)
+        factoryOf(::WeightedGradeDialogUIModelWithEvents)
     }

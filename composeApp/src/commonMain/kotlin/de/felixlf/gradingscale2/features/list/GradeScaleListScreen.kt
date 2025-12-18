@@ -70,8 +70,8 @@ internal fun GradeScaleListScreen(
     GradeScaleListScreen(
         modifier = modifier,
         uiState = uiState.value,
-        onSelectGradeScale = { viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScale(it)) },
-        onSetTotalPoints = { viewModel.onEvent(GradeScaleListUIEvent.SetTotalPoints(it)) },
+        onSelectGradeScale = { viewModel.sendCommand(GradeScaleListUIEvent.SelectGradeScale(it)) },
+        onSetTotalPoints = { viewModel.sendCommand(GradeScaleListUIEvent.SetTotalPoints(it)) },
         onOpenDialog = { activeDialogCommand = it },
     )
 
@@ -90,7 +90,7 @@ internal fun GradeScaleListScreen(
             GradeScaleListDialogCommand.AddNewGradeScale -> UpsertGradeScaleDialog(
                 onDismiss = {
                     activeDialogCommand = null
-                    it?.let { viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScaleById(it)) }
+                    it?.let { viewModel.sendCommand(GradeScaleListUIEvent.SelectGradeScaleById(it)) }
                 },
                 operation = UpsertGradeScaleUIState.State.Operation.Insert,
             )

@@ -8,8 +8,8 @@ import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.models.remote.Country
 import de.felixlf.gradingscale2.entities.models.remote.CountryGradingScales
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
-import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
+import de.felixlf.gradingscale2.entities.uimodel.UIModelWithEvents
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.ImportRemoteGradeScaleIntoDbUseCase
@@ -26,14 +26,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 
-class ImportUIModel(
+class ImportUIModelWithEvents(
     override val scope: UIModelScope,
     private val getRemoteGradeScalesUseCase: GetRemoteGradeScalesUseCase,
     private val getRemoteGradeScaleUseCase: GetRemoteGradeScaleUseCase,
     private val importRemoteGradeScaleIntoDbUseCase: ImportRemoteGradeScaleIntoDbUseCase,
     private val showSnackbarUseCase: ShowSnackbarUseCase,
     private val trackErrorUseCase: TrackErrorUseCase,
-) : UIModel<ImportUIState, ImportCommand, ImportUIEvent> {
+) : UIModelWithEvents<ImportUIState, ImportCommand, ImportUIEvent> {
 
     override val events: Channel<ImportUIEvent> = Channel()
     override val uiState: StateFlow<ImportUIState> by moleculeUIState()

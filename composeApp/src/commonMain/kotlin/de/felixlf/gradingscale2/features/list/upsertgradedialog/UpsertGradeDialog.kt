@@ -54,7 +54,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun InsertGradeDialog(gradeScaleId: String, onDismiss: () -> Unit) {
     val viewModel = dialogScopedViewModel<UpsertGradeViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(gradeScaleId) { viewModel.onEvent(UpsertGradeUIEvent.SetGradeScaleId(gradeScaleId)) }
+    LaunchedEffect(gradeScaleId) { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeScaleId(gradeScaleId)) }
     UpsertGradeDialog(onDismiss = onDismiss, uiState = uiState, viewModel = viewModel)
 }
 
@@ -65,7 +65,7 @@ fun InsertGradeDialog(gradeScaleId: String, onDismiss: () -> Unit) {
 fun EditGradeDialog(uuid: String, onDismiss: () -> Unit) {
     val viewModel = dialogScopedViewModel<UpsertGradeViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(uuid) { viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid)) }
+    LaunchedEffect(uuid) { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeUUID(uuid)) }
     UpsertGradeDialog(onDismiss = onDismiss, uiState = uiState, viewModel = viewModel)
 }
 
@@ -78,14 +78,14 @@ private fun UpsertGradeDialog(
     Dialog(onDismissRequest = onDismiss) {
         UpsertGradeDialog(
             uiState = uiState.value,
-            onSetPercentage = { viewModel.onEvent(UpsertGradeUIEvent.SetPercentage(it)) },
-            onSetName = { viewModel.onEvent(UpsertGradeUIEvent.SetGradeName(it)) },
+            onSetPercentage = { viewModel.sendCommand(UpsertGradeUIEvent.SetPercentage(it)) },
+            onSetName = { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeName(it)) },
             onSave = {
-                viewModel.onEvent(UpsertGradeUIEvent.Save)
+                viewModel.sendCommand(UpsertGradeUIEvent.Save)
                 onDismiss()
             },
             onSaveNew = {
-                viewModel.onEvent(UpsertGradeUIEvent.SaveAsNew)
+                viewModel.sendCommand(UpsertGradeUIEvent.SaveAsNew)
                 onDismiss()
             },
         )
