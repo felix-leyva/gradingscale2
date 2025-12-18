@@ -3,6 +3,8 @@ package de.felixlf.gradingscale2.entities
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIModel
 import de.felixlf.gradingscale2.entities.features.import.ImportUIModelWithEvents
 import de.felixlf.gradingscale2.entities.features.list.GradeListUIModel
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIFactory
+import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIStateFactory
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightCalculatorUIModelWithEvents
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog.WeightedGradeDialogUIModelWithEvents
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepository
@@ -94,6 +96,8 @@ val entitiesModule =
         factoryOf(::GradeListUIModel)
         factoryOf(::CalculatorUIModel)
         factoryOf(::ImportUIModelWithEvents)
+        factoryOf(::UpsertGradeUIFactory)
+        factoryOf(::UpsertGradeScaleUIStateFactory)
         factoryOf(::WeightCalculatorUIModelWithEvents)
         factoryOf(::WeightedGradeDialogUIModelWithEvents)
     }

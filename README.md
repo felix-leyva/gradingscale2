@@ -2,7 +2,7 @@
 
 A multi-platform grading scale calculator built with Kotlin Multiplatform and Compose Multiplatform. GradingScale2 handles non-linear grading systems with precision, allowing educators and students to define custom grading scales and perform exact calculations across all major platforms.
 
-## 🎯 Features
+## Features
 
 ### Core Functionality
 - **Non-Linear Grade Calculations**: Support for complex, non-linear grading scales that accurately reflect various educational systems
@@ -17,42 +17,45 @@ A multi-platform grading scale calculator built with Kotlin Multiplatform and Co
 - **Offline-First**: All data stored locally for fast, reliable access
 - **Material 3 Design**: Modern UI following the latest Material Design guidelines
 
-## 🏗️ Architecture
+## Architecture
 
-### Clean Architecture Implementation
+### Layered Architecture Implementation
 
-The project follows Clean Architecture principles with clear separation of concerns across three main layers:
+The project follows Layered Architecture principles with clear separation of concerns across three main layers such that the Domain Layer
+keeps the business logic and interfaces, which are then implemented by the data layer whenever `data framework` logic is needed (dependency
+inversion principle). The Presentation layer could also be considered a `presentation framework` layer which however focuses only on the UI
+and navigation.
+
+Due the extension of the app, only `technological` dimension is being used, but no `domain feature` dimension.
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    Presentation Layer                   │
-│               (composeApp module)                       │
-│    • Compose UI Screens                                 │
-│    • ViewModels with Molecule State Management          │
-│    • Platform-specific UI implementations               │
-└────────────────────────┬────────────────────────────────┘
-                         │
-┌────────────────────────┴────────────────────────────────┐
+
+┌────────────────────────-────────────────────────────────┐
 │                     Domain Layer                        │
 │                  (entities module)                      │
 │    • Use Cases (Business Logic)                         │
 │    • Repository Interfaces                              │
 │    • Domain Models                                      │
 └────────────────────────┬────────────────────────────────┘
-                         │
-┌────────────────────────┴────────────────────────────────┐
-│                      Data Layer                         │
-│               (data/* submodules)                       │
-│    • Repository Implementations                         │
-│    • Local Database (SQLDelight)                        │
-│    • Remote API (Ktor)                                  │
-│    • Preferences (Multiplatform Settings)               │
-└─────────────────────────────────────────────────────────┘
+                         |---------------------------------------------------------------┐
+                         |                                                               |
+                         |                                                               |
+                         |                                                               |
+┌─────────────────────────────────────────────────────────┐     ┌────────────────────────┴────────────────────────────────┐
+│                      Data Layer                         │     │                    Presentation Layer                   │
+│               (data/* submodules)                       │     │               (composeApp module)                       │
+│    • Repository Implementations                         │     │    • Compose UI Screens                                 │
+│    • Local Database (SQLDelight)                        │     │    • ViewModels with Molecule State Management          │           
+│    • Remote API (Ktor)                                  │     │    • Platform-specific UI implementations               │           
+│    • Preferences (Multiplatform Settings)               │     |                                                         |
+└─────────────────────────────────────────────────────────┘     └────────────────────────-────────────────────────────────┘
+
+
 ```
 
 ### Key Architectural Decisions
 
-#### 🎭 Molecule for Reactive State Management
+#### Molecule for Reactive State Management
 The project uses [CashApp's Molecule](https://github.com/cashapp/molecule) for state management, revolutionizing how UI state is handled by treating it as a Composable function:
 
 ```kotlin
@@ -88,7 +91,7 @@ UIModel<GradeScaleCalculatorUIState, CalculatorUIEvent> by calculatorUIModel
 This reduces boilerplate and allows to keep this logic out of the platform `:composeApp` module.
 
 
-#### 🏛️ Adaptive Layout with Persistent Scaffolds
+#### Adaptive Layout with Persistent Scaffolds
 
 The adaptive layout system uses a unique approach with single per-destination Scaffolds that maintain navigation state across all screens:
 
@@ -122,9 +125,9 @@ fun AnimatedContentScope.PersistentScaffold(
 - **Adaptive Components**: Automatically switches UI components based on screen size
 - **Centralized State**: `ScaffoldState` acts as a container for both `AnimatedVisibilityScope` and `SharedTransitionScope`
 
-#### 🔄 Immutability with PersistentList
+#### Immutability with PersistentList
 
-The project embraces functional programming principles by using immutable data structures throughout:
+The project embraces functional programming principles by using **immutable data structures** throughout:
 
 ```kotlin
 @Serializable
@@ -147,7 +150,7 @@ data class GradeScale(
 - **Compose Integration**: Works seamlessly with Compose's recomposition system
 - **Custom Serialization**: Handles WasmJS compatibility issues with a custom serializer
 
-#### 🌊 Reactive Everything with Kotlin Flows
+#### Reactive Everything with Kotlin Flows
 
 The architecture is fully reactive using Kotlin Coroutines Flow:
 
@@ -207,7 +210,7 @@ when (val result = getRemoteGradeScales()) {
 - **Explicit**: Makes error cases visible in function signatures
 - **Functional**: Leverages monadic composition for clean code
 
-#### 🧩 Gradle Convention Plugins
+#### Gradle Convention Plugins
 
 The build system uses a convention plugin approach:
 
@@ -235,7 +238,7 @@ This approach provides:
 - **Type Safety**: Kotlin DSL provides IDE support and compile-time checking
 - **Modularity**: Different plugins for different module types
 
-#### 💉 Dependency Injection with Koin
+#### Dependency Injection with Koin
 
 The project uses Koin with a modular, platform-aware structure:
 
@@ -285,7 +288,7 @@ GradingScale2/
         └── sharedprefs/ # Multiplatform Settings
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Core Technologies
 - **[Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)** (2.1.21) - Share code across platforms
@@ -352,7 +355,7 @@ cd GradingScale2
 ./gradlew :composeApp:installDebug
 ```
 
-#### 🍎 iOS
+#### iOS
 ```bash
 # Build iOS framework
 ./build-ios.sh
@@ -364,7 +367,7 @@ open iosApp/iosApp.xcodeproj
 ./gradlew :composeApp:iosSimulatorArm64Test
 ```
 
-#### 🖥️ Desktop
+#### Desktop
 ```bash
 # Run desktop application
 ./gradlew :composeApp:run
@@ -373,16 +376,19 @@ open iosApp/iosApp.xcodeproj
 ./gradlew :composeApp:packageDistributionForCurrentOS
 ```
 
-#### 🌐 Web
+#### Web
 ```bash
 # Run development server
 ./gradlew :composeApp:wasmJsBrowserRun
 
 # Build production bundle
-./gradlew :composeApp:wasmJsBrowserProductionWebpack
+./gradlew :composeApp:wasmJsBrowserProductionWebpack̨̨̨̨
 ```
 
-### 🧪 Testing
+The WebWasm version can be deployed using a docker container. Inside `docker` are included the templates to build an nginx docker and configure it to run the deployed wasmjs app.
+To ease the deployment, the `build-wasmjs.main.kts` script automates the whole process to build the app, copy the content into the `docker` directory and then via ssh transfer the docker to a remote server. Once in the server, it restart the docker with the newly deployed app.̨̨̨̨̨ 
+
+### Testing
 ```bash
 # Run all tests
 ./gradlew test
@@ -398,7 +404,7 @@ open iosApp/iosApp.xcodeproj
 ./gradlew ktlintFormat
 ```
 
-### 🧹 Clean & Rebuild
+### Clean & Rebuild
 ```bash
 # Use the helper script
 ./clean-and-rebuild.sh
@@ -408,7 +414,7 @@ open iosApp/iosApp.xcodeproj
 ./gradlew build
 ```
 
-## 🧪 Testing Strategy
+## Testing Strategy
 
 The project includes comprehensive unit tests focusing on:
 - **Use Cases**: Business logic validation
@@ -433,14 +439,14 @@ class GradeScaleListViewModelTest {
 }
 ```
 
-## 📦 Download
+## Download
 
 The desktop application is available for download on the [Download Section](https://felix-leyva.github.io/gradingscale2/download)
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
