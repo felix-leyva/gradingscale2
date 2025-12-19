@@ -3,10 +3,10 @@ package de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialo
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
-import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.testMoleculeFlow
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -41,7 +41,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun initialStateHasNullValues() = moleculeTest {
+    fun initialStateHasNullValues() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -57,7 +57,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun initCommandSetsInitialValues() = moleculeTest {
+    fun initCommandSetsInitialValues() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -91,7 +91,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun selectGradeNameUpdatesPercentage() = moleculeTest {
+    fun selectGradeNameUpdatesPercentage() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -124,7 +124,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun selectNonExistentGradeNameDoesNothing() = moleculeTest {
+    fun selectNonExistentGradeNameDoesNothing() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -151,7 +151,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun setPercentageUpdatesPercentage() = moleculeTest {
+    fun setPercentageUpdatesPercentage() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -184,7 +184,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun setInvalidPercentageDoesNothing() = moleculeTest {
+    fun setInvalidPercentageDoesNothing() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -211,7 +211,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun percentageOutOfRangeIsCoerced() = moleculeTest {
+    fun percentageOutOfRangeIsCoerced() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -254,7 +254,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun setWeightUpdatesWeight() = moleculeTest {
+    fun setWeightUpdatesWeight() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -287,7 +287,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun setInvalidWeightDoesNothing() = moleculeTest {
+    fun setInvalidWeightDoesNothing() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -314,7 +314,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun weightTooLowIsCoerced() = moleculeTest {
+    fun weightTooLowIsCoerced() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -344,7 +344,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun setRelativeWeightUpdatesPercentageWhenBelowWeight() = moleculeTest {
+    fun setRelativeWeightUpdatesPercentageWhenBelowWeight() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -378,7 +378,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun setRelativeWeightUpdatesWeightWhenAboveWeight() = moleculeTest {
+    fun setRelativeWeightUpdatesWeightWhenAboveWeight() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -412,7 +412,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun setInvalidRelativeWeightDoesNothing() = moleculeTest {
+    fun setInvalidRelativeWeightDoesNothing() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -439,7 +439,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun relativeWeightTooLowIsCoerced() = moleculeTest {
+    fun relativeWeightTooLowIsCoerced() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -472,7 +472,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun setRelativeWeightWithNoWeightDoesNothing() = moleculeTest {
+    fun setRelativeWeightWithNoWeightDoesNothing() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {
@@ -492,7 +492,7 @@ class WeightedGradeDialogUIModelTest {
     }
 
     @Test
-    fun selectGradeNameWithNoGradeScale() = moleculeTest {
+    fun selectGradeNameWithNoGradeScale() = runTest {
         val model = createModel()
 
         testMoleculeFlow(model) {

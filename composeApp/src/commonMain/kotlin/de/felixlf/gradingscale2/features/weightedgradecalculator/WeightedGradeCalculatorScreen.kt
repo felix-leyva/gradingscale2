@@ -132,7 +132,6 @@ private fun MainContent(
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
         ) {
-            // Only show dropdown on non-large screens
             GradeScaleSelectorDropdown(
                 items = gradeScaleItems,
                 selectedItemId = uiState.selectedGradeScale?.id,

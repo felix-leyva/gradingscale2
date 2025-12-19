@@ -1,5 +1,8 @@
 package de.felixlf.gradingscale2.entities.features.import
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
+import app.cash.turbine.test
 import arrow.core.left
 import arrow.core.right
 import arrow.core.some
@@ -8,7 +11,6 @@ import de.felixlf.gradingscale2.entities.models.remote.CountryGradingScales
 import de.felixlf.gradingscale2.entities.models.remote.GradeDTO
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
 import de.felixlf.gradingscale2.entities.models.remote.RemoteError
-import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.testMoleculeFlow
 import de.felixlf.gradingscale2.entities.usecases.FakeTrackerUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
@@ -22,6 +24,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -121,7 +124,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun initialStateShouldLoadCountriesAndGrades() = moleculeTest {
+    fun initialStateShouldLoadCountriesAndGrades() = runTest {
         initSUT()
         // We first need to observe the state to trigger molecule evaluation
         testMoleculeFlow(importUIModel) {
@@ -145,7 +148,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldHandleErrorWhenLoadingGradesFails() = moleculeTest {
+    fun shouldHandleErrorWhenLoadingGradesFails() = runTest {
         // Create custom error case
         val errorUseCase = GetRemoteGradeScalesUseCase {
             getRemoteGradeScalesUseCaseCalled = true
@@ -180,9 +183,9 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldSelectCountryWhenSelectCountryCommandIsSent() = moleculeTest {
+    fun shouldSelectCountryWhenSelectCountryCommandIsSent() = runTest {
         initSUT()
-        testMoleculeFlow(importUIModel) {
+        backgroundScope.launchMolecule(mode = RecompositionMode.Immediate, body = { importUIModel.produceUI() }).test {
             // First get to stable state
             val initialState = awaitItem()
 
@@ -209,7 +212,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldLoadGradeScaleWhenOpenImportDialogCommandIsSent() = moleculeTest {
+    fun shouldLoadGradeScaleWhenOpenImportDialogCommandIsSent() = runTest {
         initSUT()
         testMoleculeFlow(importUIModel) {
             // First get to stable state
@@ -245,7 +248,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldHandleErrorWhenLoadingGradeScaleFails() = moleculeTest {
+    fun shouldHandleErrorWhenLoadingGradeScaleFails() = runTest {
         // Create custom error case
         val errorUseCase = GetRemoteGradeScaleUseCase { countryAndName ->
             lastCountryAndNameParam = countryAndName
@@ -291,7 +294,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldImportGradeScaleWhenImportGradeScaleCommandIsSent() = moleculeTest {
+    fun shouldImportGradeScaleWhenImportGradeScaleCommandIsSent() = runTest {
         initSUT()
         testMoleculeFlow(importUIModel) {
             // Get to stable state
@@ -321,7 +324,7 @@ class ImportUIModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun shouldNotAttemptImportWhenNoGradeScaleIsDisplayed() = moleculeTest {
+    fun shouldNotAttemptImportWhenNoGradeScaleIsDisplayed() = runTest {
         initSUT()
         testMoleculeFlow(importUIModel) {
             // Get to stable state
@@ -351,7 +354,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shownCountryGradingScalesShouldReturnFilteredListWhenCountryIsSelected() = moleculeTest {
+    fun shownCountryGradingScalesShouldReturnFilteredListWhenCountryIsSelected() = runTest {
         // Given multiple countries
         val anotherCountry = "France"
         val anotherCountryScales = CountryGradingScales(
@@ -402,7 +405,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldSetLoadingStateDuringOperations() = moleculeTest {
+    fun shouldSetLoadingStateDuringOperations() = runTest {
         initSUT()
         // Track loading state changes
 
