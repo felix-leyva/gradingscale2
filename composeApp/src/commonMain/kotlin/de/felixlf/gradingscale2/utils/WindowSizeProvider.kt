@@ -11,7 +11,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import io.github.aakira.napier.Napier
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -38,20 +37,29 @@ fun ProvideWindowSizeClass(
 ) {
     val currentWindowSizeClass = getWindowSizeClass()
     val debouncedWindowSizeClass = remember { mutableStateOf(currentWindowSizeClass) }
-
+    val isResizing = remember { mutableStateOf(false) }
 
     LaunchedEffect(currentWindowSizeClass) {
         snapshotFlow { currentWindowSizeClass }
             .distinctUntilChanged()
-            .debounce(100)
+            .collect { immediateSize ->
+                isResizing.value = true
+            }
+    }
+
+    LaunchedEffect(currentWindowSizeClass) {
+        snapshotFlow { currentWindowSizeClass }
+            .distinctUntilChanged()
+            .debounce(300) // Increased to 300ms for more stable transitions
             .collect { newSize ->
-                Napier.d(tag = "WindowSizeProvider", message = "Window size changed to: ${newSize.widthSizeClass}")
                 debouncedWindowSizeClass.value = newSize
+                isResizing.value = false
             }
     }
 
     CompositionLocalProvider(
         LocalWindowSizeClass provides debouncedWindowSizeClass.value,
+        LocalIsResizing provides isResizing.value,
     ) {
         content()
     }

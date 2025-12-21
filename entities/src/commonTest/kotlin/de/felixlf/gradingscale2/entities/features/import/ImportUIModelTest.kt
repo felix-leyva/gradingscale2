@@ -1,5 +1,8 @@
 package de.felixlf.gradingscale2.entities.features.import
 
+import app.cash.molecule.RecompositionMode
+import app.cash.molecule.launchMolecule
+import app.cash.turbine.test
 import arrow.core.left
 import arrow.core.right
 import arrow.core.some
@@ -8,16 +11,20 @@ import de.felixlf.gradingscale2.entities.models.remote.CountryGradingScales
 import de.felixlf.gradingscale2.entities.models.remote.GradeDTO
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
 import de.felixlf.gradingscale2.entities.models.remote.RemoteError
-import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.testMoleculeFlow
+import de.felixlf.gradingscale2.entities.usecases.FakeTrackerUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetRemoteGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.ImportRemoteGradeScaleIntoDbUseCase
 import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.import_grade_get_remote_grades_error
+import gradingscale2.entities.generated.resources.import_grade_open_import_dialog_error
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -65,8 +72,10 @@ class ImportUIModelTest {
 
     private lateinit var showSnackbarUseCase: ShowSnackbarUseCase
 
+    private lateinit var fakeTrackerUseCase: FakeTrackerUseCase
+
     // Subject under test
-    private lateinit var importUIModel: ImportUIModel
+    private lateinit var importUIModel: ImportUIModelWithEvents
 
     @BeforeTest
     fun setup() {
@@ -98,21 +107,24 @@ class ImportUIModelTest {
         showSnackbarUseCase = ShowSnackbarUseCase { _, _, _ ->
             ShowSnackbarUseCase.SnackbarResult.Dismissed
         }
+
+        fakeTrackerUseCase = FakeTrackerUseCase()
     }
 
     private fun TestScope.initSUT() {
         // Create the model with test scope from TestDispatcherProvider
-        importUIModel = ImportUIModel(
+        importUIModel = ImportUIModelWithEvents(
             scope = this,
             getRemoteGradeScalesUseCase = getRemoteGradeScalesUseCase,
             getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
             importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
             showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
         )
     }
 
     @Test
-    fun initialStateShouldLoadCountriesAndGrades() = moleculeTest {
+    fun initialStateShouldLoadCountriesAndGrades() = runTest {
         initSUT()
         // We first need to observe the state to trigger molecule evaluation
         testMoleculeFlow(importUIModel) {
@@ -136,7 +148,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldHandleErrorWhenLoadingGradesFails() = moleculeTest {
+    fun shouldHandleErrorWhenLoadingGradesFails() = runTest {
         // Create custom error case
         val errorUseCase = GetRemoteGradeScalesUseCase {
             getRemoteGradeScalesUseCaseCalled = true
@@ -144,12 +156,13 @@ class ImportUIModelTest {
         }
 
         // Create new model with error case
-        val errorModel = ImportUIModel(
+        val errorModel = ImportUIModelWithEvents(
             scope = this,
             getRemoteGradeScalesUseCase = errorUseCase,
             getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
             importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
             showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
         )
 
         // Observe states
@@ -161,7 +174,8 @@ class ImportUIModelTest {
             val errorState = if (loadingState.error == null) awaitItem() else loadingState
 
             // Verify error is captured
-            assertEquals(testRemoteError.message, errorState.error)
+            assertEquals(testRemoteError.message, fakeTrackerUseCase.reportedErrors.value?.message)
+            assertEquals(Res.string.import_grade_get_remote_grades_error, errorState.error)
 
             // Clean up
             cancelAndIgnoreRemainingEvents()
@@ -169,9 +183,9 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldSelectCountryWhenSelectCountryCommandIsSent() = moleculeTest {
+    fun shouldSelectCountryWhenSelectCountryCommandIsSent() = runTest {
         initSUT()
-        testMoleculeFlow(importUIModel) {
+        backgroundScope.launchMolecule(mode = RecompositionMode.Immediate, body = { importUIModel.produceUI() }).test {
             // First get to stable state
             val initialState = awaitItem()
 
@@ -198,7 +212,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldLoadGradeScaleWhenOpenImportDialogCommandIsSent() = moleculeTest {
+    fun shouldLoadGradeScaleWhenOpenImportDialogCommandIsSent() = runTest {
         initSUT()
         testMoleculeFlow(importUIModel) {
             // First get to stable state
@@ -234,7 +248,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldHandleErrorWhenLoadingGradeScaleFails() = moleculeTest {
+    fun shouldHandleErrorWhenLoadingGradeScaleFails() = runTest {
         // Create custom error case
         val errorUseCase = GetRemoteGradeScaleUseCase { countryAndName ->
             lastCountryAndNameParam = countryAndName
@@ -242,12 +256,13 @@ class ImportUIModelTest {
         }
 
         // Create new model with error case
-        val errorModel = ImportUIModel(
+        val errorModel = ImportUIModelWithEvents(
             scope = this,
             getRemoteGradeScalesUseCase = getRemoteGradeScalesUseCase,
             getRemoteGradeScaleUseCase = errorUseCase,
             importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
             showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
         )
 
         testMoleculeFlow(errorModel) {
@@ -269,7 +284,8 @@ class ImportUIModelTest {
             val errorState = if (nextState.error == null) awaitItem() else nextState
 
             // Verify
-            assertEquals(testRemoteError.message, errorState.error)
+            assertEquals(testRemoteError.message, fakeTrackerUseCase.reportedErrors.value?.message)
+            assertEquals(Res.string.import_grade_open_import_dialog_error, errorState.error)
             assertFalse(errorState.isLoading)
 
             // Clean up
@@ -278,7 +294,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldImportGradeScaleWhenImportGradeScaleCommandIsSent() = moleculeTest {
+    fun shouldImportGradeScaleWhenImportGradeScaleCommandIsSent() = runTest {
         initSUT()
         testMoleculeFlow(importUIModel) {
             // Get to stable state
@@ -308,7 +324,7 @@ class ImportUIModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun shouldNotAttemptImportWhenNoGradeScaleIsDisplayed() = moleculeTest {
+    fun shouldNotAttemptImportWhenNoGradeScaleIsDisplayed() = runTest {
         initSUT()
         testMoleculeFlow(importUIModel) {
             // Get to stable state
@@ -338,7 +354,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shownCountryGradingScalesShouldReturnFilteredListWhenCountryIsSelected() = moleculeTest {
+    fun shownCountryGradingScalesShouldReturnFilteredListWhenCountryIsSelected() = runTest {
         // Given multiple countries
         val anotherCountry = "France"
         val anotherCountryScales = CountryGradingScales(
@@ -352,12 +368,13 @@ class ImportUIModelTest {
         }
 
         // Create model with multiple countries
-        val multiCountryModel = ImportUIModel(
+        val multiCountryModel = ImportUIModelWithEvents(
             scope = this,
             getRemoteGradeScalesUseCase = multipleCountriesUseCase,
             getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
             importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
             showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
         )
 
         testMoleculeFlow(multiCountryModel) {
@@ -388,7 +405,7 @@ class ImportUIModelTest {
     }
 
     @Test
-    fun shouldSetLoadingStateDuringOperations() = moleculeTest {
+    fun shouldSetLoadingStateDuringOperations() = runTest {
         initSUT()
         // Track loading state changes
 

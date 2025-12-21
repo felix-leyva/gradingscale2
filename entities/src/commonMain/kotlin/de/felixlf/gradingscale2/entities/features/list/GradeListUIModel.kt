@@ -7,26 +7,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SetTotalPoints
-import de.felixlf.gradingscale2.entities.uimodel.MoleculePresenter
+import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
+import de.felixlf.gradingscale2.entities.uimodel.asState
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 /**
  * This class is responsible for managing the UI state of the grade scale list screen.
  */
 class GradeListUIModel(
-    private val scope: UIModelScope,
+    override val scope: UIModelScope,
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
     private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase,
     private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase,
-) : MoleculePresenter<GradeScaleListUIState, GradeScaleListUIEvent> {
+) : UIModel<GradeScaleListUIState, GradeScaleListUIEvent> {
 
     // MutableStateOf causes inside the produceUI function recomposition which is helpful to update the State. If we wish to "observe" this
     // value in other places, we need to do this inside @Composable functions.
@@ -34,6 +36,7 @@ class GradeListUIModel(
     private var totalPoints by mutableStateOf(10.0)
 
     // Important exception: do not use this state value in the produceUI function, to avoid recomposition loops.
+    override val uiState: StateFlow<GradeScaleListUIState> by moleculeUIState()
     private var state by mutableStateOf<GradeScaleListUIState?>(null)
 
     @Composable

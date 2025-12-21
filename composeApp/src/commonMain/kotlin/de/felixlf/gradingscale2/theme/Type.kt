@@ -12,21 +12,21 @@ val AppTypography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 57.sp,
         lineHeight = 64.sp,
-        letterSpacing = (-0.25).sp
+        letterSpacing = (-0.25).sp,
     ),
     headlineSmall = TextStyle(
         fontFamily = FontFamily.Serif, // Replace with your desired serif font
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         lineHeight = 32.sp,
-        letterSpacing = 0.sp
+        letterSpacing = 0.sp,
     ),
     bodyLarge = TextStyle(
         fontFamily = FontFamily.SansSerif, // Replace with your desired sans-serif font
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    )
+        letterSpacing = 0.5.sp,
+    ),
     // You can define other text styles here as needed (e.g., titleLarge, labelSmall)
 )

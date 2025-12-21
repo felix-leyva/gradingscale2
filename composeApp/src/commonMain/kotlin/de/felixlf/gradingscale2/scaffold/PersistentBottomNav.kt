@@ -1,91 +1,81 @@
 package de.felixlf.gradingscale2.scaffold
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.shape.RoundedCornerShape // Added
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme // Added
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults // Added
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.surfaceColorAtElevation // Added
+import androidx.compose.material3.surfaceColorAtElevation
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip // Added
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp // Added
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import de.felixlf.gradingscale2.AppState
 import de.felixlf.gradingscale2.navigation.Destinations
-import de.felixlf.gradingscale2.utils.isAtLeastMediumScreenWidth
+import de.felixlf.gradingscale2.utils.currentWindowSizeClass
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
-/**
- * A shared element key for the bottom navigation bar
- */
-private object BottomNavSharedElementKey
+private const val ANIMATION_DURATION_MS = 500
+private const val SURFACE_ELEVATION_DP = 3
+private const val CORNER_RADIUS_DP = 16
 
-/**
- * Z-index for the shared element in overlay
- */
-private const val BottomNavSharedElementZIndex = 100f
-
-/**
- * A persistent bottom navigation bar that uses shared element transitions
- * to maintain visual continuity across navigation destinations
- */
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun ScaffoldState.PersistentNavigationBar(
+fun PersistentNavigationBar(
     modifier: Modifier = Modifier,
-    enterTransition: EnterTransition,
-    exitTransition: ExitTransition,
     content: @Composable RowScope.() -> Unit,
 ) {
-    AnimatedVisibility(
-        modifier = modifier
-            .sharedElement(
-                sharedContentState = rememberSharedContentState(BottomNavSharedElementKey),
-                animatedVisibilityScope = this,
-                zIndexInOverlay = BottomNavSharedElementZIndex,
-            ),
-        visible = !isAtLeastMediumScreenWidth().value,
-        enter = enterTransition,
-        exit = exitTransition,
-        content = {
-            NavigationBar(
-                // Added for a subtle elevation effect and shape
-                containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(3.dp),
-                modifier = Modifier.clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-            ) {
-                content()
-            }
-        },
+    val windowSizeClass = currentWindowSizeClass()
+    var shouldShow by remember { mutableStateOf(windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact) }
+
+    LaunchedEffect(windowSizeClass.widthSizeClass) {
+        val newShouldShow = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
+        if (shouldShow != newShouldShow) {
+            shouldShow = newShouldShow
+        }
+    }
+
+    val animatedAlpha by animateFloatAsState(
+        targetValue = if (shouldShow) 1f else 0f,
+        animationSpec = tween(durationMillis = ANIMATION_DURATION_MS),
+        label = "BottomNavHeight",
     )
+
+    if (animatedAlpha > 0f) {
+        NavigationBar(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(SURFACE_ELEVATION_DP.dp),
+            modifier = modifier
+                .alpha(animatedAlpha)
+                .clip(RoundedCornerShape(topStart = CORNER_RADIUS_DP.dp, topEnd = CORNER_RADIUS_DP.dp)),
+        ) {
+            content()
+        }
+    }
 }
 
 @Composable
-fun ScaffoldState.DefaultNavigationBar(
+fun DefaultNavigationBar(
     modifier: Modifier = Modifier,
-    enterTransition: EnterTransition = slideInVertically(initialOffsetY = { it }),
-    exitTransition: ExitTransition = slideOutVertically(targetOffsetY = { it }),
 ) {
     val appState: AppState = koinInject()
     val navController = appState.navController.controller
     val currentDestination = navController.currentBackStackEntryAsState()
-    PersistentNavigationBar(
-        modifier = modifier,
-        enterTransition = enterTransition,
-        exitTransition = exitTransition,
-    ) {
+    PersistentNavigationBar(modifier = modifier) {
         Destinations.entries.forEach { destination ->
             val selected = rememberUpdatedState(
                 currentDestination.value?.destination?.route?.substringAfterLast(".") == destination.name,
@@ -109,11 +99,10 @@ fun ScaffoldState.DefaultNavigationBar(
                         textAlign = TextAlign.Center,
                     )
                 },
-                // Added for custom item colors
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
                     selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                    indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f), // Slightly transparent indicator
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 ),

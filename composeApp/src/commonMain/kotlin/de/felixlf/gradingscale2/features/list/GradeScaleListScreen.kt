@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -39,10 +41,12 @@ import de.felixlf.gradingscale2.features.list.upsertgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.InsertGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleDialog
 import de.felixlf.gradingscale2.theme.AppTheme
+import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
 import de.felixlf.gradingscale2.utils.isLargeScreenWidthLocal
 import de.felixlf.gradingscale2.utils.textFieldManager
+import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_list_no_grade_scale_selected
 import gradingscale2.entities.generated.resources.gradescale_list_total_points
@@ -66,8 +70,8 @@ internal fun GradeScaleListScreen(
     GradeScaleListScreen(
         modifier = modifier,
         uiState = uiState.value,
-        onSelectGradeScale = { viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScale(it)) },
-        onSetTotalPoints = { viewModel.onEvent(GradeScaleListUIEvent.SetTotalPoints(it)) },
+        onSelectGradeScale = { viewModel.sendCommand(GradeScaleListUIEvent.SelectGradeScale(it)) },
+        onSetTotalPoints = { viewModel.sendCommand(GradeScaleListUIEvent.SetTotalPoints(it)) },
         onOpenDialog = { activeDialogCommand = it },
     )
 
@@ -86,7 +90,7 @@ internal fun GradeScaleListScreen(
             GradeScaleListDialogCommand.AddNewGradeScale -> UpsertGradeScaleDialog(
                 onDismiss = {
                     activeDialogCommand = null
-                    it?.let { viewModel.onEvent(GradeScaleListUIEvent.SelectGradeScaleById(it)) }
+                    it?.let { viewModel.sendCommand(GradeScaleListUIEvent.SelectGradeScaleById(it)) }
                 },
                 operation = UpsertGradeScaleUIState.State.Operation.Insert,
             )
@@ -128,41 +132,38 @@ private fun GradeScaleListScreen(
         },
     ) {
         Column(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize(),
         ) {
             Row(
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp).fillMaxWidth().height(IntrinsicSize.Max),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    val textFieldValue = textFieldManager(uiState.selectedGradeScale?.totalPoints?.stringWithDecimals() ?: "") {
-                        onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
-                    }
+                val textFieldValue = textFieldManager(uiState.selectedGradeScale?.totalPoints?.stringWithDecimals() ?: "") {
+                    onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
+                }
 
-                    // Only show dropdown on non-large screens
-                    GradeScaleSelectorDropdown(
-                        items = gradeScaleItems,
-                        selectedItemId = uiState.selectedGradeScale?.id,
-                        onSelectionChange = { id ->
-                            id?.let {
-                                val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
-                                selectedName?.let { onSelectGradeScale(it) }
-                            }
-                        },
-                        modifier = Modifier.weight(0.7f),
+                // Only show dropdown on non-large screens
+                GradeScaleSelectorDropdown(
+                    items = gradeScaleItems,
+                    selectedItemId = uiState.selectedGradeScale?.id,
+                    onSelectionChange = { id ->
+                        id?.let {
+                            val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
+                            selectedName?.let { onSelectGradeScale(it) }
+                        }
+                    },
+                    modifier = Modifier.weight(0.7f),
+                )
+
+                if (gradeScale != null) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    CalculatorTextField(
+                        modifier = Modifier.weight(0.3f).fillMaxHeight(),
+                        state = textFieldValue,
+                        textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
+                        label = stringResource(Res.string.gradescale_list_total_points),
                     )
-
-                    if (gradeScale != null) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        CalculatorTextField(
-                            modifier = Modifier.weight(0.3f).height(IntrinsicSize.Max),
-                            state = textFieldValue,
-                            textStyle = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                            label = stringResource(Res.string.gradescale_list_total_points),
-                        )
-                        DialogActionsMenu(gradeScaleId = gradeScale.id, onAction = onOpenDialog)
-                    }
+                    DialogActionsMenu(gradeScaleId = gradeScale.id, onAction = onOpenDialog)
                 }
             }
 

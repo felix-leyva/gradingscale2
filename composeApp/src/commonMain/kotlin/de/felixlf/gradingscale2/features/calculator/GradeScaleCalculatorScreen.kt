@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.selectAll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,6 +16,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIEvent
@@ -21,11 +28,13 @@ import de.felixlf.gradingscale2.entities.features.calculator.GradeScaleCalculato
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.entities.util.stringWithDecimals
+import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
 import de.felixlf.gradingscale2.utils.isLargeScreenWidthLocal
 import de.felixlf.gradingscale2.utils.textFieldManager
+import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.calculator_screen_grade_name_dropbox_default
 import gradingscale2.entities.generated.resources.calculator_screen_grade_name_dropbox_label
@@ -54,11 +63,11 @@ internal fun GradeScaleCalculatorScreen(
     GradeScaleCalculatorScreen(
         modifier = modifier,
         uiState = uiState.value,
-        onSelectGradeScale = { viewModel.onEvent(CalculatorUIEvent.SelectGradeScale(it)) },
-        onSetTotalPoints = { viewModel.onEvent(CalculatorUIEvent.SetTotalPoints(it)) },
-        onSetPoints = { viewModel.onEvent(CalculatorUIEvent.SetPoints(it)) },
-        onSetPercentage = { viewModel.onEvent(CalculatorUIEvent.SetPercentage(it)) },
-        onSelectGradeName = { viewModel.onEvent(CalculatorUIEvent.SetGradeName(it)) },
+        onSelectGradeScale = { viewModel.sendCommand(CalculatorUIEvent.SelectGradeScale(it)) },
+        onSetTotalPoints = { viewModel.sendCommand(CalculatorUIEvent.SetTotalPoints(it)) },
+        onSetPoints = { viewModel.sendCommand(CalculatorUIEvent.SetPoints(it)) },
+        onSetPercentage = { viewModel.sendCommand(CalculatorUIEvent.SetPercentage(it)) },
+        onSelectGradeName = { viewModel.sendCommand(CalculatorUIEvent.SetGradeName(it)) },
     )
 }
 
@@ -81,7 +90,6 @@ private fun GradeScaleCalculatorScreen(
             GradeScaleNameAndId(id = it.gradeScaleId, name = it.gradeScaleName)
         }.toPersistentList()
     }
-
     AdaptiveGradeScaleSelector(
         items = gradeScaleItems,
         selectedItemId = uiState.selectedGradeScale?.id,
@@ -93,7 +101,7 @@ private fun GradeScaleCalculatorScreen(
         },
     ) {
         Column(
-            modifier = modifier.fillMaxSize().padding(16.dp),
+            modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize().padding(16.dp),
         ) {
             // Only show dropdown on non-large screens
             GradeScaleSelectorDropdown(
@@ -115,6 +123,10 @@ private fun GradeScaleCalculatorScreen(
             if (gradeScale == null) {
                 Text(text = stringResource(Res.string.gradescale_list_select_grade_scale))
             } else {
+                val totalPointsFocusRequester = remember { FocusRequester() }
+                val pointsFocusRequester = remember { FocusRequester() }
+                val percentageFocusRequester = remember { FocusRequester() }
+
                 Column(
                     modifier = Modifier.wrapContentWidth(),
                     verticalArrangement = Arrangement.SpaceBetween,
@@ -124,22 +136,45 @@ private fun GradeScaleCalculatorScreen(
                     ) {
                         val totalPointsState = textFieldManager(uiState.totalPoints?.stringWithDecimals() ?: "") {
                             onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
+                            edit { selectAll() }
                         }
 
                         CalculatorTextField(
-                            modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                            modifier = Modifier
+                                .padding(vertical = 16.dp)
+                                .weight(1f)
+                                .focusRequester(totalPointsFocusRequester)
+                                .focusProperties {
+                                    next = pointsFocusRequester
+                                },
                             state = totalPointsState,
                             label = stringResource(Res.string.calculator_screen_total_points_input),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next,
+                            ),
                         )
 
                         val pointState = textFieldManager(uiState.currentGrade?.points?.stringWithDecimals() ?: "") {
                             onSetPoints(it.toDoubleOrNull() ?: 0.0)
+                            edit { selectAll() }
                         }
 
                         CalculatorTextField(
-                            modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                            modifier = Modifier
+                                .padding(vertical = 16.dp)
+                                .weight(1f)
+                                .focusRequester(pointsFocusRequester)
+                                .focusProperties {
+                                    next = percentageFocusRequester
+                                    previous = totalPointsFocusRequester
+                                },
                             state = pointState,
                             label = stringResource(Res.string.calculator_screen_points_input),
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Number,
+                                imeAction = ImeAction.Next,
+                            ),
                         )
                     }
 
@@ -148,12 +183,23 @@ private fun GradeScaleCalculatorScreen(
                     ) {
                         val percentageState = textFieldManager((uiState.currentPercentage)?.times(100)?.stringWithDecimals() ?: "") {
                             onSetPercentage((it.toDoubleOrNull()?.div(100)) ?: 0.0)
+                            edit { selectAll() }
                         }
 
                         CalculatorTextField(
-                            modifier = Modifier.padding(vertical = 16.dp).weight(1f),
+                            modifier = Modifier
+                                .padding(vertical = 16.dp)
+                                .weight(1f)
+                                .focusRequester(percentageFocusRequester)
+                                .focusProperties {
+                                    previous = pointsFocusRequester
+                                },
                             state = percentageState,
                             label = stringResource(Res.string.calculator_screen_percentage_input),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                imeAction = ImeAction.Done,
+                                keyboardType = KeyboardType.Number,
+                            ),
                         )
 
                         DropboxSelector(

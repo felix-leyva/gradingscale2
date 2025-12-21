@@ -2,43 +2,30 @@
 @file:OptIn(ExperimentalKotlinGradlePluginApi::class, ExperimentalWasmDsl::class)
 
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
 
 plugins {
-    id(
-        libs2.plugins.kotlinMultiplatform.get().pluginId,
-    )
+    id(libs2.plugins.kotlinMultiplatform.get().pluginId)
     id("gs-android-app")
-    id(
-        libs2.plugins.google.services.get().pluginId,
-    )
-    id(
-        libs2.plugins.jetbrainsCompose.get().pluginId,
-    )
-    id(
-        libs2.plugins.compose.compiler.get().pluginId,
-    )
-    id(
-        libs2.plugins.ksp.get().pluginId,
-    )
-    id(
-        libs2.plugins.kotlinxSerialization.get().pluginId,
-    )
+    id(libs2.plugins.google.services.get().pluginId)
+    id(libs2.plugins.jetbrainsCompose.get().pluginId)
+    id(libs2.plugins.compose.compiler.get().pluginId)
+    id(libs2.plugins.ksp.get().pluginId)
+    id(libs2.plugins.kotlinxSerialization.get().pluginId)
     alias(libs2.plugins.conveyor)
+    alias(libs2.plugins.hot.reload)
+    id("sentry-android")
 }
 
 kotlin {
-    version = "1.0"
-
     jvm()
 
     @OptIn(ExperimentalWasmDsl::class)
     wasmJs {
-        outputModuleName = provider { "composeApp" }
+        outputModuleName = "composeApp"
         browser {
             val rootDirPath = project.rootDir.path
             val projectDirPath = project.projectDir.path
@@ -75,6 +62,19 @@ kotlin {
         }
     }
 
+    // Disable iOS tests due to Firebase framework linking issues in test binaries
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().configureEach {
+        if (name.startsWith("ios")) {
+            binaries.all {
+                if (this is org.jetbrains.kotlin.gradle.plugin.mpp.TestExecutable) {
+                    linkTaskProvider.configure {
+                        enabled = false
+                    }
+                }
+            }
+        }
+    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -94,6 +94,8 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs2.navigation.compose)
             implementation(libs2.material3.window.size)
+            implementation(libs2.haze)
+            implementation(libs2.haze.materials)
 
             implementation(libs2.napier)
             implementation(libs2.androidx.lifecycle.viewmodel)
@@ -109,11 +111,12 @@ kotlin {
             // Arrow
             implementation(libs2.arrow.optics)
 
-            implementation(project(":entities"))
-            implementation(project(":data:authFirebase"))
-            implementation(project(":data:network"))
-            implementation(project(":data:persistance:db"))
-            implementation(project(":data:persistance:sharedprefs"))
+            implementation(projects.entities)
+            implementation(projects.data.authFirebase)
+            implementation(projects.data.network)
+            implementation(projects.data.persistance.db)
+            implementation(projects.data.persistance.sharedprefs)
+            implementation(projects.data.diagnostics)
         }
 
         commonTest.dependencies {
@@ -133,11 +136,10 @@ kotlin {
                 implementation(libs2.slf4j.simple)
             }
         }
-
     }
 }
 android {
-    namespace = "de.felixlf.gradingscale2"
+    namespace = libs2.versions.applicationId.get()
     testOptions {
         unitTests.isReturnDefaultValues = true
     }
@@ -145,7 +147,7 @@ android {
 
 compose.desktop {
     application {
-        mainClass = "de.felixlf.gradingscale2.MainKt"
+        mainClass = libs2.versions.mainClassName.get()
         buildTypes {
             release {
                 proguard {
@@ -156,14 +158,14 @@ compose.desktop {
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "grading-scale"
-            packageVersion = "1.0.0"
+            packageName = libs2.versions.desktopPackageName.get()
+            packageVersion = libs2.versions.appVersion.get()
             modules("java.instrument", "java.management", "java.sql", "jdk.unsupported")
 
             macOS {
                 iconFile.set(project.file("src/commonMain/composeResources/drawable/app_icon.icns"))
-                bundleID = "de.felixlf.gradingscale2"
-                packageName = "Grading Scale"
+                bundleID = libs2.versions.applicationId.get()
+                packageName = libs2.versions.appDisplayName.get()
                 appStore = true
                 appCategory = "public.app-category.utilities"
             }
@@ -176,10 +178,6 @@ compose.desktop {
             }
         }
     }
-}
-
-composeCompiler {
-    featureFlags.add(ComposeFeatureFlag.OptimizeNonSkippingGroups)
 }
 
 compose {
@@ -208,11 +206,10 @@ tasks.register("checkAndCreateGoogleServices") {
 }
 
 tasks.register("checkAndCreateIosGoogleServices") {
-    val googleServicesFile = parent?.layout?.projectDirectory?.file("iosApp/iosApp/GoogleService-Info.plist")
-        ?: run {
-            println("Parent project not found.")
-            return@register
-        }
+    val googleServicesFile = parent?.layout?.projectDirectory?.file("iosApp/iosApp/GoogleService-Info.plist") ?: run {
+        println("Parent project not found.")
+        return@register
+    }
     val googleServicesContent = providers.environmentVariable("GOOGLE_IOS_SECRET")
     doLast {
         if (!googleServicesFile.asFile.exists()) {
@@ -232,7 +229,6 @@ tasks.register("checkAndCreateIosGoogleServices") {
 tasks.named("preBuild") {
     dependsOn("checkAndCreateGoogleServices", "checkAndCreateIosGoogleServices")
 }
-
 
 dependencies {
     ksp(libs2.arrow.optics.ksp.plugin)

@@ -1,10 +1,7 @@
 package de.felixlf.gradingscale2.entities.features.calculator
 
-import app.cash.molecule.RecompositionMode
-import app.cash.molecule.launchMolecule
-import app.cash.turbine.test
 import arrow.core.Option
-import de.felixlf.gradingscale2.entities.moleculeTest
+import de.felixlf.gradingscale2.entities.testMoleculeFlow
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
@@ -13,6 +10,7 @@ import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -44,9 +42,9 @@ class CalculatorUIStateFactoryTest {
     }
 
     @Test
-    fun `gradeScales are initialized from the usecases`() = moleculeTest {
+    fun `gradeScales are initialized from the usecases`() = runTest {
         setupSUT()
-        launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
+        testMoleculeFlow(factory) {
             val emptyState = awaitItem()
             assertEquals(null, emptyState.selectedGradeScale)
             assertTrue(emptyState.gradeScalesNamesWithId.isEmpty())
@@ -61,9 +59,9 @@ class CalculatorUIStateFactoryTest {
     }
 
     @Test
-    fun `selectGradeScale sets selectedGradeScaleId`() = moleculeTest {
+    fun `selectGradeScale sets selectedGradeScaleId`() = runTest {
         setupSUT()
-        launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
+        testMoleculeFlow(factory) {
             awaitItem()
             val state = awaitItem()
             assertEquals(null, state.selectedGradeScale)
@@ -82,9 +80,9 @@ class CalculatorUIStateFactoryTest {
     }
 
     @Test
-    fun `setTotalPoints sets totalPoints`() = moleculeTest {
+    fun `setTotalPoints sets totalPoints`() = runTest {
         setupSUT()
-        launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
+        testMoleculeFlow(factory) {
             awaitItem()
             val state = awaitItem()
             factory.sendCommand(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
@@ -98,9 +96,9 @@ class CalculatorUIStateFactoryTest {
     }
 
     @Test
-    fun `setPercentage sets percentage`() = moleculeTest {
+    fun `setPercentage sets percentage`() = runTest {
         setupSUT()
-        launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
+        testMoleculeFlow(factory) {
             awaitItem()
             val state = awaitItem()
             factory.sendCommand(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
@@ -119,9 +117,9 @@ class CalculatorUIStateFactoryTest {
     }
 
     @Test
-    fun `setPoints sets points`() = moleculeTest {
+    fun `setPoints sets points`() = runTest {
         setupSUT()
-        launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
+        testMoleculeFlow(factory) {
             awaitItem()
             val state = awaitItem()
             factory.sendCommand(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))
@@ -140,9 +138,9 @@ class CalculatorUIStateFactoryTest {
     }
 
     @Test
-    fun `setGradeName sets grade name`() = moleculeTest {
+    fun `setGradeName sets grade name`() = runTest {
         setupSUT()
-        launchMolecule(RecompositionMode.Immediate) { factory.produceUI() }.test {
+        testMoleculeFlow(factory) {
             awaitItem()
             val state = awaitItem()
             factory.sendCommand(CalculatorUIEvent.SelectGradeScale(state.gradeScalesNames.first()))

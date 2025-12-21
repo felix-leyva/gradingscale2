@@ -23,7 +23,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeWithName
 import de.felixlf.gradingscale2.entities.util.stringWithDecimals
+import gradingscale2.entities.generated.resources.Res
+import gradingscale2.entities.generated.resources.weighted_grade_list_label_name
+import gradingscale2.entities.generated.resources.weighted_grade_list_label_percentage
+import gradingscale2.entities.generated.resources.weighted_grade_list_label_points
+import gradingscale2.entities.generated.resources.weighted_grade_list_label_title
+import gradingscale2.entities.generated.resources.weighted_grade_list_label_total_points
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -34,7 +41,7 @@ internal fun PartialGradesList(
 ) {
     Column(modifier = modifier) {
         Text(
-            text = "Partial grades",
+            text = stringResource(Res.string.weighted_grade_list_label_title),
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
@@ -42,10 +49,10 @@ internal fun PartialGradesList(
         LazyColumn {
             stickyHeader {
                 GradeRowContent(
-                    gradeName = "Name",
-                    percentage = "Percentage",
-                    points = "Points",
-                    totalPoints = "Total points",
+                    gradeName = stringResource(Res.string.weighted_grade_list_label_name),
+                    percentage = stringResource(Res.string.weighted_grade_list_label_percentage),
+                    points = stringResource(Res.string.weighted_grade_list_label_points),
+                    totalPoints = stringResource(Res.string.weighted_grade_list_label_total_points),
                     isHeader = true,
                 )
                 HorizontalDivider()

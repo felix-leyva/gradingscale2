@@ -17,8 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import de.felixlf.gradingscale2.utils.NumericInputFilter
+import de.felixlf.gradingscale2.utils.onPreviewTab
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +34,10 @@ internal fun CalculatorTextField(
     readOnly: Boolean = false,
     singleLine: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
+        keyboardType = KeyboardType.Number,
+        imeAction = ImeAction.Done,
+    ),
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     inputTransformation: InputTransformation? = null,
@@ -41,15 +47,36 @@ internal fun CalculatorTextField(
         if (isFocused && selectAllOnFocus) state.edit { selectAll() }
     }
 
+    // Apply numeric filter if keyboard type is Number
+    val isNumberKeyboard = keyboardOptions.keyboardType == KeyboardType.Number
+    val combinedTransformation = remember(inputTransformation, isNumberKeyboard) {
+        if (isNumberKeyboard) {
+            val numericFilter = NumericInputFilter()
+            if (inputTransformation != null) {
+                // Chain both transformations
+                InputTransformation {
+                    numericFilter.run { transformInput() }
+                    inputTransformation.run { transformInput() }
+                }
+            } else {
+                numericFilter
+            }
+        } else {
+            inputTransformation
+        }
+    }
+
+    val modifierWithTabHandler = modifier.onPreviewTab()
+
     BasicTextField(
-        modifier = modifier,
+        modifier = modifierWithTabHandler,
         state = state,
         enabled = enabled,
         readOnly = readOnly,
         keyboardOptions = keyboardOptions,
         textStyle = textStyle,
         interactionSource = interactionSource,
-        inputTransformation = inputTransformation,
+        inputTransformation = combinedTransformation,
         decorator = { innerTextField ->
             OutlinedTextFieldDefaults.DecorationBox(
                 value = state.text.toString(),

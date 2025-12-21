@@ -10,9 +10,9 @@ import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.Up
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation.Insert
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation.Update
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
-import de.felixlf.gradingscale2.entities.moleculeTest
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeScaleUseCase
+import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import kotlinx.collections.immutable.persistentListOf
@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -61,6 +62,10 @@ class UpsertGradeScaleUIStateFactoryTest {
         )
     }.toImmutableList()
 
+    private val mockShowSnackbarUseCase = ShowSnackbarUseCase { _, _, _ ->
+        ShowSnackbarUseCase.SnackbarResult.ActionPerformed
+    }
+
     private fun TestScope.setUseCase(
         insertGradeScaleUseCase: InsertGradeScaleUseCase = defaultInsertGradeScaleUseCase,
         updateGradeScaleUseCase: UpdateGradeScaleUseCase = defaultUpdateGradeScaleUseCase,
@@ -68,11 +73,12 @@ class UpsertGradeScaleUIStateFactoryTest {
         getAllGradeScalesUseCase = getAllGradeScalesUseCase,
         insertGradeScaleUseCase = insertGradeScaleUseCase,
         updateGradeScaleUseCase = updateGradeScaleUseCase,
+        showSnackbarUseCase = mockShowSnackbarUseCase,
         scope = this,
     )
 
     private fun TestScope.getUIState(factory: UpsertGradeScaleUIStateFactory) =
-        launchMolecule(mode = RecompositionMode.Immediate) {
+        backgroundScope.launchMolecule(mode = RecompositionMode.Immediate) {
             factory.produceUI()
         }
 
@@ -91,7 +97,7 @@ class UpsertGradeScaleUIStateFactoryTest {
     }
 
     @Test
-    fun `should return initial state and then the list of gradeScale names`() = moleculeTest {
+    fun `should return initial state and then the list of gradeScale names`() = runTest {
         val useCase = setUseCase()
         getUIState(useCase).test {
             assertEquals(
@@ -115,7 +121,7 @@ class UpsertGradeScaleUIStateFactoryTest {
     }
 
     @Test
-    fun `should set new name`() = moleculeTest {
+    fun `should set new name`() = runTest {
         val useCase = setUseCase()
         getUIState(useCase).test {
             skipItems(2)
@@ -144,7 +150,7 @@ class UpsertGradeScaleUIStateFactoryTest {
     }
 
     @Test
-    fun `should set save state to loading and then to success`() = moleculeTest {
+    fun `should set save state to loading and then to success`() = runTest {
         val useCase = setUseCase()
         getUIState(useCase).test {
             skipItems(2)
@@ -187,7 +193,7 @@ class UpsertGradeScaleUIStateFactoryTest {
     }
 
     @Test
-    fun `should set save state to loading and then to error`() = moleculeTest {
+    fun `should set save state to loading and then to error`() = runTest {
         val useCase = setUseCase(
             insertGradeScaleUseCase = InsertGradeScaleUseCase { _, _ ->
                 delay(1)
@@ -232,7 +238,7 @@ class UpsertGradeScaleUIStateFactoryTest {
     }
 
     @Test
-    fun `should set current grade scale id`() = moleculeTest {
+    fun `should set current grade scale id`() = runTest {
         val useCase = setUseCase()
         getUIState(useCase).test {
             skipItems(2)

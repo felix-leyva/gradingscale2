@@ -24,18 +24,41 @@
     <string name="gradescale_list_dialog_edit_cancel">Cancel</string>
     <string name="gradescale_list_dialog_edit_error_duplicated_name">A grade scale with the same name already exists. Please use a different name</string>
     <string name="gradescale_list_dialog_edit_error_invalid_name">Invalid name, please make sure the field is filled up</string>
+    <string name="gradescale_list_dialog_error_saving">An error occured while trying to save the grade scale</string>
     <string name="add_grade">Add Grade</string>
     <string name="default_grade_name">new grade</string>
     <string name="import_filter_by_country">Filter by country</string>
     <string name="import_country_and_scale_name">Country and grade scale name</string>
+    <string name="import_grade_get_remote_grades_error">An error occurred while trying to load the selected grade scale</string>
+    <string name="import_grade_open_import_dialog_error">An error occurred while trying to load the selected grade scale</string>
+    <string name="import_grade_data_loading_error">Error loading data</string>
+    <string name="import_grade_retry_button">Retry</string>
+    <string name="import_grade_save_success_message">Grade scale imported successfully</string>
+
+    <string name="import_dialog_no_button">No</string>
+    <string name="import_dialog_yes_button">Yes</string>
+    <string name="import_dialog_title">Import the selected grade scale?</string>
+
+
     <string name="weighted_calculator_selected_grade_scale">Selected grade scale</string>
     <string name="weighted_grade_dialog_title">Grade</string>
     <string name="weighted_grade_dialog_grade_name">Name of grade</string>
     <string name="weighted_grade_dialog_percentage">Percentage</string>
-    <string name="weighted_grade_dialog_points">Points</string>
-    <string name="weighted_grade_dialog_total_points">Total points</string>
+    <string name="weighted_grade_dialog_points">Score</string>
+    <string name="weighted_grade_dialog_total_points">Weight</string>
     <string name="weighted_grade_dialog_save">SAVE</string>
     <string name="weighted_grade_dialog_cancel">CANCEL</string>
     <string name="weighted_grade_dialog_delete">DELETE</string>
     <string name="upsert_grade_save_as_new">Save as new</string>
+    <string name="weighted_grade_summary_title">Global grade</string>
+    <string name="weighted_grade_summary_total">Total grade</string>
+    <string name="weighted_grade_summary_percentage">Percentage</string>
+    <string name="weighted_grade_summary_points">Total Score</string>
+    <string name="weighted_grade_summary_total_points">Total Weight</string>
+    <string name="weighted_grade_list_label_title">Partial grades</string>
+    <string name="weighted_grade_list_label_name">Name</string>
+    <string name="weighted_grade_list_label_percentage">Percentage</string>
+    <string name="weighted_grade_list_label_points">Score</string>
+    <string name="weighted_grade_list_label_total_points">Weight</string>
+
 </resources>

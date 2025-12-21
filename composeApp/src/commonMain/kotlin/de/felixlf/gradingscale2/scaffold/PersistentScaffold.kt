@@ -2,7 +2,6 @@ package de.felixlf.gradingscale2.scaffold
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.animateBounds
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,17 +19,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.zIndex
 
-/**
- * A scaffold that supports persistent UI elements across navigation destinations.
- */
+private const val NAV_RAIL_Z_INDEX = 2f // Navigation rail above content
+private const val CONTENT_Z_INDEX = 1f // Main content below navigation
+
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalLayoutApi::class)
 @Composable
 fun AnimatedContentScope.PersistentScaffold(
     modifier: Modifier = Modifier.fillMaxSize(),
     topBar: @Composable ScaffoldState.() -> Unit = {},
     floatingActionButton: @Composable ScaffoldState.() -> Unit = {},
-    bottomBar: @Composable ScaffoldState.() -> Unit = { DefaultNavigationBar() },
-    navigationRail: @Composable ScaffoldState.() -> Unit = { DefaultNavigationRail() },
+    bottomBar: @Composable () -> Unit = { DefaultNavigationBar() },
+    navigationRail: @Composable () -> Unit = { DefaultNavigationRail() },
     snackbarHost: @Composable ScaffoldState.() -> Unit = { PersistentSnackbarHost() },
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     containerColor: Color = MaterialTheme.colorScheme.background,
@@ -39,65 +38,46 @@ fun AnimatedContentScope.PersistentScaffold(
     content: @Composable ScaffoldState.(PaddingValues) -> Unit,
 ) {
     val scaffoldState = rememberScaffoldState(this)
-    with(scaffoldState) {
-        NavigationRailScaffold(
-            modifier = modifier,
-            navigationRail = navigationRail,
-            content = {
-                Scaffold(
-                    modifier = modifier
-                        .animateBounds(lookaheadScope = this),
-                    topBar = {
-                        topBar()
-                    },
-                    floatingActionButton = {
-                        floatingActionButton()
-                    },
-                    bottomBar = {
-                        bottomBar()
-                    },
-                    snackbarHost = {
-                        snackbarHost()
-                    },
-                    floatingActionButtonPosition = floatingActionButtonPosition,
-                    contentColor = contentColor,
-                    contentWindowInsets = contentWindowInsets,
-                    content = { paddingValues ->
-                        content(paddingValues)
-                    },
-                )
-            },
-        )
-    }
-}
 
-/**
- * Helper composable to render a navigation rail alongside the main content
- */
-@OptIn(ExperimentalSharedTransitionApi::class)
-@Composable
-private inline fun ScaffoldState.NavigationRailScaffold(
-    modifier: Modifier = Modifier,
-    navigationRail: @Composable ScaffoldState.() -> Unit,
-    content: @Composable () -> Unit,
-) {
-    Row(
+    NavigationRailScaffold(
         modifier = modifier,
+        navigationRail = navigationRail,
         content = {
-            Box(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .zIndex(2f),
-            ) {
-                navigationRail()
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .zIndex(1f),
-            ) {
-                content()
-            }
+            Scaffold(
+                modifier = Modifier,
+                topBar = { scaffoldState.topBar() },
+                floatingActionButton = { scaffoldState.floatingActionButton() },
+                bottomBar = { bottomBar() },
+                snackbarHost = { scaffoldState.snackbarHost() },
+                floatingActionButtonPosition = floatingActionButtonPosition,
+                contentColor = contentColor,
+                contentWindowInsets = contentWindowInsets,
+                content = { paddingValues -> scaffoldState.content(paddingValues) },
+            )
         },
     )
+}
+
+@Composable
+private fun NavigationRailScaffold(
+    modifier: Modifier = Modifier,
+    navigationRail: @Composable () -> Unit,
+    content: @Composable () -> Unit,
+) {
+    Row(modifier = modifier) {
+        Box(
+            modifier = Modifier
+                .wrapContentWidth()
+                .zIndex(NAV_RAIL_Z_INDEX),
+        ) {
+            navigationRail()
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(CONTENT_Z_INDEX),
+        ) {
+            content()
+        }
+    }
 }

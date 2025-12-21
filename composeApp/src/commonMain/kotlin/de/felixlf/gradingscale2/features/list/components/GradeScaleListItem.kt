@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.models.PointedGrade
 import de.felixlf.gradingscale2.entities.util.stringWithDecimals
@@ -19,25 +20,28 @@ import de.felixlf.gradingscale2.uicomponents.VerticalDivider
 @Composable
 internal fun GradeScaleListItem(
     grade: PointedGrade,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier.height(IntrinsicSize.Min),
-        verticalAlignment = Alignment.Companion.CenterVertically,
+        modifier = modifier.height(IntrinsicSize.Max),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            modifier = Modifier.Companion.weight(1f).padding(8.dp),
+            modifier = Modifier.weight(1f).padding(8.dp),
             text = grade.namedGrade,
+            textAlign = TextAlign.Center,
         )
         VerticalDivider()
         Text(
-            modifier = Modifier.Companion.weight(1f).padding(8.dp),
+            modifier = Modifier.weight(1f).padding(8.dp),
             text = "${(grade.percentage * 100).stringWithDecimals()} %",
+            textAlign = TextAlign.Center,
         )
         VerticalDivider()
         Text(
-            modifier = Modifier.Companion.weight(1f).padding(8.dp),
+            modifier = Modifier.weight(1f).padding(8.dp),
             text = grade.points.stringWithDecimals(),
+            textAlign = TextAlign.Center,
         )
     }
 }

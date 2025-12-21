@@ -24,12 +24,16 @@ import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
 import de.felixlf.gradingscale2.features.import.components.ImportErrorContent
 import de.felixlf.gradingscale2.features.import.components.ImportGradeScalesList
 import de.felixlf.gradingscale2.features.import.dialogs.ImportDialog
+import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.uicomponents.LoadingContent
+import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.import_country_and_scale_name
 import gradingscale2.entities.generated.resources.import_filter_by_country
+import gradingscale2.entities.generated.resources.import_grade_get_remote_grades_error
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -37,7 +41,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun ImportScreen(
     modifier: Modifier = Modifier,
-    viewModel: ImportViewModel = koinViewModel<ImportViewModel>(),
+    viewModel: ImportViewModelWithEvents = koinViewModel<ImportViewModelWithEvents>(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -54,11 +58,11 @@ fun ImportScreen(
     uiState: ImportUIState,
     onSendCommand: (ImportCommand) -> Unit,
 ) {
-    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Box(modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize(), contentAlignment = Alignment.Center) {
         when {
             uiState.isLoading && uiState.countryGradingScales.isEmpty() -> LoadingContent()
 
-            uiState.error != null -> ImportErrorContent(error = uiState.error!!) {
+            uiState.error != null -> ImportErrorContent(error = stringResource(uiState.error!!)) {
                 onSendCommand(ImportCommand.Refresh)
             }
 
@@ -136,6 +140,7 @@ fun ImportScreenPreviewLoadingInitial() {
     }
 }
 
+@OptIn(InternalResourceApi::class)
 @Preview
 @Composable
 fun ImportScreenPreviewError() {
@@ -143,7 +148,7 @@ fun ImportScreenPreviewError() {
         Surface {
             ImportScreen(
                 uiState = ImportUIState(
-                    error = "Network error",
+                    error = Res.string.import_grade_get_remote_grades_error,
                     isLoading = false,
                     countryGradingScales = persistentListOf(),
                     displayedGradeScaleDTO = null,

@@ -1,10 +1,12 @@
 package de.felixlf.gradingscale2.entities
 
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIModel
-import de.felixlf.gradingscale2.entities.features.import.ImportUIModel
+import de.felixlf.gradingscale2.entities.features.import.ImportUIModelWithEvents
 import de.felixlf.gradingscale2.entities.features.list.GradeListUIModel
-import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightCalculatorUIModel
-import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog.WeightedGradeDialogUIModel
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIFactory
+import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIStateFactory
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightCalculatorUIModelWithEvents
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog.WeightedGradeDialogUIModelWithEvents
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepository
 import de.felixlf.gradingscale2.entities.repositories.GradeScaleRepositoryImpl
 import de.felixlf.gradingscale2.entities.repositories.GradesRepository
@@ -44,6 +46,8 @@ import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCaseImpl
+import de.felixlf.gradingscale2.entities.usecases.TrackErrorUseCase
+import de.felixlf.gradingscale2.entities.usecases.TrackErrorUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpdateGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
@@ -85,12 +89,15 @@ val entitiesModule =
         singleOf(::UpsertWeightedGradeUseCaseImpl).bind<UpsertWeightedGradeUseCase>()
         singleOf(::GetLastSelectedGradeScaleIdUseCaseImpl).bind<GetLastSelectedGradeScaleIdUseCase>()
         singleOf(::SetLastSelectedGradeScaleIdUseCaseImpl).bind<SetLastSelectedGradeScaleIdUseCase>()
+        singleOf(::TrackErrorUseCaseImpl).bind<TrackErrorUseCase>()
 
         // UI Model
         factory { get<DispatcherProvider>().newUIScope() }.bind<UIModelScope>()
         factoryOf(::GradeListUIModel)
         factoryOf(::CalculatorUIModel)
-        factoryOf(::ImportUIModel)
-        factoryOf(::WeightCalculatorUIModel)
-        factoryOf(::WeightedGradeDialogUIModel)
+        factoryOf(::ImportUIModelWithEvents)
+        factoryOf(::UpsertGradeUIFactory)
+        factoryOf(::UpsertGradeScaleUIStateFactory)
+        factoryOf(::WeightCalculatorUIModelWithEvents)
+        factoryOf(::WeightedGradeDialogUIModelWithEvents)
     }

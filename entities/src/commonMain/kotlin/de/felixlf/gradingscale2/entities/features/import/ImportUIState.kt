@@ -5,12 +5,13 @@ import de.felixlf.gradingscale2.entities.models.remote.CountryGradingScales
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import org.jetbrains.compose.resources.StringResource
 
 data class ImportUIState(
     val countryGradingScales: ImmutableList<CountryGradingScales>,
     val displayedGradeScaleDTO: GradeScaleDTO?,
     val selectedCountry: Country?,
-    val error: String?,
+    val error: StringResource?,
     val isLoading: Boolean,
 ) {
     val shownCountryGradingScales = selectedCountry?.let { country ->

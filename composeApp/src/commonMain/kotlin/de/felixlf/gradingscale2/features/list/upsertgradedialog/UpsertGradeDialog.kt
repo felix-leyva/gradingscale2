@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.material3.Button
@@ -25,7 +26,9 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -51,7 +54,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun InsertGradeDialog(gradeScaleId: String, onDismiss: () -> Unit) {
     val viewModel = dialogScopedViewModel<UpsertGradeViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(gradeScaleId) { viewModel.onEvent(UpsertGradeUIEvent.SetGradeScaleId(gradeScaleId)) }
+    LaunchedEffect(gradeScaleId) { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeScaleId(gradeScaleId)) }
     UpsertGradeDialog(onDismiss = onDismiss, uiState = uiState, viewModel = viewModel)
 }
 
@@ -62,7 +65,7 @@ fun InsertGradeDialog(gradeScaleId: String, onDismiss: () -> Unit) {
 fun EditGradeDialog(uuid: String, onDismiss: () -> Unit) {
     val viewModel = dialogScopedViewModel<UpsertGradeViewModel>()
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    LaunchedEffect(uuid) { viewModel.onEvent(UpsertGradeUIEvent.SetGradeUUID(uuid)) }
+    LaunchedEffect(uuid) { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeUUID(uuid)) }
     UpsertGradeDialog(onDismiss = onDismiss, uiState = uiState, viewModel = viewModel)
 }
 
@@ -75,14 +78,14 @@ private fun UpsertGradeDialog(
     Dialog(onDismissRequest = onDismiss) {
         UpsertGradeDialog(
             uiState = uiState.value,
-            onSetPercentage = { viewModel.onEvent(UpsertGradeUIEvent.SetPercentage(it)) },
-            onSetName = { viewModel.onEvent(UpsertGradeUIEvent.SetGradeName(it)) },
+            onSetPercentage = { viewModel.sendCommand(UpsertGradeUIEvent.SetPercentage(it)) },
+            onSetName = { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeName(it)) },
             onSave = {
-                viewModel.onEvent(UpsertGradeUIEvent.Save)
+                viewModel.sendCommand(UpsertGradeUIEvent.Save)
                 onDismiss()
             },
             onSaveNew = {
-                viewModel.onEvent(UpsertGradeUIEvent.SaveAsNew)
+                viewModel.sendCommand(UpsertGradeUIEvent.SaveAsNew)
                 onDismiss()
             },
         )
@@ -108,12 +111,17 @@ private fun UpsertGradeDialog(
                 return@Card
             }
 
+            val keyboardController = LocalSoftwareKeyboardController.current
+            val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
+
             EditGradeTextField(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 value = uiState.name ?: "",
                 onValueChange = onSetName,
                 label = stringResource(Res.string.edit_grade_name),
                 error = uiState.error.any { it == UpsertGradeUIState.Error.INVALID_NAME || it == UpsertGradeUIState.Error.DUPLICATE_NAME },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = keyboardActions,
             )
             EditGradeTextField(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
@@ -124,7 +132,11 @@ private fun UpsertGradeDialog(
                     it == UpsertGradeUIState.Error.INVALID_PERCENTAGE ||
                         it == UpsertGradeUIState.Error.DUPLICATE_PERCENTAGE
                 },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Done,
+                ),
+                keyboardActions = keyboardActions,
             )
             uiState.error.joinToString { it.name }.ifBlank { null }?.let {
                 Text(
@@ -167,6 +179,7 @@ private fun EditGradeTextField(
     error: Boolean,
     modifier: Modifier = Modifier,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     val textFieldValue = textFieldManager(value) { onValueChange(it) }
     BasicTextField(

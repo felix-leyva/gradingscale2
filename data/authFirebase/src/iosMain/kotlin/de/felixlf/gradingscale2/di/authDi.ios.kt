@@ -2,10 +2,8 @@
 
 package de.felixlf.gradingscale2.di
 
-import de.felixlf.gradingscale2.AnalyticsProviderBaseImpl
 import de.felixlf.gradingscale2.AuthInitializerImpl
 import de.felixlf.gradingscale2.AuthTokenProviderImpl
-import de.felixlf.gradingscale2.entities.network.AnalyticsProvider
 import de.felixlf.gradingscale2.entities.network.AuthInitializer
 import de.felixlf.gradingscale2.entities.network.AuthTokenProvider
 import dev.gitlive.firebase.Firebase
@@ -20,7 +18,6 @@ import org.koin.dsl.module
 
 internal actual fun authPlatformModule(): Module =
     module {
-        singleOf<AnalyticsProvider>(::AnalyticsProviderBaseImpl)
         singleOf<AuthInitializer>(::AuthInitializerImpl)
 
         single<AuthTokenProvider> {
