@@ -2,7 +2,6 @@ package de.felixlf.gradingscale2.entities.uimodel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import app.cash.molecule.RecompositionMode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,7 +42,6 @@ interface UIModel<UIState, UICommand> {
      * Sends an command of type [UICommand] to the Factory.
      */
     fun sendCommand(command: UICommand)
-
 }
 
 typealias UIModelScope = CoroutineScope

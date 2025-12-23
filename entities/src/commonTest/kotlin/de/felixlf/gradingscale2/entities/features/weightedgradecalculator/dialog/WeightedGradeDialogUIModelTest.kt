@@ -1,9 +1,10 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog
 
+import app.cash.turbine.test
+import de.felixlf.gradingscale2.entities.TestStateProducer
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
-import de.felixlf.gradingscale2.entities.testMoleculeFlow
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -11,7 +12,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class WeightedGradeDialogUIModelTest {
+class modelTest {
 
     // Test data
     private val testGradeScaleName = "Test Grade Scale"
@@ -37,14 +38,14 @@ class WeightedGradeDialogUIModelTest {
     )
 
     private fun TestScope.createModel(): WeightedGradeDialogUIModelWithEvents {
-        return WeightedGradeDialogUIModelWithEvents(scope = this)
+        return WeightedGradeDialogUIModelWithEvents(stateProducer = TestStateProducer(backgroundScope))
     }
 
     @Test
     fun initialStateHasNullValues() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             val state = awaitItem()
 
             // Check initial values are null
@@ -60,7 +61,7 @@ class WeightedGradeDialogUIModelTest {
     fun initCommandSetsInitialValues() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Get initial state
             val initialState = awaitItem()
 
@@ -94,7 +95,7 @@ class WeightedGradeDialogUIModelTest {
     fun selectGradeNameUpdatesPercentage() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -127,7 +128,7 @@ class WeightedGradeDialogUIModelTest {
     fun selectNonExistentGradeNameDoesNothing() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -154,7 +155,7 @@ class WeightedGradeDialogUIModelTest {
     fun setPercentageUpdatesPercentage() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -187,7 +188,7 @@ class WeightedGradeDialogUIModelTest {
     fun setInvalidPercentageDoesNothing() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -214,7 +215,7 @@ class WeightedGradeDialogUIModelTest {
     fun percentageOutOfRangeIsCoerced() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -257,7 +258,7 @@ class WeightedGradeDialogUIModelTest {
     fun setWeightUpdatesWeight() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -290,7 +291,7 @@ class WeightedGradeDialogUIModelTest {
     fun setInvalidWeightDoesNothing() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -317,7 +318,7 @@ class WeightedGradeDialogUIModelTest {
     fun weightTooLowIsCoerced() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -347,7 +348,7 @@ class WeightedGradeDialogUIModelTest {
     fun setRelativeWeightUpdatesPercentageWhenBelowWeight() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -381,7 +382,7 @@ class WeightedGradeDialogUIModelTest {
     fun setRelativeWeightUpdatesWeightWhenAboveWeight() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -415,7 +416,7 @@ class WeightedGradeDialogUIModelTest {
     fun setInvalidRelativeWeightDoesNothing() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -442,7 +443,7 @@ class WeightedGradeDialogUIModelTest {
     fun relativeWeightTooLowIsCoerced() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -475,7 +476,7 @@ class WeightedGradeDialogUIModelTest {
     fun setRelativeWeightWithNoWeightDoesNothing() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 
@@ -495,7 +496,7 @@ class WeightedGradeDialogUIModelTest {
     fun selectGradeNameWithNoGradeScale() = runTest {
         val model = createModel()
 
-        testMoleculeFlow(model) {
+        model.uiState.test {
             // Skip initial state
             awaitItem()
 

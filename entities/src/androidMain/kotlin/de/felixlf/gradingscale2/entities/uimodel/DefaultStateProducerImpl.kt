@@ -2,7 +2,6 @@ package de.felixlf.gradingscale2.entities.uimodel
 
 import app.cash.molecule.AndroidUiDispatcher
 import app.cash.molecule.RecompositionMode
-import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 

@@ -1,10 +1,9 @@
 package de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog
 
-import app.cash.molecule.RecompositionMode
-import app.cash.molecule.launchMolecule
 import app.cash.turbine.test
 import arrow.core.None
 import arrow.core.Option
+import de.felixlf.gradingscale2.entities.TestStateProducer
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Loaded
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Loading
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State.Operation.Insert
@@ -74,13 +73,11 @@ class UpsertGradeScaleUIStateFactoryTest {
         insertGradeScaleUseCase = insertGradeScaleUseCase,
         updateGradeScaleUseCase = updateGradeScaleUseCase,
         showSnackbarUseCase = mockShowSnackbarUseCase,
-        scope = this,
+        stateProducer = TestStateProducer(backgroundScope),
     )
 
     private fun TestScope.getUIState(factory: UpsertGradeScaleUIStateFactory) =
-        backgroundScope.launchMolecule(mode = RecompositionMode.Immediate) {
-            factory.produceUI()
-        }
+        factory.uiState
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @BeforeTest

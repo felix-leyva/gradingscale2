@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.features
 
+import app.cash.turbine.test
 import arrow.core.Option
 import de.felixlf.gradingscale2.entities.features.list.GradeListUIModel
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent
@@ -12,6 +13,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -36,14 +38,14 @@ class GradeScaleListViewModelTest {
             getGradeScaleByIdUseCase = gradeScaleById,
             getLastSelectedGradeScaleIdUseCase = getLastSelectedGradeScaleIdUseCase,
             setLastSelectedGradeScaleIdUseCase = setLastSelectedGradeScaleIdUseCase,
-            scope = this,
+            stateProducer = TestStateProducer(backgroundScope),
         )
     }
 
     @Test
-    fun `gradeScales are initialized from the usecases`() = moleculeTest {
+    fun `gradeScales are initialized from the usecases`() = runTest {
         val viewModel = setupSUT()
-        testMoleculeFlow(viewModel) {
+        viewModel.uiState.test {
             awaitItem()
             val state = awaitItem()
             assertEquals(null, state.selectedGradeScale)
@@ -52,9 +54,9 @@ class GradeScaleListViewModelTest {
     }
 
     @Test
-    fun `selectGradeScale sets selectedGradeScaleId`() = moleculeTest {
+    fun `selectGradeScale sets selectedGradeScaleId`() = runTest {
         val viewModel = setupSUT()
-        testMoleculeFlow(viewModel) {
+        viewModel.uiState.test {
             skipItems(2)
             viewModel.sendCommand(GradeScaleListUIEvent.SelectGradeScale(mockGradeScales[0].gradeScaleName))
             val state = awaitItem()
@@ -64,9 +66,9 @@ class GradeScaleListViewModelTest {
     }
 
     @Test
-    fun `setTotalPoints modifies the totalPoints of the selected gradescale`() = moleculeTest {
+    fun `setTotalPoints modifies the totalPoints of the selected gradescale`() = runTest {
         val viewModel = setupSUT()
-        testMoleculeFlow(viewModel) {
+        viewModel.uiState.test {
             awaitItem()
             awaitItem()
 

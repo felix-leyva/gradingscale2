@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.features
 
+import app.cash.turbine.test
 import arrow.core.raise.either
 import arrow.core.raise.ensureNotNull
 import arrow.core.raise.option
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -95,19 +97,19 @@ class EditGradeViewModelTest {
             upsertGradeUseCase = updateSingleGradeUseCase,
             insertGradeUseCase = insertGradeUseCase,
             getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
-            scope = this,
+            stateProducer = TestStateProducer(backgroundScope),
         )
     }
 
     @Test
-    fun `updateGradeModel loads the grade from the usecase`() = moleculeTest {
+    fun `updateGradeModel loads the grade from the usecase`() = runTest {
         // Given
         val viewModel = getSUT()
         val grade = gradeScales.value[1].grades[3]
         val uuid = grade.uuid
 
         // When, Then
-        testMoleculeFlow(viewModel) {
+        viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
             viewModel.sendCommand(UpsertGradeUIEvent.SetGradeUUID(uuid))
             assertEquals(grade, awaitItem().grade)
@@ -115,7 +117,7 @@ class EditGradeViewModelTest {
     }
 
     @Test
-    fun `updateGradeModel name updates the ui grade name`() = moleculeTest {
+    fun `updateGradeModel name updates the ui grade name`() = runTest {
         // Given
         val viewModel = getSUT()
         val grade = gradeScales.value[1].grades[3]
@@ -123,7 +125,7 @@ class EditGradeViewModelTest {
         val newNameGrade = "New Grade Name"
 
         // When, Then
-        testMoleculeFlow(viewModel) {
+        viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
             viewModel.sendCommand(UpsertGradeUIEvent.SetGradeUUID(uuid))
             assertEquals(grade, awaitItem().grade)
@@ -135,7 +137,7 @@ class EditGradeViewModelTest {
     }
 
     @Test
-    fun `updateGradeModel name updates the ui grade name but with errors if name is empty`() = moleculeTest {
+    fun `updateGradeModel name updates the ui grade name but with errors if name is empty`() = runTest {
         // Given
         val viewModel = getSUT()
 
@@ -144,7 +146,7 @@ class EditGradeViewModelTest {
         val newNameGrade = ""
 
         // When, Then
-        testMoleculeFlow(viewModel) {
+        viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
             viewModel.sendCommand(UpsertGradeUIEvent.SetGradeUUID(uuid))
             awaitItem()
@@ -156,7 +158,7 @@ class EditGradeViewModelTest {
     }
 
     @Test
-    fun `update percentage updates the ui percentage but with errors if percentage is not between 0 and 100`() = moleculeTest {
+    fun `update percentage updates the ui percentage but with errors if percentage is not between 0 and 100`() = runTest {
         // Given
         val viewModel = getSUT()
 
@@ -165,7 +167,7 @@ class EditGradeViewModelTest {
         val newPercentage = 101.0
 
         // When, Then
-        testMoleculeFlow(viewModel) {
+        viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
             viewModel.sendCommand(UpsertGradeUIEvent.SetGradeUUID(uuid))
             awaitItem()
@@ -177,7 +179,7 @@ class EditGradeViewModelTest {
     }
 
     @Test
-    fun `updateGradeModel updates the grade`() = moleculeTest {
+    fun `updateGradeModel updates the grade`() = runTest {
         // Given
         val viewModel = getSUT()
 
@@ -186,7 +188,7 @@ class EditGradeViewModelTest {
         val newNameGrade = "New Grade Name"
 
         // When, Then
-        testMoleculeFlow(viewModel) {
+        viewModel.uiState.test {
             assertEquals(null, awaitItem().grade)
             viewModel.sendCommand(UpsertGradeUIEvent.SetGradeUUID(uuid))
             awaitItem()
@@ -202,7 +204,7 @@ class EditGradeViewModelTest {
     }
 
     @Test
-    fun `updateGradeModel creates a new grade`() = moleculeTest {
+    fun `updateGradeModel creates a new grade`() = runTest {
         // Given
         val viewModel = getSUT()
 
@@ -211,7 +213,7 @@ class EditGradeViewModelTest {
         val newPercentage = 0.5123
 
         // When, Then
-        testMoleculeFlow(viewModel) {
+        viewModel.uiState.test {
             awaitItem()
             viewModel.sendCommand(UpsertGradeUIEvent.SetGradeScaleId(gradeScaleId))
             viewModel.sendCommand(UpsertGradeUIEvent.SetGradeName(newNameGrade))

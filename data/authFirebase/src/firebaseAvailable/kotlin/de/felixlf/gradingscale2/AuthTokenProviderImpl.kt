@@ -27,7 +27,7 @@ internal class AuthTokenProviderImpl(
             .onStart {
                 runCatching { userToTokenResult((auth.signInAnonymously().user)) }
                     .onFailure { Napier.e(it.stackTraceToString()) }
-                    .onSuccess { emit(it)}
+                    .onSuccess { emit(it) }
             }
             .catch {
                 Napier.e("Error on getting tokenFlow")
@@ -53,5 +53,4 @@ internal class AuthTokenProviderImpl(
         Napier.e("Failed on conversion of the user token", fne)
         null
     }
-
 }

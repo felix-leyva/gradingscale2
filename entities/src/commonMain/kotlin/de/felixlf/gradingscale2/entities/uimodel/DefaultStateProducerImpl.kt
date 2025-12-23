@@ -9,7 +9,7 @@ import kotlinx.coroutines.SupervisorJob
  * The default [StateProducer] implementation for every platform except android
  */
 class DefaultStateProducerImpl(
-    dispatcherProvider: DispatcherProvider
+    dispatcherProvider: DispatcherProvider,
 ) : StateProducer {
     override val scope: CoroutineScope = CoroutineScope(dispatcherProvider.immediate + SupervisorJob())
 

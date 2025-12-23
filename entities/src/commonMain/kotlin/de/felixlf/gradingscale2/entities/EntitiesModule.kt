@@ -17,7 +17,6 @@ import de.felixlf.gradingscale2.entities.repositories.RemoteSyncRepository
 import de.felixlf.gradingscale2.entities.repositories.RemoteSyncRepositoryImpl
 import de.felixlf.gradingscale2.entities.repositories.WeightedGradesRepository
 import de.felixlf.gradingscale2.entities.repositories.WeightedGradesRepositoryImpl
-import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.DeleteGradeUseCase
@@ -54,7 +53,6 @@ import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCaseImpl
-import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import de.felixlf.gradingscale2.entities.util.GradeScaleGenerator
 import de.felixlf.gradingscale2.entities.util.ResourceGradeScaleGenerator
 import org.koin.core.module.Module

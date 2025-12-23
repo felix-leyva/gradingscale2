@@ -1,12 +1,13 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 
+import app.cash.turbine.test
 import arrow.core.Option
 import arrow.core.raise.option
+import de.felixlf.gradingscale2.entities.TestStateProducer
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
-import de.felixlf.gradingscale2.entities.testMoleculeFlow
 import de.felixlf.gradingscale2.entities.usecases.DeleteWeightedGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllWeightedGradesUseCase
@@ -119,7 +120,7 @@ class WeightedGradeCalculatorUIModelTest {
     private fun TestScope.initSUT() {
         // Create the model with test scope
         weightedGradeCalculatorUIModel = WeightCalculatorUIModelWithEvents(
-            scope = this,
+            stateProducer = TestStateProducer(backgroundScope),
             getAllGradeScales = getAllGradeScalesUseCase,
             getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
             getAllWeightedGradesUseCase = getAllWeightedGradesUseCase,
@@ -134,7 +135,7 @@ class WeightedGradeCalculatorUIModelTest {
     fun initialStateShouldLoadGradeScales() = runTest {
         initSUT()
 
-        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+        weightedGradeCalculatorUIModel.uiState.test {
             // First emission might be the default state with isLoading=true
             val initialState = awaitItem()
 
@@ -161,7 +162,7 @@ class WeightedGradeCalculatorUIModelTest {
     fun shouldSelectGradeScaleWhenSelectGradeScaleCommandIsSent() = runTest {
         initSUT()
 
-        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+        weightedGradeCalculatorUIModel.uiState.test {
             // Get to stable state
             awaitItem() // Skip initial loading state
             awaitItem() // Get loaded state
@@ -191,7 +192,7 @@ class WeightedGradeCalculatorUIModelTest {
     fun shouldAddGradeAtEndWhenCommandIsSent() = runTest {
         initSUT()
 
-        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+        weightedGradeCalculatorUIModel.uiState.test {
             // Get to stable state
             awaitItem() // Skip initial loading state
             awaitItem() // Get loaded state
@@ -230,7 +231,7 @@ class WeightedGradeCalculatorUIModelTest {
     fun shouldAddGradeAtPositionWhenCommandIsSent() = runTest {
         initSUT()
 
-        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+        weightedGradeCalculatorUIModel.uiState.test {
             // Get to stable state
             awaitItem() // Skip initial loading state
             awaitItem() // Get loaded state
@@ -286,7 +287,7 @@ class WeightedGradeCalculatorUIModelTest {
     fun shouldUpdateGradeWhenUpdateGradeCommandIsSent() = runTest {
         initSUT()
 
-        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+        weightedGradeCalculatorUIModel.uiState.test {
             // Get to stable state
             awaitItem() // Skip initial loading state
             awaitItem() // Get loaded state
@@ -324,7 +325,7 @@ class WeightedGradeCalculatorUIModelTest {
     fun shouldRemoveGradeWhenRemoveGradeCommandIsSent() = runTest {
         initSUT()
 
-        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+        weightedGradeCalculatorUIModel.uiState.test {
             // Get to stable state
             awaitItem() // Skip initial loading state
             awaitItem() // Get loaded state
@@ -370,7 +371,7 @@ class WeightedGradeCalculatorUIModelTest {
     fun weightedGradesShouldContainCorrectGradeNamesWhenGradeScaleIsSelected() = runTest {
         initSUT()
 
-        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+        weightedGradeCalculatorUIModel.uiState.test {
             // Get to stable state
             awaitItem() // Skip initial loading state
             awaitItem() // Get loaded state
@@ -412,7 +413,7 @@ class WeightedGradeCalculatorUIModelTest {
     fun weightedGradesShouldBeEmptyWhenNoGradeScaleIsSelected() = runTest {
         initSUT()
 
-        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+        weightedGradeCalculatorUIModel.uiState.test {
             // Get to stable state
             awaitItem() // Skip initial loading state
             awaitItem() // Get loaded state
@@ -448,7 +449,7 @@ class WeightedGradeCalculatorUIModelTest {
     fun shouldHandleMultipleUpdatesCorrectly() = runTest {
         initSUT()
 
-        testMoleculeFlow(weightedGradeCalculatorUIModel) {
+        weightedGradeCalculatorUIModel.uiState.test {
             // Get to stable state
             awaitItem() // Skip initial loading state
             awaitItem() // Get loaded state

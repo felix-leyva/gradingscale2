@@ -4,11 +4,7 @@ import de.felixlf.gradingscale2.entities.network.AuthTokenProvider
 import io.ktor.client.plugins.api.Send
 import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.utils.HttpResponseCancelled
 import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
 
