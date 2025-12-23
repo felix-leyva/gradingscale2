@@ -1,30 +1,29 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.models.GradeScale
-import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
+import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModelWithEvents
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
 
 class WeightedGradeDialogUIModelWithEvents(
-    override val scope: UIModelScope,
+    override val stateProducer: StateProducer,
 ) : UIModelWithEvents<WeightedGradeDialogUIState, WeightedGradeDialogCommand, WeightedGradeDialogEvent> {
     override val events: Channel<WeightedGradeDialogEvent> = Channel()
-    override val uiState: StateFlow<WeightedGradeDialogUIState> by moleculeUIState()
     private var gradeScale: GradeScale? by mutableStateOf(null)
     private var percentage: Double? by mutableStateOf(null)
     private var weight: Double? by mutableStateOf(null)
 
-    @Composable
-    override fun produceUI() = WeightedGradeDialogUIState(
-        gradeScale = gradeScale,
-        percentage = percentage,
-        weight = weight,
-    )
+    override val uiState: StateFlow<WeightedGradeDialogUIState> by stateProducer {
+        WeightedGradeDialogUIState(
+            gradeScale = gradeScale,
+            percentage = percentage,
+            weight = weight,
+        )
+    }
 
     override fun sendCommand(command: WeightedGradeDialogCommand) {
         when (command) {

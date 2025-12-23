@@ -1,14 +1,13 @@
 package de.felixlf.gradingscale2.entities.features.list
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SetTotalPoints
+import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModel
-import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.uimodel.asState
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
@@ -23,7 +22,7 @@ import kotlinx.coroutines.launch
  * This class is responsible for managing the UI state of the grade scale list screen.
  */
 class GradeListUIModel(
-    override val scope: UIModelScope,
+    override val stateProducer: StateProducer,
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
     private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase,
@@ -36,11 +35,8 @@ class GradeListUIModel(
     private var totalPoints by mutableStateOf(10.0)
 
     // Important exception: do not use this state value in the produceUI function, to avoid recomposition loops.
-    override val uiState: StateFlow<GradeScaleListUIState> by moleculeUIState()
     private var state by mutableStateOf<GradeScaleListUIState?>(null)
-
-    @Composable
-    override fun produceUI(): GradeScaleListUIState {
+    override val uiState: StateFlow<GradeScaleListUIState> by stateProducer {
         LaunchedEffect(Unit) {
             getLastSelectedGradeScaleIdUseCase()?.let {
                 gradeScaleId = it
@@ -55,7 +51,7 @@ class GradeListUIModel(
             )
         }.toImmutableList()
 
-        return GradeScaleListUIState(
+        GradeScaleListUIState(
             selectedGradeScale = modifiedGradeScale,
             gradeScalesNamesWithId = gradeScalesNamesWithId,
         ).also { state = it }

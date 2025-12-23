@@ -36,6 +36,7 @@ kotlin {
 
         commonMain.dependencies {
             implementation(projects.entities)
+            implementation(libs2.napier)
         }
 
         val wasmJsMain by getting {

@@ -3,7 +3,6 @@ package de.felixlf.gradingscale2.entities.uimodel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import app.cash.molecule.RecompositionMode
-import app.cash.molecule.launchMolecule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,49 +15,38 @@ import kotlin.coroutines.EmptyCoroutineContext
  */
 interface UIModel<UIState, UICommand> {
     /**
-     * The coroutine scope of the UI Model. This is used to launch coroutines and manage the lifecycle of the UI Model.
-     * Use the function [de.felixlf.gradingscale2.entities.util.DispatcherProvider.newUIScope] to create the scope with the proper dispatcher and job.
-     * When instantiating a ViewModel, insert the scope in the viewModel constructor, to link the lifecycle of the ViewModel with the lifecycle of the
-     * UI Model.
+     * The [StateProducer] which will be used to produce a [StateFlow] in the UI Model.
+     * This also holds the [CoroutineScope] used to launch coroutines and manage the lifecycle of the UI Model.
      */
-    val scope: UIModelScope
+    val stateProducer: StateProducer
 
     /**
      * The UI [kotlinx.coroutines.flow.StateFlow] which represents the UI State and is consumed by the UI.
-     * Use the [moleculeUIState] function to create the StateFlow.
+     * Use the [stateProducer] function to create the StateFlow.
      * ```
-     * override val uiState by moleculeState()
+     * override val uiState by stateProducer {
+     *    // Your logic here
+     * }
      * ```
      */
     val uiState: StateFlow<UIState>
 
     /**
-     * Produces the UI State of type [UIState] using a [androidx.compose.runtime.Composable] function.
-     *
-     * The UI State should be produced using the provided dependencies in the constructor of the implementing class.
+     * The [CoroutineScope] delegated from the [StateProducer].
+     * When instantiating a ViewModel, insert the scope in the viewModel constructor, to link the lifecycle of the ViewModel with the lifecycle of the
+     * UI Model.
      */
-    @Composable
-    fun produceUI(): UIState
+    val scope: CoroutineScope
+        get() = stateProducer.scope
 
     /**
      * Sends an command of type [UICommand] to the Factory.
      */
     fun sendCommand(command: UICommand)
 
-    /**
-     * Launches a Molecule with the [RecompositionMode.ContextClock] mode. This is used to create the UI state and dispatch UI events.
-     * It returns a [StateFlow] lazily, to avoid that null pointer exceptions occur, due other vals not being initialized before.
-     */
-    fun moleculeUIState() = lazy {
-        scope.launchMolecule(getRecompositionMode()) {
-            produceUI()
-        }
-    }
 }
 
 typealias UIModelScope = CoroutineScope
-
-expect fun getRecompositionMode(): RecompositionMode
 
 /**
  * Converts a [kotlinx.coroutines.flow.StateFlow] of type [T] to a state exposing the value of type [T] in a composable function and represents its latest value.

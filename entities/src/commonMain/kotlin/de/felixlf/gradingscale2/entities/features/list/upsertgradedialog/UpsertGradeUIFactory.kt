@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
+import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
@@ -25,7 +26,7 @@ class UpsertGradeUIFactory(
     private val insertGradeUseCase: InsertGradeUseCase,
     private val upsertGradeUseCase: UpsertGradeUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
-    override val scope: UIModelScope,
+    override val stateProducer: StateProducer,
 ) : UIModel<UpsertGradeUIState, UpsertGradeUIEvent> {
 
     private var gradeScaleId by mutableStateOf<String?>(null)
@@ -38,12 +39,9 @@ class UpsertGradeUIFactory(
     private var percentage by mutableStateOf<String?>(null)
     private var currentState by mutableStateOf<UpsertGradeUIState?>(null)
 
-    override val uiState: StateFlow<UpsertGradeUIState> by moleculeUIState()
-
-    @Composable
-    override fun produceUI(): UpsertGradeUIState {
+    override val uiState: StateFlow<UpsertGradeUIState> by stateProducer {
         initUi()
-        return UpsertGradeUIState(
+        UpsertGradeUIState(
             grade = selectedGrade,
             percentage = percentage,
             name = gradeName,

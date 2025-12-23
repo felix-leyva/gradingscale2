@@ -1,6 +1,5 @@
 package de.felixlf.gradingscale2.entities.util
 
-import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import kotlinx.coroutines.CoroutineDispatcher
 
 /**
@@ -8,7 +7,6 @@ import kotlinx.coroutines.CoroutineDispatcher
  */
 interface DispatcherProvider {
     val main: CoroutineDispatcher
-    val inmediate: CoroutineDispatcher
+    val immediate: CoroutineDispatcher
     val io: CoroutineDispatcher
-    fun newUIScope(): UIModelScope
 }

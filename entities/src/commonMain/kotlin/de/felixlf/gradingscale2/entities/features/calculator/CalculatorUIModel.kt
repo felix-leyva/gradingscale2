@@ -1,12 +1,11 @@
 package de.felixlf.gradingscale2.entities.features.calculator
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModel
-import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
 import de.felixlf.gradingscale2.entities.uimodel.asState
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
@@ -23,7 +22,7 @@ import kotlinx.coroutines.launch
  * @param getGradeScaleByIdUseCase UseCase for getting a grade scale by its ID.
  */
 class CalculatorUIModel(
-    override val scope: UIModelScope,
+    override val stateProducer: StateProducer,
     private val allGradeScalesUseCase: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
     private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase,
@@ -39,10 +38,7 @@ class CalculatorUIModel(
     // Important exception: do not use this state value in the produceUI function, to avoid recomposition loops.
     private var state by mutableStateOf<GradeScaleCalculatorUIState?>(null)
 
-    override val uiState: StateFlow<GradeScaleCalculatorUIState> by moleculeUIState()
-
-    @Composable
-    override fun produceUI(): GradeScaleCalculatorUIState {
+    override val uiState: StateFlow<GradeScaleCalculatorUIState> by stateProducer {
         LaunchedEffect(Unit) {
             gradeScaleId = getLastSelectedGradeScaleIdUseCase()
         }
@@ -55,7 +51,7 @@ class CalculatorUIModel(
             )
         }.toImmutableList()
 
-        return GradeScaleCalculatorUIState(
+        GradeScaleCalculatorUIState(
             selectedGradeScale = selectedGradeScale,
             gradeScalesNamesWithId = gradeScalesNamesWithId,
             currentPercentage = percentage,

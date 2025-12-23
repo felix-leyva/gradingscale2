@@ -19,7 +19,7 @@ class TestDispatcherProvider(
     val clock: MonotonicFrameClock = BroadcastFrameClock(),
 ) : DispatcherProvider {
     override val main: CoroutineDispatcher = testDispatcher
-    override val inmediate: CoroutineDispatcher = testDispatcher
+    override val immediate: CoroutineDispatcher = testDispatcher
     override val io: CoroutineDispatcher = testDispatcher
-    override fun newUIScope(): UIModelScope = CoroutineScope(clock + inmediate + SupervisorJob())
+    override fun newUIScope(): UIModelScope = CoroutineScope(clock + immediate + SupervisorJob())
 }

@@ -57,13 +57,17 @@ import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import de.felixlf.gradingscale2.entities.util.GradeScaleGenerator
 import de.felixlf.gradingscale2.entities.util.ResourceGradeScaleGenerator
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 
+expect val platformEntitiesModule: Module
+
 val entitiesModule =
     module {
+        includes(platformEntitiesModule)
         singleOf(::ResourceGradeScaleGenerator).bind<GradeScaleGenerator>()
         single<GradeScaleRepository> { GradeScaleRepositoryImpl(get()) }
         single<GradesRepository> { GradesRepositoryImpl(get()) }
@@ -92,7 +96,6 @@ val entitiesModule =
         singleOf(::TrackErrorUseCaseImpl).bind<TrackErrorUseCase>()
 
         // UI Model
-        factory { get<DispatcherProvider>().newUIScope() }.bind<UIModelScope>()
         factoryOf(::GradeListUIModel)
         factoryOf(::CalculatorUIModel)
         factoryOf(::ImportUIModelWithEvents)

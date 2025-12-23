@@ -1,12 +1,12 @@
 package de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
+import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.asState
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
@@ -17,7 +17,6 @@ import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_list_dialog_error_saving
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -26,16 +25,13 @@ class UpsertGradeScaleUIStateFactory(
     private val insertGradeScaleUseCase: InsertGradeScaleUseCase,
     private val updateGradeScaleUseCase: UpdateGradeScaleUseCase,
     private val showSnackbarUseCase: ShowSnackbarUseCase,
-    override val scope: CoroutineScope,
+    override val stateProducer: StateProducer,
 ) : UIModel<UpsertGradeScaleUIState, UpserGradeScaleUIEvent> {
     private var newGradeScaleName by mutableStateOf("")
     private var uiSaveState by mutableStateOf<State>(State.Loading)
     private var operation by mutableStateOf<State.Operation?>(null)
 
-    override val uiState: StateFlow<UpsertGradeScaleUIState> by moleculeUIState()
-
-    @Composable
-    override fun produceUI(): UpsertGradeScaleUIState {
+    override val uiState: StateFlow<UpsertGradeScaleUIState> by stateProducer {
         val existingGradeScaleNames = getAllGradeScalesUseCase().asState(persistentListOf()).map { gradeScale ->
             GradeScaleNameAndId(
                 name = gradeScale.gradeScaleName,
@@ -51,7 +47,7 @@ class UpsertGradeScaleUIStateFactory(
             operation?.let { uiSaveState = State.Loaded(it) }
         }
 
-        return UpsertGradeScaleUIState(
+        UpsertGradeScaleUIState(
             existingGradeScaleNames = existingGradeScaleNames,
             newName = newGradeScaleName,
             state = uiSaveState,

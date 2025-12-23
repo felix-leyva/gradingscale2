@@ -1,6 +1,5 @@
 package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +9,7 @@ import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.Weight
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.UpdateGrade
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
-import de.felixlf.gradingscale2.entities.uimodel.UIModelScope
+import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModelWithEvents
 import de.felixlf.gradingscale2.entities.uimodel.asState
 import de.felixlf.gradingscale2.entities.usecases.DeleteWeightedGradeUseCase
@@ -27,7 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class WeightCalculatorUIModelWithEvents(
-    override val scope: UIModelScope,
+    override val stateProducer: StateProducer,
     private val getAllGradeScales: GetAllGradeScalesUseCase,
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
     private val getAllWeightedGradesUseCase: GetAllWeightedGradesUseCase,
@@ -37,13 +36,11 @@ class WeightCalculatorUIModelWithEvents(
     private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase,
 ) : UIModelWithEvents<WeightCalculatorUIState, WeightedCalculatorCommand, WeightedCalculatorEvent> {
     override val events: Channel<WeightedCalculatorEvent> = Channel()
-    override val uiState: StateFlow<WeightCalculatorUIState> by moleculeUIState()
 
     private var selectedGradeScaleId by mutableStateOf<String?>(null)
     private var openedGradeId by mutableStateOf<String?>(null)
 
-    @Composable
-    override fun produceUI(): WeightCalculatorUIState {
+    override val uiState: StateFlow<WeightCalculatorUIState> by stateProducer {
         LaunchedEffect(Unit) { getLastSelectedGradeScaleIdUseCase()?.let { selectedGradeScaleId = it } }
         val grades = getAllWeightedGradesUseCase().asState(persistentListOf())
 
@@ -55,7 +52,7 @@ class WeightCalculatorUIModelWithEvents(
             getGradeScaleByIdUseCase(it).asState(null)
         }
 
-        return WeightCalculatorUIState(
+        WeightCalculatorUIState(
             gradeScaleNameAndIds = gradeScalesNamesAndIds.toImmutableList(),
             selectedGradeScale = selectedGradeScale,
             grades = grades,

@@ -25,7 +25,9 @@ internal class GradeScaleApiImpl(
 ) : GradeScaleApi {
 
     override suspend fun countriesAndGrades(): Either<RemoteError, List<CountryGradingScales>> = either {
-        val httpResponse = httpClient.request("${baseUrlProvider.baseApiUrl}/countriesAndGrades.json")
+        val httpResponse = runCatching { httpClient.request("${baseUrlProvider.baseApiUrl}/countriesAndGrades.json")}
+            .getOrElse { raise(RemoteError(400, "")) }
+
         when {
             httpResponse.status.value in 200..299 -> {
                 val body = safeGet { httpResponse.body<JsonObject>() }
