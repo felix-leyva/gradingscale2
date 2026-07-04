@@ -16,7 +16,8 @@ plugins {
     id(libs2.plugins.ksp.get().pluginId)
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
     alias(libs2.plugins.conveyor)
-    alias(libs2.plugins.hot.reload)
+    // Compose 1.11+ puts hot-reload on the plugin classpath transitively, so apply without a version
+    id(libs2.plugins.hot.reload.get().pluginId)
     id("sentry-android")
 }
 
@@ -240,9 +241,12 @@ dependencies {
 }
 
 // Work around https://conveyor.hydraulic.dev/17.0/tutorial/tortoise/2-gradle/#adapting-a-compose-multiplatform-app
-configurations.all {
-    attributes {
-        // https://github.com/JetBrains/compose-jb/issues/1404#issuecomment-1146894731
-        attribute(Attribute.of("ui", String::class.java), "awt")
+configurations.configureEach {
+    // Gradle 9 forbids setting attributes on declarable-only configurations; they only matter for resolution anyway
+    if (isCanBeResolved || isCanBeConsumed) {
+        attributes {
+            // https://github.com/JetBrains/compose-jb/issues/1404#issuecomment-1146894731
+            attribute(Attribute.of("ui", String::class.java), "awt")
+        }
     }
 }

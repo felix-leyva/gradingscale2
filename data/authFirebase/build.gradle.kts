@@ -28,9 +28,10 @@ kotlin {
             dependsOn(firebaseAvailable)
             dependencies {
                 // Workaround for https://github.com/GitLiveApp/firebase-kotlin-sdk/issues/356
+                // BOM 34.x removed the -ktx artifacts; their APIs live in the base modules now
                 implementation(project.dependencies.platform(libs2.firebase.bom))
-                implementation(libs2.firebase.common.ktx)
-                implementation(libs2.firebase.auth.ktx)
+                implementation(libs2.firebase.common.android)
+                implementation(libs2.firebase.auth.android)
             }
         }
 

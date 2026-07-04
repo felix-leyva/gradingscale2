@@ -20,7 +20,7 @@ fun Project.ktlintConfig() {
         }
     }
 
-    val outputDir = "${project.buildDir}/reports/ktlint/"
+    val outputDir = "${project.layout.buildDirectory.get().asFile}/reports/ktlint/"
     val inputFiles = project.fileTree(mapOf("dir" to "src", "include" to "**/*.kt"))
 
     tasks.create<JavaExec>("ktlintCheck") {

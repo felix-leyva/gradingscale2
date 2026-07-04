@@ -36,7 +36,7 @@ fun Project.sonarQubeBaseConfig() {
                 property(
                     "sonar.coverage.jacoco.xmlReportPaths",
                     // Depends on the name of the jacoco task (which currently is jacocoReport)
-                    "${project.buildDir}/reports/jacoco/jacocoReport/jacocoReport.xml",
+                    "${project.layout.buildDirectory.get().asFile}/reports/jacoco/jacocoReport/jacocoReport.xml",
                 )
             }
         }

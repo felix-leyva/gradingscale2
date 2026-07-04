@@ -35,13 +35,13 @@ fun Project.configureJacocoAndSonarqube(buildVariant: Variant) {
         }
 
         classDirectories.setFrom(
-            fileTree("${project.buildDir}/tmp/kotlin-classes/$name"),
+            fileTree(project.layout.buildDirectory.dir("tmp/kotlin-classes/$name")),
         )
 
         sourceDirectories.setFrom(sources)
 
         executionData.setFrom(
-            fileTree(project.buildDir) {
+            fileTree(project.layout.buildDirectory) {
                 include(
                     "outputs/unit_test_code_coverage/${name}UnitTest/$testTaskName.exec",
                 )
@@ -50,7 +50,7 @@ fun Project.configureJacocoAndSonarqube(buildVariant: Variant) {
     }
     extensions.configure<SonarExtension>("sonarqube") {
         properties {
-            property("sonar.junit.reportsPath", "${project.buildDir}/reports/tests/$testTaskName")
+            property("sonar.junit.reportsPath", "${project.layout.buildDirectory.get().asFile}/reports/tests/$testTaskName")
             property("sonar.sources", sources)
         }
     }
