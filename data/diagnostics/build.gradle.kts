@@ -48,8 +48,10 @@ kotlin {
     }
 }
 
-android {
-    namespace = libs.versions.packagename + ".diagnostics"
+kotlin {
+    androidLibrary {
+        namespace = libs.versions.packagename + ".diagnostics"
+    }
 }
 
 buildConfig {

@@ -33,15 +33,11 @@ compose {
         publicResClass = true
     }
 }
-android {
-    namespace = libs.versions.packagename + ".entities"
-    // This is important to be able to run unit test when using molecule, due the MonotonicClock dependency
-    testOptions {
-        unitTests.isReturnDefaultValues = true
+kotlin {
+    // Unit-test default return values (needed for molecule's MonotonicClock) are set in multiplatform-lib
+    androidLibrary {
+        namespace = libs.versions.packagename + ".entities"
     }
-}
-dependencies {
-    testImplementation(project(":entities"))
 }
 
 buildConfig {

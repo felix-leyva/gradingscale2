@@ -18,10 +18,11 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.koinInject
 import org.koin.core.parameter.parametersOf
 
+// Public because :androidApp calls this from its MainActivity since the AGP 9 module split
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 @Preview
-internal fun App() {
+fun App() {
     val diagnosticsProvider = koinInject<DiagnosticsProvider>()
     LaunchedEffect(Unit) { diagnosticsProvider.initDiagnostics() }
     LaunchedEffect(Unit) { Napier.base(DebugAntilog()) }

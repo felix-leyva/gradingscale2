@@ -22,7 +22,7 @@ desktopPackageName = "grading-scale" # Package name for desktop distributions
 mainClassName = "de.felixlf.gradingscale2.MainKt" # Main class for JVM
 java = "17" # Java version
 
-agp = "8.13.2" # https://developer.android.com/build/releases/gradle-plugin - AGP 9.x is a major migration (new KMP plugin), staying on 8.x. NOTE: AGP 8.x requires Gradle <= 9.5 (9.6 removed an internal API AGP 8 uses); Gradle >= 9 is required by plugins built with Kotlin 2.3 metadata (SQLDelight 2.3, KSP 2.3.9)
+agp = "9.2.1" # https://developer.android.com/build/releases/gradle-plugin - AGP 9: KMP modules use com.android.kotlin.multiplatform.library, app entry point lives in :androidApp (built-in Kotlin, no KGP androidTarget). Requires Gradle >= 9.1
 android-compileSdk = "36" # https://developer.android.com/tools/releases/platforms
 android-minSdk = "26" # https://developer.android.com/tools/releases/platforms
 android-targetSdk = "36" # https://developer.android.com/tools/releases/platforms
@@ -33,7 +33,7 @@ androidx-espresso-core = "3.7.0" # https://developer.android.com/jetpack/android
 androidx-lifecycle = "2.10.0" # https://developer.android.com/jetpack/androidx/releases/lifecycle
 androidx-test-junit = "1.3.0" # https://developer.android.com/jetpack/androidx/releases/test
 android-desugar = "2.1.5" # https://maven.google.com/web/index.html#com.android.tools:desugar_jdk_libs
-compose-plugin = "1.11.1" # https://github.com/JetBrains/compose-multiplatform/releases
+compose-plugin = "1.11.1" # https://github.com/JetBrains/compose-multiplatform/releases - 1.11 dropped Intel Apple targets (no iosX64 artifacts), so the project no longer declares iosX64
 material3WindowSizeClass = "1.9.0" # https://central.sonatype.com/artifact/org.jetbrains.compose.material3/material3-window-size-class
 junit = "4.13.2" # https://github.com/junit-team/junit4/releases
 kotlin = "2.4.0" # https://github.com/JetBrains/kotlin/releases
@@ -137,7 +137,7 @@ koin-compose-viewmodel-nav = { module = "io.insert-koin:koin-compose-viewmodel-n
 
 # Convention Plugins Dependencies
 # Plugins for buildSrc see: https://discuss.gradle.org/t/using-version-catalogs-with-precompiled-script-plugins/45417
-gradle-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" } # https://maven.google.com/web/index.html#com.android.tools.build:gradle
+gradle-agp = { module = "com.android.tools.build:gradle", version.ref = "agp" } # https://maven.google.com/web/index.html#com.android.tools.build:gradle - also provides com.android.kotlin.multiplatform.library
 gradle-jetbrainsCompose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose-plugin" } # https://plugins.gradle.org/plugin/org.jetbrains.compose
 gradle-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.plugin.compose
 gradle-kotlinMultiplatform = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" } # https://plugins.gradle.org/plugin/org.jetbrains.kotlin.multiplatform
@@ -158,6 +158,7 @@ gradle-sentryandroid = { module = "io.sentry:sentry-android-gradle-plugin", vers
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" } # https://mvnrepository.com/artifact/org.jetbrains.compose/org.jetbrains.compose.gradle.plugin
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

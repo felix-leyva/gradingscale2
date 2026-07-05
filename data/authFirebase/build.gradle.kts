@@ -53,8 +53,10 @@ kotlin {
     }
 }
 
-android {
-    namespace = libs.versions.packagename + ".authfirebase"
+kotlin {
+    androidLibrary {
+        namespace = libs.versions.packagename + ".authfirebase"
+    }
 }
 
 // Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration

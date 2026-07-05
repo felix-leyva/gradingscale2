@@ -20,7 +20,7 @@ data class FirebaseConfigData(
  * Extension function to configure Firebase BuildConfig fields
  * This approach is configuration cache compatible as it uses Gradle's Provider API
  */
-fun Project.configureFirebaseBuildConfig(googleServicesPath: String = "composeApp/google-services.json") {
+fun Project.configureFirebaseBuildConfig(googleServicesPath: String = "androidApp/google-services.json") {
     // Create a provider that lazily reads the Firebase configuration
     val firebaseConfigProvider: Provider<FirebaseConfigData> = providers.provider {
         val googleServicesFile = rootProject.file(googleServicesPath)

@@ -1,6 +1,6 @@
 @file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
 
-import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
 
 plugins {
     id("multiplatform-plugin")
@@ -54,8 +54,10 @@ kotlin {
     }
 }
 
-android {
-    namespace = libs.versions.packagename + ".network"
+kotlin {
+    androidLibrary {
+        namespace = libs.versions.packagename + ".network"
+    }
 }
 
 // Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration
@@ -64,7 +66,13 @@ buildConfig {
         packageName("de.felixlf.gradingscale2")
 
         // Read the property at configuration time, not task execution time
-        val localProperties = gradleLocalProperties(rootDir, providers)
+        // (plain Properties instead of AGP's internal gradleLocalProperties, removed in AGP 9)
+        val localProperties = Properties().apply {
+            val localPropertiesFile = rootDir.resolve("local.properties")
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.inputStream().use { load(it) }
+            }
+        }
         val baseUrl = localProperties.getProperty("GRADINGSCALE_BASE_URL") ?: ""
 
         buildConfigField("String", "BASE_URL", "\"$baseUrl\"")

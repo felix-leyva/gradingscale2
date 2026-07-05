@@ -44,6 +44,7 @@ plugins {
 }
 
 include(":composeApp")
+include(":androidApp")
 include(":data:network")
 include(":data:authFirebase")
 include(":data:persistance:sharedprefs")

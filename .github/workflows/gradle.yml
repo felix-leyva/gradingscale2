@@ -41,7 +41,9 @@ jobs:
       uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
     - name: Build with Gradle Wrapper
-      run: ./gradlew clean test assembleDebug
+      # AGP 9 KMP modules expose unit tests as jvmTest/testAndroidHostTest; the plain "test"
+      # lifecycle task only covers :androidApp
+      run: ./gradlew clean jvmTest testAndroidHostTest assembleDebug
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.

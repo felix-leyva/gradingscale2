@@ -349,10 +349,10 @@ cd GradingScale2
 #### 🤖 Android
 ```bash
 # Build debug APK
-./gradlew :composeApp:assembleDebug
+./gradlew :androidApp:assembleDebug
 
 # Install on connected device
-./gradlew :composeApp:installDebug
+./gradlew :androidApp:installDebug
 ```
 
 #### iOS

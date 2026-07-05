@@ -1,8 +1,6 @@
 @file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
 
 plugins {
-    id("gs-android-library")
-    id("org.jetbrains.kotlin.multiplatform")
     id("multiplatform-plugin")
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
     id(
@@ -61,6 +59,8 @@ sqldelight {
     }
 }
 
-android {
-    namespace = libs.versions.packagename + ".db"
+kotlin {
+    androidLibrary {
+        namespace = libs.versions.packagename + ".db"
+    }
 }

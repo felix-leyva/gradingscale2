@@ -1,7 +1,6 @@
 @file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
 
 plugins {
-    id("gs-android-library")
     id("multiplatform-plugin")
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
 }
@@ -40,6 +39,8 @@ kotlin {
         }
     }
 }
-android {
-    namespace = libs.versions.packagename + ".sharedprefs"
+kotlin {
+    androidLibrary {
+        namespace = libs.versions.packagename + ".sharedprefs"
+    }
 }
