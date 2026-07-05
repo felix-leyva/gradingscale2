@@ -13,7 +13,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -32,7 +31,6 @@ import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
-import de.felixlf.gradingscale2.utils.isLargeScreenWidthLocal
 import de.felixlf.gradingscale2.utils.textFieldManager
 import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
@@ -82,7 +80,6 @@ private fun GradeScaleCalculatorScreen(
     onSelectGradeName: (String) -> Unit = {},
 ) {
     val gradeScale = remember(uiState.selectedGradeScale) { uiState.selectedGradeScale }
-    val isLargeScreen by isLargeScreenWidthLocal()
 
     // Convert UI state to GradeScaleNameAndId list for the adaptive selector
     val gradeScaleItems = remember(uiState.gradeScalesNamesWithId) {
@@ -99,24 +96,23 @@ private fun GradeScaleCalculatorScreen(
                 selectedName?.let { onSelectGradeScale(it) }
             }
         },
-    ) {
+    ) { isListPaneVisible ->
         Column(
             modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize().padding(16.dp),
         ) {
-            // Only show dropdown on non-large screens
-            GradeScaleSelectorDropdown(
-                items = gradeScaleItems,
-                selectedItemId = uiState.selectedGradeScale?.id,
-                onSelectionChange = { id ->
-                    id?.let {
-                        val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
-                        selectedName?.let { onSelectGradeScale(it) }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            if (!isLargeScreen) {
+            // On compact windows the list pane is hidden, so selection happens through the dropdown
+            if (!isListPaneVisible) {
+                GradeScaleSelectorDropdown(
+                    items = gradeScaleItems,
+                    selectedItemId = uiState.selectedGradeScale?.id,
+                    onSelectionChange = { id ->
+                        id?.let {
+                            val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
+                            selectedName?.let { onSelectGradeScale(it) }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 HorizontalDivider()
             }
 

@@ -6,6 +6,7 @@ import androidx.compose.material.icons.automirrored.filled.ListAlt
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation3.runtime.NavKey
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.destinations_menu_grade_importerr
 import gradingscale2.entities.generated.resources.destinations_menu_grade_scale_detail
@@ -18,7 +19,7 @@ import org.jetbrains.compose.resources.StringResource
 enum class Destinations(
     val label: StringResource,
     val icon: ImageVector,
-) {
+) : NavKey {
     GradeScaleList(Res.string.destinations_menu_grade_scale_list, Icons.AutoMirrored.Filled.ListAlt),
 
     GradeScaleCalculator(Res.string.destinations_menu_grade_scale_detail, Icons.Default.Calculate),

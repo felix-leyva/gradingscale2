@@ -128,18 +128,21 @@ private fun MainContent(
         onSelectionChange = { id ->
             onSendCommand(WeightedCalculatorCommand.SelectGradeScale(id))
         },
-    ) {
+    ) { isListPaneVisible ->
         Column(
             modifier = Modifier.fillMaxSize().padding(16.dp),
         ) {
-            GradeScaleSelectorDropdown(
-                items = gradeScaleItems,
-                selectedItemId = uiState.selectedGradeScale?.id,
-                onSelectionChange = { id ->
-                    onSendCommand(WeightedCalculatorCommand.SelectGradeScale(id))
-                },
-                modifier = Modifier.fillMaxWidth(),
-            )
+            // On compact windows the list pane is hidden, so selection happens through the dropdown
+            if (!isListPaneVisible) {
+                GradeScaleSelectorDropdown(
+                    items = gradeScaleItems,
+                    selectedItemId = uiState.selectedGradeScale?.id,
+                    onSelectionChange = { id ->
+                        onSendCommand(WeightedCalculatorCommand.SelectGradeScale(id))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
 
             GlobalGradeSummary(
                 weightedGradesSummary = uiState.weightedGradeSummary,

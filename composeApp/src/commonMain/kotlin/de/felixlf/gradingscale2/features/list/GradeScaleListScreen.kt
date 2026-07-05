@@ -44,7 +44,6 @@ import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
-import de.felixlf.gradingscale2.utils.isLargeScreenWidthLocal
 import de.felixlf.gradingscale2.utils.textFieldManager
 import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
@@ -112,7 +111,6 @@ private fun GradeScaleListScreen(
     onOpenDialog: (GradeScaleListDialogCommand) -> Unit = {},
 ) {
     val gradeScale = remember(uiState.selectedGradeScale) { uiState.selectedGradeScale }
-    val isLargeScreen by isLargeScreenWidthLocal()
 
     // Convert UI state to GradeScaleNameAndId list for the adaptive selector
     val gradeScaleItems = remember(uiState.gradeScalesNamesWithId) {
@@ -130,7 +128,7 @@ private fun GradeScaleListScreen(
                 selectedName?.let { onSelectGradeScale(it) }
             }
         },
-    ) {
+    ) { isListPaneVisible ->
         Column(
             modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize(),
         ) {
@@ -142,18 +140,20 @@ private fun GradeScaleListScreen(
                     onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
                 }
 
-                // Only show dropdown on non-large screens
-                GradeScaleSelectorDropdown(
-                    items = gradeScaleItems,
-                    selectedItemId = uiState.selectedGradeScale?.id,
-                    onSelectionChange = { id ->
-                        id?.let {
-                            val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
-                            selectedName?.let { onSelectGradeScale(it) }
-                        }
-                    },
-                    modifier = Modifier.weight(0.7f),
-                )
+                // On compact windows the list pane is hidden, so selection happens through the dropdown
+                if (!isListPaneVisible) {
+                    GradeScaleSelectorDropdown(
+                        items = gradeScaleItems,
+                        selectedItemId = uiState.selectedGradeScale?.id,
+                        onSelectionChange = { id ->
+                            id?.let {
+                                val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
+                                selectedName?.let { onSelectGradeScale(it) }
+                            }
+                        },
+                        modifier = Modifier.weight(0.7f),
+                    )
+                }
 
                 if (gradeScale != null) {
                     Spacer(modifier = Modifier.width(8.dp))
@@ -167,7 +167,7 @@ private fun GradeScaleListScreen(
                 }
             }
 
-            if (!isLargeScreen) {
+            if (!isListPaneVisible) {
                 HorizontalDivider()
             }
 

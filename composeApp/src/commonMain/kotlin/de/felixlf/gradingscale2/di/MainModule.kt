@@ -3,7 +3,8 @@ package de.felixlf.gradingscale2.di
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.SnackbarHostState
-import androidx.navigation.NavHostController
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 import de.felixlf.gradingscale2.AppState
 import de.felixlf.gradingscale2.dbModule
 import de.felixlf.gradingscale2.entities.entitiesModule
@@ -45,7 +46,7 @@ val mainModule = module {
     viewModelOf(::WeightedCalculatorViewModelWithEvents)
     viewModelOf(::WeightedGradeDialogViewModelWithEvents)
 
-    single<AppNavController> { (controller: NavHostController) -> AppNavControllerImpl(controller) }
+    single<AppNavController> { (backStack: NavBackStack<NavKey>) -> AppNavControllerImpl(backStack) }
     singleOf(::SnackbarHostState)
     singleOf(::ShowSnackbarUseCaseImpl).bind<ShowSnackbarUseCase>()
     single<AppState> { (sharedTransitionScope: SharedTransitionScope) ->

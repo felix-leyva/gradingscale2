@@ -6,7 +6,8 @@ gson = "2.14.0" # https://search.maven.org/artifact/com.google.code.gson/gson
 haze = "1.7.2" # https://github.com/chrisbanes/haze/releases - 2.0.0 is still alpha
 moleculeRuntime = "2.2.0" # https://github.com/cashapp/molecule/releases
 napier = "2.7.1" # https://github.com/AAkira/Napier/releases - 2.8.1 exists but not for JS target (May 21, 2025)
-navigationCompose = "2.9.2" # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html
+navigation3 = "1.1.1" # https://kotlinlang.org/docs/multiplatform/compose-navigation-3.html - org.jetbrains.androidx.navigation3
+material3Adaptive = "1.2.0" # https://central.sonatype.com/artifact/org.jetbrains.compose.material3.adaptive/adaptive - 1.3.x requires compileSdk 37 on Android
 sqlDelightVersion = "2.3.2" # https://github.com/cashapp/sqldelight/releases
 firebaseBom = "34.15.0" # https://firebase.google.com/support/release-notes/android - 34.x has no KTX modules; requires GitLive Firebase >= 2.4.0
 kotlinxCollectionsImmutable = "0.5.1" # https://github.com/Kotlin/kotlinx.collections.immutable/releases
@@ -34,7 +35,6 @@ androidx-lifecycle = "2.10.0" # https://developer.android.com/jetpack/androidx/r
 androidx-test-junit = "1.3.0" # https://developer.android.com/jetpack/androidx/releases/test
 android-desugar = "2.1.5" # https://maven.google.com/web/index.html#com.android.tools:desugar_jdk_libs
 compose-plugin = "1.11.1" # https://github.com/JetBrains/compose-multiplatform/releases - 1.11 dropped Intel Apple targets (no iosX64 artifacts), so the project no longer declares iosX64
-material3WindowSizeClass = "1.9.0" # https://central.sonatype.com/artifact/org.jetbrains.compose.material3/material3-window-size-class
 junit = "4.13.2" # https://github.com/junit-team/junit4/releases
 kotlin = "2.4.0" # https://github.com/JetBrains/kotlin/releases
 compose-reload = "1.1.1" # https://github.com/JetBrains/compose-hot-reload/releases
@@ -71,7 +71,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 haze = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 haze-materials = { module = "dev.chrisbanes.haze:haze-materials", version.ref = "haze" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" } # https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-navigation-routing.html#sample-project
+navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation3" } # https://kotlinlang.org/docs/multiplatform/compose-navigation-3.html
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelightVersion" }
 coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelightVersion" }
 firebase-auth-android = { module = "com.google.firebase:firebase-auth" } # version from firebase-bom; BOM 34.x removed the -ktx artifacts
@@ -95,7 +95,10 @@ android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", vers
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 compose-preview-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", version.ref = "compose-plugin" }
-material3-window-size = { group = "org.jetbrains.compose.material3", name = "material3-window-size-class", version.ref = "material3WindowSizeClass"}
+material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3Adaptive" }
+material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "material3Adaptive" }
+material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "material3Adaptive" }
+lifecycle-viewmodel-nav3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "androidx-lifecycle" }
 molecule-runtime = { module = "app.cash.molecule:molecule-runtime", version.ref = "moleculeRuntime" }
 
 # ViewModel & Coroutines
@@ -133,7 +136,6 @@ koin-test = { group = "io.insert-koin", name = "koin-test", version.ref = "koin"
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-compose = { group = "io.insert-koin", name = "koin-compose", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
-koin-compose-viewmodel-nav = { module = "io.insert-koin:koin-compose-viewmodel-navigation", version.ref = "koin" }
 
 # Convention Plugins Dependencies
 # Plugins for buildSrc see: https://discuss.gradle.org/t/using-version-catalogs-with-precompiled-script-plugins/45417
@@ -152,7 +154,7 @@ gradle-sqldelight = { group = "app.cash.sqldelight", name = "app.cash.sqldelight
 gradle-hotreload = { group = "org.jetbrains.compose-hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelightVersion" }
-gradle-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentryVersion"}
+gradle-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentryVersion" }
 gradle-sentryandroid = { module = "io.sentry:sentry-android-gradle-plugin", version.ref = "sentryAndroidVersion" }
 
 [plugins]
