@@ -1,0 +1,86 @@
+.gs-scaffold {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+}
+
+/* Compact: navigation (bar) goes to the bottom. */
+.gs-scaffold__nav {
+  order: 2;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.gs-scaffold__body {
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Expanded: navigation (rail) on the left. */
+@media (min-width: 600px) {
+  .gs-scaffold {
+    flex-direction: row;
+  }
+  .gs-scaffold__nav {
+    order: 0;
+    position: static;
+  }
+}
+
+/* Top app bar with the haze blur from Theme.kt's transparentHaze(). */
+.gs-scaffold__top-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--gs-space-4);
+  height: 64px;
+  padding: 0 var(--gs-space-4);
+  background: color-mix(in srgb, var(--md-sys-color-surface) 85%, transparent);
+  backdrop-filter: blur(var(--gs-blur));
+  -webkit-backdrop-filter: blur(var(--gs-blur));
+}
+
+.gs-scaffold__title {
+  flex: 1;
+  margin: 0;
+  font-family: var(--md-sys-typescale-title-large-font);
+  font-size: var(--md-sys-typescale-title-large-size);
+  line-height: var(--md-sys-typescale-title-large-line-height);
+  font-weight: var(--md-sys-typescale-title-large-weight);
+  color: var(--md-sys-color-on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gs-scaffold__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--gs-space-2);
+}
+
+.gs-scaffold__content {
+  flex: 1;
+  padding: var(--gs-space-4);
+}
+
+.gs-scaffold__fab {
+  position: fixed;
+  right: var(--gs-space-4);
+  bottom: calc(80px + var(--gs-space-4)); /* clears the bottom nav bar */
+  z-index: 20;
+}
+
+@media (min-width: 600px) {
+  .gs-scaffold__fab {
+    bottom: var(--gs-space-4);
+  }
+}

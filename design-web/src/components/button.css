@@ -1,0 +1,87 @@
+.gs-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gs-space-2);
+  height: 40px;
+  padding: 0 var(--gs-space-6);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-full);
+  font-family: var(--md-sys-typescale-label-large-font);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+  line-height: var(--md-sys-typescale-label-large-line-height);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s, box-shadow 0.15s;
+  white-space: nowrap;
+}
+
+.gs-button--with-icon {
+  padding-left: var(--gs-space-4);
+}
+
+.gs-button__icon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+}
+
+.gs-button--filled {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+.gs-button--filled:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-sys-color-on-primary) 8%, var(--md-sys-color-primary));
+  box-shadow: var(--gs-elevation-1);
+}
+.gs-button--filled:active:not(:disabled) {
+  background: color-mix(in srgb, var(--md-sys-color-on-primary) 12%, var(--md-sys-color-primary));
+  box-shadow: none;
+}
+
+.gs-button--tonal {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+.gs-button--tonal:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--md-sys-color-on-secondary-container) 8%, var(--md-sys-color-secondary-container));
+  box-shadow: var(--gs-elevation-1);
+}
+.gs-button--tonal:active:not(:disabled) {
+  background: color-mix(in srgb, var(--md-sys-color-on-secondary-container) 12%, var(--md-sys-color-secondary-container));
+  box-shadow: none;
+}
+
+.gs-button--outlined {
+  background: transparent;
+  border: 1px solid var(--md-sys-color-outline);
+  color: var(--md-sys-color-primary);
+}
+.gs-button--outlined:hover:not(:disabled),
+.gs-button--text:hover:not(:disabled) {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.gs-button--outlined:active:not(:disabled),
+.gs-button--text:active:not(:disabled) {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.gs-button--text {
+  background: transparent;
+  color: var(--md-sys-color-primary);
+  padding: 0 var(--gs-space-3);
+}
+
+.gs-button:disabled {
+  cursor: default;
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+  color: color-mix(in srgb, var(--md-sys-color-on-surface) 38%, transparent);
+  border-color: color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent);
+  box-shadow: none;
+}
+.gs-button--text:disabled,
+.gs-button--outlined:disabled {
+  background: transparent;
+}

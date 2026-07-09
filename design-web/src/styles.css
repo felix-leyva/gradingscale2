@@ -1,0 +1,15 @@
+/* GradingScale design system — single style entry point.
+ * Everything a page needs is reachable from this file's @import closure. */
+@import "./tokens.css";
+@import "./components/app-theme.css";
+@import "./components/scaffold.css";
+@import "./components/navigation-suite.css";
+@import "./components/button.css";
+@import "./components/card.css";
+@import "./components/text-field.css";
+@import "./components/select.css";
+@import "./components/list-item.css";
+@import "./components/dialog.css";
+@import "./components/snackbar.css";
+@import "./components/divider.css";
+@import "./components/loading-indicator.css";

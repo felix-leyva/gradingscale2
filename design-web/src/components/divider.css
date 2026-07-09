@@ -1,0 +1,28 @@
+.gs-divider {
+  border: none;
+  margin: 0;
+  background: var(--md-sys-color-outline-variant);
+  flex-shrink: 0;
+}
+
+.gs-divider--horizontal {
+  height: 1px;
+  width: 100%;
+}
+
+.gs-divider--horizontal.gs-divider--inset {
+  width: auto;
+  margin-left: var(--gs-space-4);
+  margin-right: var(--gs-space-4);
+}
+
+.gs-divider--vertical {
+  width: 1px;
+  height: auto;
+  align-self: stretch;
+}
+
+.gs-divider--vertical.gs-divider--inset {
+  margin-top: var(--gs-space-2);
+  margin-bottom: var(--gs-space-2);
+}

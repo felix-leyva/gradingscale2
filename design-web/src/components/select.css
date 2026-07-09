@@ -1,0 +1,73 @@
+.gs-select {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 210px;
+  max-width: 280px; /* mirrors the app's 280dp selector width */
+}
+
+.gs-select__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  transition: border-color 0.15s;
+}
+
+.gs-select__box select {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--gs-space-6) 0 var(--gs-space-4);
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  appearance: none;
+  cursor: pointer;
+}
+
+.gs-select__box select option {
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Label always floats: a select always has a value. */
+.gs-select__box label {
+  position: absolute;
+  left: var(--gs-space-3);
+  top: 0;
+  transform: translateY(-50%);
+  padding: 0 var(--gs-space-1);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-small-size);
+  background: var(--gs-field-surface, var(--md-sys-color-background));
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.gs-select__box:focus-within {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-primary);
+}
+
+.gs-select__box:focus-within label {
+  color: var(--md-sys-color-primary);
+}
+
+.gs-select__arrow {
+  position: absolute;
+  right: var(--gs-space-3);
+  display: inline-flex;
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+}
+
+.gs-select--disabled {
+  opacity: 0.38;
+  pointer-events: none;
+}

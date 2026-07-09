@@ -1,0 +1,41 @@
+.gs-snackbar {
+  position: fixed;
+  bottom: var(--gs-space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--gs-space-2);
+  min-width: 288px;
+  max-width: 560px;
+  padding: var(--gs-space-1) var(--gs-space-2) var(--gs-space-1) var(--gs-space-4);
+  background: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  box-shadow: var(--gs-elevation-3);
+  z-index: 110;
+}
+
+.gs-snackbar__message {
+  flex: 1;
+  padding: var(--gs-space-2) 0;
+  font-size: var(--md-sys-typescale-body-medium-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+}
+
+.gs-snackbar__action {
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-inverse-primary);
+  font-family: var(--md-sys-typescale-label-large-font);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+  letter-spacing: var(--md-sys-typescale-label-large-tracking);
+  padding: var(--gs-space-2) var(--gs-space-3);
+  border-radius: var(--md-sys-shape-corner-full);
+  cursor: pointer;
+}
+
+.gs-snackbar__action:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}

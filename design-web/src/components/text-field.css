@@ -1,0 +1,102 @@
+.gs-text-field {
+  display: inline-flex;
+  flex-direction: column;
+  min-width: 210px;
+}
+
+.gs-text-field__box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  background: transparent;
+  transition: border-color 0.15s;
+}
+
+.gs-text-field__box input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--gs-space-4);
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+}
+
+.gs-text-field__box input::placeholder {
+  color: transparent;
+  transition: color 0.15s;
+}
+
+.gs-text-field__box:focus-within input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.gs-text-field__box label {
+  position: absolute;
+  left: var(--gs-space-3);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 var(--gs-space-1);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-large-size);
+  background: transparent;
+  pointer-events: none;
+  transition: top 0.15s, font-size 0.15s, color 0.15s, background-color 0.15s;
+  white-space: nowrap;
+}
+
+/* Float the label when focused or populated; its background masks the outline. */
+.gs-text-field__box:focus-within label,
+.gs-text-field--populated .gs-text-field__box label {
+  top: 0;
+  font-size: var(--md-sys-typescale-body-small-size);
+  background: var(--gs-field-surface, var(--md-sys-color-background));
+}
+
+.gs-text-field__box:focus-within {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-primary);
+}
+
+.gs-text-field__box:focus-within label {
+  color: var(--md-sys-color-primary);
+}
+
+.gs-text-field__trailing {
+  display: inline-flex;
+  align-items: center;
+  padding-right: var(--gs-space-3);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.gs-text-field__supporting {
+  padding: var(--gs-space-1) var(--gs-space-4) 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-small-size);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+}
+
+/* Error state */
+.gs-text-field--error .gs-text-field__box {
+  border-color: var(--md-sys-color-error);
+}
+.gs-text-field--error .gs-text-field__box:focus-within {
+  box-shadow: inset 0 0 0 1px var(--md-sys-color-error);
+}
+.gs-text-field--error .gs-text-field__box label,
+.gs-text-field--error .gs-text-field__supporting {
+  color: var(--md-sys-color-error);
+}
+
+/* Disabled state */
+.gs-text-field--disabled {
+  opacity: 0.38;
+  pointer-events: none;
+}

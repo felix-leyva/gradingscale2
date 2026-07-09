@@ -1,0 +1,43 @@
+.gs-dialog__scrim {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--md-sys-color-scrim) 32%, transparent);
+  z-index: 100;
+  padding: var(--gs-space-6);
+}
+
+.gs-dialog {
+  --gs-field-surface: var(--md-sys-color-surface-container-high);
+  background: var(--md-sys-color-surface-container-high);
+  color: var(--md-sys-color-on-surface);
+  border-radius: var(--md-sys-shape-corner-extra-large);
+  padding: var(--gs-space-6);
+  min-width: 280px;
+  max-width: 560px;
+  width: 100%;
+  box-shadow: var(--gs-elevation-3);
+}
+
+.gs-dialog__title {
+  margin: 0 0 var(--gs-space-4);
+  font-family: var(--md-sys-typescale-headline-small-font);
+  font-size: var(--md-sys-typescale-headline-small-size);
+  line-height: var(--md-sys-typescale-headline-small-line-height);
+  font-weight: var(--md-sys-typescale-headline-small-weight);
+  color: var(--md-sys-color-on-surface);
+}
+
+.gs-dialog__content {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  line-height: var(--md-sys-typescale-body-medium-line-height);
+}
+
+.gs-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--gs-space-2);
+  margin-top: var(--gs-space-6);
+}

@@ -1,0 +1,20 @@
+.gs-root {
+  min-height: 100%;
+  /* Surface behind form fields — floating labels mask their outline with it.
+   * Containers that change the surface (Card, Dialog) override it. */
+  --gs-field-surface: var(--md-sys-color-background);
+  background: var(--md-sys-color-background);
+  color: var(--md-sys-color-on-background);
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  -webkit-font-smoothing: antialiased;
+}
+
+.gs-root *,
+.gs-root *::before,
+.gs-root *::after {
+  box-sizing: border-box;
+}

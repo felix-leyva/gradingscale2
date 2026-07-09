@@ -1,0 +1,17 @@
+{
+  "shape": "package",
+  "projectId": "c8060961-6e86-401b-8f45-27f8e61d6e8b",
+  "pkg": "gradingscale-design-web",
+  "globalName": "GradingScaleDesign",
+  "entry": "design-web/dist/index.js",
+  "buildCmd": "npm --prefix design-web run build",
+  "cssEntry": "dist/styles.css",
+  "readmeHeader": ".design-sync/conventions.md",
+  "provider": { "component": "AppTheme" },
+  "overrides": {
+    "Dialog": { "cardMode": "single", "viewport": "560x420" },
+    "Snackbar": { "cardMode": "single", "viewport": "560x200" },
+    "Scaffold": { "cardMode": "single", "viewport": "840x560" },
+    "NavigationSuite": { "cardMode": "column" }
+  }
+}

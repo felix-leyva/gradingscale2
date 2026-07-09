@@ -1,0 +1,82 @@
+.gs-nav {
+  display: flex;
+  background: var(--md-sys-color-surface-container);
+  flex-shrink: 0;
+}
+
+.gs-nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gs-space-1);
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  padding: var(--gs-space-3) 0 var(--gs-space-4);
+}
+
+.gs-nav__indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 32px;
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: background-color 0.15s;
+}
+
+.gs-nav__item:hover .gs-nav__indicator {
+  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent);
+}
+
+.gs-nav__item--selected {
+  color: var(--md-sys-color-on-surface);
+}
+
+.gs-nav__item--selected .gs-nav__indicator {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.gs-nav__label {
+  font-family: var(--md-sys-typescale-label-medium-font);
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: var(--md-sys-typescale-label-medium-weight);
+  letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+}
+
+/* Bar layout: items share the row equally. */
+.gs-nav--bar {
+  flex-direction: row;
+}
+.gs-nav--bar .gs-nav__item {
+  flex: 1;
+}
+
+/* Rail layout: narrow vertical column. */
+.gs-nav--rail {
+  flex-direction: column;
+  width: 80px;
+  padding-top: var(--gs-space-6);
+  gap: var(--gs-space-3);
+}
+
+/* Auto: bar on compact viewports, rail from 600px (mirrors AppNavigationSuite). */
+.gs-nav--auto {
+  flex-direction: row;
+}
+.gs-nav--auto .gs-nav__item {
+  flex: 1;
+}
+@media (min-width: 600px) {
+  .gs-nav--auto {
+    flex-direction: column;
+    width: 80px;
+    padding-top: var(--gs-space-6);
+    gap: var(--gs-space-3);
+  }
+  .gs-nav--auto .gs-nav__item {
+    flex: none;
+  }
+}

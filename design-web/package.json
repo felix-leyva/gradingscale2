@@ -1,0 +1,39 @@
+{
+  "name": "gradingscale-design-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "React + CSS mirror of the GradingScale2 Compose Material 3 theme, for Claude Design.",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "style": "dist/styles.css",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./dist/styles.css"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "gen-tokens": "node scripts/gen-tokens.mjs",
+    "prebuild": "npm run gen-tokens",
+    "build": "esbuild src/index.ts --bundle --format=esm --outfile=dist/index.js --external:react --external:react-dom --jsx=automatic && esbuild src/styles.css --bundle --outfile=dist/styles.css && tsc --emitDeclarationOnly",
+    "demo": "npm run build && esbuild demo/demo.tsx --bundle --outfile=demo/demo.js --jsx=automatic --servedir=."
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "esbuild": "^0.24.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.7.2"
+  }
+}
