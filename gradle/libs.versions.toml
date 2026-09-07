@@ -3,14 +3,14 @@
 appdirs = "1.5.0" # https://github.com/harawata/appdirs/releases
 arrowCore = "2.2.3" # https://github.com/arrow-kt/arrow/releases
 gson = "2.14.0" # https://search.maven.org/artifact/com.google.code.gson/gson
-haze = "1.7.2" # https://github.com/chrisbanes/haze/releases - 2.0.0 is still alpha
+haze = "1.7.3" # https://github.com/chrisbanes/haze/releases - 2.0.0 is still alpha
 moleculeRuntime = "2.2.0" # https://github.com/cashapp/molecule/releases
 napier = "2.7.1" # https://github.com/AAkira/Napier/releases - 2.8.1 exists but not for JS target (May 21, 2025)
 navigation3 = "1.1.1" # https://kotlinlang.org/docs/multiplatform/compose-navigation-3.html - org.jetbrains.androidx.navigation3
 material3Adaptive = "1.2.0" # https://central.sonatype.com/artifact/org.jetbrains.compose.material3.adaptive/adaptive - 1.3.x requires compileSdk 37 on Android
 sqlDelightVersion = "2.3.2" # https://github.com/cashapp/sqldelight/releases
-firebaseBom = "34.15.0" # https://firebase.google.com/support/release-notes/android - 34.x has no KTX modules; requires GitLive Firebase >= 2.4.0
-kotlinxCollectionsImmutable = "0.5.1" # https://github.com/Kotlin/kotlinx.collections.immutable/releases
+firebaseBom = "34.18.0" # https://firebase.google.com/support/release-notes/android - 34.x has no KTX modules; requires GitLive Firebase >= 2.4.0
+kotlinxCollectionsImmutable = "0.5.2" # https://github.com/Kotlin/kotlinx.collections.immutable/releases
 multiplatformSettingsNoArg = "1.3.0" # https://github.com/russhwolf/multiplatform-settings/releases
 organization = "de.felixlf" # Project specific
 packagename = "de.felixlf.gradingscale" # Project specific
@@ -23,43 +23,43 @@ desktopPackageName = "grading-scale" # Package name for desktop distributions
 mainClassName = "de.felixlf.gradingscale2.MainKt" # Main class for JVM
 java = "17" # Java version
 
-agp = "9.2.1" # https://developer.android.com/build/releases/gradle-plugin - AGP 9: KMP modules use com.android.kotlin.multiplatform.library, app entry point lives in :androidApp (built-in Kotlin, no KGP androidTarget). Requires Gradle >= 9.1
-android-compileSdk = "36" # https://developer.android.com/tools/releases/platforms
+agp = "9.4.0-alpha06" # https://developer.android.com/build/releases/gradle-plugin - AGP 9: KMP modules use com.android.kotlin.multiplatform.library, app entry point lives in :androidApp (built-in Kotlin, no KGP androidTarget). Requires Gradle >= 9.1
+android-compileSdk = "37" # https://developer.android.com/tools/releases/platforms
 android-minSdk = "26" # https://developer.android.com/tools/releases/platforms
 android-targetSdk = "36" # https://developer.android.com/tools/releases/platforms
 androidx-activityCompose = "1.13.0" # https://developer.android.com/jetpack/androidx/releases/activity
-androidx-appcompat = "1.7.1" # https://developer.android.com/jetpack/androidx/releases/appcompat
+androidx-appcompat = "1.8.0" # https://developer.android.com/jetpack/androidx/releases/appcompat
 androidx-core-ktx = "1.19.0" # https://developer.android.com/jetpack/androidx/releases/core
 androidx-espresso-core = "3.7.0" # https://developer.android.com/jetpack/androidx/releases/test
-androidx-lifecycle = "2.10.0" # https://developer.android.com/jetpack/androidx/releases/lifecycle
+androidx-lifecycle = "2.11.0" # https://developer.android.com/jetpack/androidx/releases/lifecycle
 androidx-test-junit = "1.3.0" # https://developer.android.com/jetpack/androidx/releases/test
 android-desugar = "2.1.5" # https://maven.google.com/web/index.html#com.android.tools:desugar_jdk_libs
-compose-plugin = "1.11.1" # https://github.com/JetBrains/compose-multiplatform/releases - 1.11 dropped Intel Apple targets (no iosX64 artifacts), so the project no longer declares iosX64
+compose-plugin = "1.12.0" # https://github.com/JetBrains/compose-multiplatform/releases - 1.11 dropped Intel Apple targets (no iosX64 artifacts), so the project no longer declares iosX64
 junit = "4.13.2" # https://github.com/junit-team/junit4/releases
 kotlin = "2.4.0" # https://github.com/JetBrains/kotlin/releases
-compose-reload = "1.1.1" # https://github.com/JetBrains/compose-hot-reload/releases
+compose-reload = "1.2.0" # https://github.com/JetBrains/compose-hot-reload/releases
 kotlinx-coroutines = "1.11.0" # https://github.com/Kotlin/kotlinx.coroutines/releases
 koin = "4.2.2" # https://insert-koin.io/
-ktor = "3.5.1" # https://github.com/ktorio/ktor/releases
+ktor = "3.5.2" # https://github.com/ktorio/ktor/releases
 gmazzoBuildConfig = "6.0.10" # https://github.com/gmazzo/gradle-buildconfig-plugin/releases
-aboutLibraries = "15.0.3" # https://github.com/mikepenz/AboutLibraries/releases
+aboutLibraries = "15.2.0" # https://github.com/mikepenz/AboutLibraries/releases
 
-sonarqubeGradlePlugin = "7.3.1.8318" # https://github.com/SonarSource/sonar-scanner-gradle/releases
+sonarqubeGradlePlugin = "7.5.0.8588" # https://github.com/SonarSource/sonar-scanner-gradle/releases
 turbineVersion = "1.2.1" # https://github.com/cashapp/turbine/releases
-slf4j = "2.0.18" # https://www.slf4j.org/
-ksp = "2.3.9" # https://github.com/google/ksp/releases
+slf4j = "2.0.19" # https://www.slf4j.org/
+ksp = "2.3.11" # https://github.com/google/ksp/releases
 sqlDelightPlugin = "2.3.2" # https://github.com/cashapp/sqldelight/releases - keep in sync with sqlDelightVersion
 kstore = "1.1.0" # https://github.com/xxfast/KStore/releases
 kotlinxSerialization = "1.11.0" # https://github.com/Kotlin/kotlinx.serialization/releases
 
 #Firebase
-firebase-kotlin = "2.4.0" # https://github.com/GitLiveApp/firebase-kotlin-sdk/releases - 2.4.0 restored iosX64 support and works with Firebase BOM 34.x
+firebase-kotlin = "2.7.0" # https://github.com/GitLiveApp/firebase-kotlin-sdk/releases - 2.4.0 restored iosX64 support and works with Firebase BOM 34.x
 google-services = "4.5.0" # https://developers.google.com/android/guides/google-services-plugin
-firebaseCrashlyticsBuildtools = "3.0.7" # https://firebase.google.com/support/release-notes/android
-foundationAndroid = "1.11.4" # https://developer.android.com/jetpack/androidx/releases/compose-foundation
-conveyorVersion = "1.13" # https://github.com/hydraulic-software/conveyor/releases
+firebaseCrashlyticsBuildtools = "3.0.8" # https://firebase.google.com/support/release-notes/android
+foundationAndroid = "1.12.0" # https://developer.android.com/jetpack/androidx/releases/compose-foundation
+conveyorVersion = "2.0" # https://github.com/hydraulic-software/conveyor/releases
 sentryVersion = "0.27.0" # https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/
-sentryAndroidVersion = "6.14.0" # https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/debug-symbols/
+sentryAndroidVersion = "6.21.0" # https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/debug-symbols/
 
 [libraries]
 android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelightVersion" }
@@ -151,7 +151,7 @@ gradle-aboutLibraries = { module = "com.mikepenz.aboutlibraries.plugin:aboutlibr
 gradle-sonarqube = { module = "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin", version.ref = "sonarqubeGradlePlugin" } # https://plugins.gradle.org/plugin/org.sonarqube
 gradle-firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" } # https://maven.google.com/web/index.html#com.google.firebase:firebase-crashlytics-buildtools
 gradle-sqldelight = { group = "app.cash.sqldelight", name = "app.cash.sqldelight.gradle.plugin", version.ref = "sqlDelightPlugin" } # https://oss.sonatype.org/#nexus-search;quick~sqldelight
-gradle-hotreload = { group = "org.jetbrains.compose-hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload" }
+gradle-hotreload = { group = "org.jetbrains.compose.hot-reload", name = "org.jetbrains.compose-hot-reload.gradle.plugin", version.ref = "compose-reload" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
 web-worker-driver = { module = "app.cash.sqldelight:web-worker-driver", version.ref = "sqlDelightVersion" }
 gradle-sentry = { module = "io.sentry:sentry-kotlin-multiplatform-gradle-plugin", version.ref = "sentryVersion" }

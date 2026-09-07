@@ -21,6 +21,8 @@ plugins {
     id(libs2.plugins.hot.reload.get().pluginId)
 }
 
+version = libs2.versions.appVersion.get()
+
 kotlin {
     jvm()
 
@@ -196,7 +198,12 @@ compose {
 }
 
 dependencies {
-    ksp(libs2.arrow.optics.ksp.plugin)
+    add("kspCommonMainMetadata", libs2.arrow.optics.ksp.plugin)
+    add("kspJvm", libs2.arrow.optics.ksp.plugin)
+    add("kspAndroid", libs2.arrow.optics.ksp.plugin)
+    add("kspIosArm64", libs2.arrow.optics.ksp.plugin)
+    add("kspIosSimulatorArm64", libs2.arrow.optics.ksp.plugin)
+    add("kspWasmJs", libs2.arrow.optics.ksp.plugin)
     // Use the configurations created by the Conveyor plugin to tell Gradle/Conveyor where to find the artifacts for each platform.
     linuxAmd64(compose.desktop.linux_x64)
     macAmd64(compose.desktop.macos_x64)
