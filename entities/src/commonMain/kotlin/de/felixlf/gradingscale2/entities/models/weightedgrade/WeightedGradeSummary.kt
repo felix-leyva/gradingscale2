@@ -5,4 +5,5 @@ data class WeightedGradeSummary(
     val weightedPercentage: String,
     val earnedPoints: String,
     val totalPoints: String,
+    val weightedPercentageDouble: Double = 0.0,
 )

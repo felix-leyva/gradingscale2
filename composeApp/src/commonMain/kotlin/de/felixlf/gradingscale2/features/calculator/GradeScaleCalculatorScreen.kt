@@ -1,55 +1,34 @@
 package de.felixlf.gradingscale2.features.calculator
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.selectAll
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIEvent
 import de.felixlf.gradingscale2.entities.features.calculator.GradeScaleCalculatorUIState
-import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
-import de.felixlf.gradingscale2.entities.util.stringWithDecimals
+import de.felixlf.gradingscale2.features.calculator.components.CalculatorContent
+import de.felixlf.gradingscale2.features.calculator.components.EmptyScalePlaceholder
+import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
-import de.felixlf.gradingscale2.uicomponents.DropboxSelector
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
-import de.felixlf.gradingscale2.utils.textFieldManager
 import dev.chrisbanes.haze.hazeSource
-import gradingscale2.entities.generated.resources.Res
-import gradingscale2.entities.generated.resources.calculator_screen_grade_name_dropbox_default
-import gradingscale2.entities.generated.resources.calculator_screen_grade_name_dropbox_label
-import gradingscale2.entities.generated.resources.calculator_screen_percentage_input
-import gradingscale2.entities.generated.resources.calculator_screen_points_input
-import gradingscale2.entities.generated.resources.calculator_screen_total_points_input
-import gradingscale2.entities.generated.resources.gradescale_list_select_grade_scale
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toPersistentList
-import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 /**
- * The Calculator Screen is the main screen of the calculator feature. It allows the user to calculate the grade of a student based on the
- * selected grade scale.
+ * The Calculator Screen allows users to calculate grades bidirectionally
+ * across total points, earned points, percentage, and grade letters.
  */
 @Composable
 internal fun GradeScaleCalculatorScreen(
@@ -70,7 +49,7 @@ internal fun GradeScaleCalculatorScreen(
 }
 
 @Composable
-private fun GradeScaleCalculatorScreen(
+internal fun GradeScaleCalculatorScreen(
     modifier: Modifier = Modifier,
     uiState: GradeScaleCalculatorUIState,
     onSelectGradeScale: (String) -> Unit = {},
@@ -79,137 +58,50 @@ private fun GradeScaleCalculatorScreen(
     onSetPercentage: (Double) -> Unit = {},
     onSelectGradeName: (String) -> Unit = {},
 ) {
-    val gradeScale = remember(uiState.selectedGradeScale) { uiState.selectedGradeScale }
-
-    // Convert UI state to GradeScaleNameAndId list for the adaptive selector
-    val gradeScaleItems = remember(uiState.gradeScalesNamesWithId) {
-        uiState.gradeScalesNamesWithId.map {
-            GradeScaleNameAndId(id = it.gradeScaleId, name = it.gradeScaleName)
-        }.toPersistentList()
-    }
     AdaptiveGradeScaleSelector(
-        items = gradeScaleItems,
-        selectedItemId = uiState.selectedGradeScale?.id,
+        items = uiState.gradeScaleItems,
+        selectedItemId = uiState.selectedGradeScaleId,
         onSelectionChange = { id ->
             id?.let {
-                val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
+                val selectedName = uiState.gradeScalesNamesWithId.find { scale -> scale.gradeScaleId == id }?.gradeScaleName
                 selectedName?.let { onSelectGradeScale(it) }
             }
         },
     ) { isListPaneVisible ->
         Column(
-            modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize().padding(16.dp),
+            modifier = modifier
+                .hazeSource(LocalHazeState.current)
+                .fillMaxSize()
+                .padding(16.dp),
         ) {
-            // On compact windows the list pane is hidden, so selection happens through the dropdown
+            // Dropdown selector visible only on compact screens (where list pane is hidden)
             if (!isListPaneVisible) {
                 GradeScaleSelectorDropdown(
-                    items = gradeScaleItems,
-                    selectedItemId = uiState.selectedGradeScale?.id,
+                    items = uiState.gradeScaleItems,
+                    selectedItemId = uiState.selectedGradeScaleId,
                     onSelectionChange = { id ->
                         id?.let {
-                            val selectedName = uiState.gradeScalesNamesWithId.find { it.gradeScaleId == id }?.gradeScaleName
+                            val selectedName = uiState.gradeScalesNamesWithId.find { scale -> scale.gradeScaleId == id }?.gradeScaleName
                             selectedName?.let { onSelectGradeScale(it) }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
                 )
-                HorizontalDivider()
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+                Spacer(modifier = Modifier.height(12.dp))
             }
 
-            if (gradeScale == null) {
-                Text(text = stringResource(Res.string.gradescale_list_select_grade_scale))
+            if (!uiState.hasSelectedGradeScale) {
+                EmptyScalePlaceholder()
             } else {
-                val totalPointsFocusRequester = remember { FocusRequester() }
-                val pointsFocusRequester = remember { FocusRequester() }
-                val percentageFocusRequester = remember { FocusRequester() }
-
-                Column(
-                    modifier = Modifier.wrapContentWidth(),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        val totalPointsState = textFieldManager(uiState.totalPoints?.stringWithDecimals() ?: "") {
-                            onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
-                            edit { selectAll() }
-                        }
-
-                        CalculatorTextField(
-                            modifier = Modifier
-                                .padding(vertical = 16.dp)
-                                .weight(1f)
-                                .focusRequester(totalPointsFocusRequester)
-                                .focusProperties {
-                                    next = pointsFocusRequester
-                                },
-                            state = totalPointsState,
-                            label = stringResource(Res.string.calculator_screen_total_points_input),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Next,
-                            ),
-                        )
-
-                        val pointState = textFieldManager(uiState.currentGrade?.points?.stringWithDecimals() ?: "") {
-                            onSetPoints(it.toDoubleOrNull() ?: 0.0)
-                            edit { selectAll() }
-                        }
-
-                        CalculatorTextField(
-                            modifier = Modifier
-                                .padding(vertical = 16.dp)
-                                .weight(1f)
-                                .focusRequester(pointsFocusRequester)
-                                .focusProperties {
-                                    next = percentageFocusRequester
-                                    previous = totalPointsFocusRequester
-                                },
-                            state = pointState,
-                            label = stringResource(Res.string.calculator_screen_points_input),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Next,
-                            ),
-                        )
-                    }
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        val percentageState = textFieldManager((uiState.currentPercentage)?.times(100)?.stringWithDecimals() ?: "") {
-                            onSetPercentage((it.toDoubleOrNull()?.div(100)) ?: 0.0)
-                            edit { selectAll() }
-                        }
-
-                        CalculatorTextField(
-                            modifier = Modifier
-                                .padding(vertical = 16.dp)
-                                .weight(1f)
-                                .focusRequester(percentageFocusRequester)
-                                .focusProperties {
-                                    previous = pointsFocusRequester
-                                },
-                            state = percentageState,
-                            label = stringResource(Res.string.calculator_screen_percentage_input),
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                imeAction = ImeAction.Done,
-                                keyboardType = KeyboardType.Number,
-                            ),
-                        )
-
-                        DropboxSelector(
-                            elements = uiState.selectedGradeScale?.sortedGrades?.map { it.namedGrade }?.toImmutableList()
-                                ?: persistentListOf(),
-                            selectedElement = uiState.currentGrade?.namedGrade,
-                            onSelectElement = onSelectGradeName,
-                            defaultText = stringResource(Res.string.calculator_screen_grade_name_dropbox_default),
-                            label = stringResource(Res.string.calculator_screen_grade_name_dropbox_label),
-                            modifier = Modifier.padding(vertical = 16.dp).weight(1f),
-                            textStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
-                        )
-                    }
-                }
+                CalculatorContent(
+                    uiState = uiState,
+                    onSetTotalPoints = onSetTotalPoints,
+                    onSetPoints = onSetPoints,
+                    onSetPercentage = onSetPercentage,
+                    onSelectGradeName = onSelectGradeName,
+                )
             }
         }
     }
@@ -217,7 +109,7 @@ private fun GradeScaleCalculatorScreen(
 
 @Preview
 @Composable
-private fun CalculatorScreenPreview() {
+private fun CalculatorScreenPreview() = AppTheme {
     GradeScaleCalculatorScreen(
         uiState = GradeScaleCalculatorUIState(
             selectedGradeScale = MockGradeScalesGenerator().gradeScales.first(),
@@ -229,8 +121,8 @@ private fun CalculatorScreenPreview() {
                         gradeScaleId = it.id,
                     )
                 }.toImmutableList(),
-            currentPercentage = 0.8,
-            totalPoints = 10.0,
+            currentPercentage = 0.85,
+            totalPoints = 100.0,
         ),
     )
 }

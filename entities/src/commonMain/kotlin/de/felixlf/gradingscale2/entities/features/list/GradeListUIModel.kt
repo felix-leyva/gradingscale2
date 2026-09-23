@@ -9,6 +9,7 @@ import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.Set
 import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModel
 import de.felixlf.gradingscale2.entities.uimodel.asState
+import de.felixlf.gradingscale2.entities.usecases.DeleteGradeScaleUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetAllGradeScalesUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUseCase
@@ -27,6 +28,7 @@ class GradeListUIModel(
     private val getGradeScaleByIdUseCase: GetGradeScaleByIdUseCase,
     private val getLastSelectedGradeScaleIdUseCase: GetLastSelectedGradeScaleIdUseCase,
     private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase,
+    private val deleteGradeScaleUseCase: DeleteGradeScaleUseCase? = null,
 ) : UIModel<GradeScaleListUIState, GradeScaleListUIEvent> {
 
     // MutableStateOf causes inside the produceUI function recomposition which is helpful to update the State. If we wish to "observe" this
@@ -70,6 +72,18 @@ class GradeListUIModel(
             }
 
             is GradeScaleListUIEvent.SelectGradeScaleById -> gradeScaleId = command.gradeScaleId
+
+            is GradeScaleListUIEvent.DeleteGradeScale -> {
+                scope.launch {
+                    deleteGradeScaleUseCase?.invoke(command.gradeScaleId)
+                    if (gradeScaleId == command.gradeScaleId) {
+                        val remaining = state?.gradeScalesNamesWithId?.filter { it.gradeScaleId != command.gradeScaleId }
+                        val nextScale = remaining?.firstOrNull()
+                        gradeScaleId = nextScale?.gradeScaleId
+                        nextScale?.gradeScaleId?.let { setLastSelectedGradeScaleIdUseCase.invoke(it) }
+                    }
+                }
+            }
         }
     }
 }
@@ -78,4 +92,5 @@ sealed interface GradeScaleListUIEvent {
     data class SelectGradeScale(val gradeScaleName: String) : GradeScaleListUIEvent
     data class SelectGradeScaleById(val gradeScaleId: String) : GradeScaleListUIEvent
     data class SetTotalPoints(val points: Double) : GradeScaleListUIEvent
+    data class DeleteGradeScale(val gradeScaleId: String) : GradeScaleListUIEvent
 }

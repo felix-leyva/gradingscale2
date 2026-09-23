@@ -45,7 +45,7 @@ import gradingscale2.entities.generated.resources.edit_grade_percentage
 import gradingscale2.entities.generated.resources.edit_grade_save_button
 import gradingscale2.entities.generated.resources.upsert_grade_save_as_new
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 
 /**
  * The Insert Grade Dialog is a dialog that allows the user to insert a new grade.

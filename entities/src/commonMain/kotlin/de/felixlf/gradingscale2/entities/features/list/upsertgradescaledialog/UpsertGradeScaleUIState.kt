@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog
 
+import androidx.compose.runtime.Stable
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_error_duplicated_name
@@ -9,6 +10,7 @@ import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_sa
 import kotlinx.collections.immutable.ImmutableList
 import org.jetbrains.compose.resources.StringResource
 
+@Stable
 data class UpsertGradeScaleUIState(
     val existingGradeScaleNames: ImmutableList<GradeScaleNameAndId>,
     val newName: String?,

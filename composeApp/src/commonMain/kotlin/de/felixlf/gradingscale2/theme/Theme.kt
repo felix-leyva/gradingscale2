@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
@@ -260,6 +261,11 @@ val unspecified_scheme = ColorFamily(
 )
 
 val LocalHazeState = compositionLocalOf { HazeState() }
+val LocalGradeScaleColors = staticCompositionLocalOf { lightGradeColors }
+
+val MaterialTheme.gradeColors: GradeScaleColors
+    @Composable
+    get() = LocalGradeScaleColors.current
 
 @Composable
 fun AppTheme(
@@ -281,8 +287,12 @@ fun AppTheme(
         else -> lightScheme
     }
 
+    val gradeColors = if (darkTheme) darkGradeColors else lightGradeColors
     val hazeState = rememberHazeState()
-    CompositionLocalProvider(LocalHazeState provides hazeState) {
+    CompositionLocalProvider(
+        LocalHazeState provides hazeState,
+        LocalGradeScaleColors provides gradeColors,
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = AppTypography,
@@ -294,11 +304,13 @@ fun AppTheme(
 @Composable
 fun transparentHaze(
     containerColor: Color = MaterialTheme.colorScheme.surface,
+    alpha: Float = if (containerColor.luminance() >= 0.5) 0.90f else 0.92f,
 ): HazeStyle = HazeStyle(
     backgroundColor = containerColor,
     tint = HazeTint(
-        containerColor.copy(alpha = if (containerColor.luminance() >= 0.5) 0.15f else 0.35f),
+        containerColor.copy(alpha = alpha),
     ),
-    blurRadius = 8.dp,
+    blurRadius = 20.dp,
     noiseFactor = -1f,
 )
+

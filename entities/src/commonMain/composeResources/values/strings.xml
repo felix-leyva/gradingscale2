@@ -60,5 +60,21 @@
     <string name="weighted_grade_list_label_percentage">Percentage</string>
     <string name="weighted_grade_list_label_points">Score</string>
     <string name="weighted_grade_list_label_total_points">Weight</string>
-
+    <string name="calculator_quick_adjust">Quick Adjust</string>
+    <string name="calculator_calculation_parameters">Calculation Parameters</string>
+    <string name="gradescale_list_menu_delete_grade_scale">Delete Grade Scale</string>
+    <string name="gradescale_list_dialog_delete_title">Delete Grade Scale?</string>
+    <string name="gradescale_list_dialog_delete_message">Are you sure you want to delete this grade scale? This action cannot be undone.</string>
+    <string name="gradescale_list_dialog_delete_confirm">Delete</string>
+    <string name="gradescale_list_column_grade">Grade</string>
+    <string name="gradescale_list_column_min_percentage">Min. %</string>
+    <string name="gradescale_list_column_points_needed">Points Needed</string>
+    <string name="gradescale_list_view_mode_grid">Grid View</string>
+    <string name="gradescale_list_view_mode_list">List View</string>
+    <string name="weighted_calculator_add_grade">Add Grade</string>
+    <string name="weighted_calculator_empty_title">No partial grades yet</string>
+    <string name="weighted_calculator_empty_desc">Add exams, assignments, or coursework with their weights to compute your final grade.</string>
+    <string name="weighted_calculator_add_first_grade">Add First Grade</string>
+    <string name="weighted_calculator_total_weight_label">Total weight</string>
+    <string name="weighted_calculator_grade_count">%d partial grades</string>
 </resources>

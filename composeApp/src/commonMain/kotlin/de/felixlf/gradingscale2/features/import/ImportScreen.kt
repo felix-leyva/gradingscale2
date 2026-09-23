@@ -35,7 +35,7 @@ import gradingscale2.entities.generated.resources.import_grade_get_remote_grades
 import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.InternalResourceApi
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable

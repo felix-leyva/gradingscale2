@@ -6,6 +6,7 @@ sentry {
     autoInstallation {
         enabled.set(false)
     }
+    telemetry.set(false)
 
     org.set(System.getenv("SENTRY_ORG") ?: throw NullPointerException("SENTRY_ORG environmental variable not set yet"))
     projectName.set(

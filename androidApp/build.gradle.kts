@@ -5,7 +5,7 @@ plugins {
     id(libs2.plugins.androidApplication.get().pluginId)
     id(libs2.plugins.compose.compiler.get().pluginId)
     id(libs2.plugins.google.services.get().pluginId)
-    id("sentry-android")
+    // id("sentry-android")
 }
 
 android {

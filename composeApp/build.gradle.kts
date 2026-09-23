@@ -95,7 +95,7 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(compose.preview)
+            implementation(libs2.compose.preview.tooling)
             implementation(libs2.androidx.activity.compose)
         }
 
@@ -107,7 +107,9 @@ kotlin {
             implementation(compose.material3AdaptiveNavigationSuite)
             implementation(compose.ui)
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
+            implementation(libs2.compose.ui.tooling.preview)
+
+
             implementation(libs2.navigation3.ui)
             implementation(libs2.material3.adaptive)
             implementation(libs2.material3.adaptive.layout)

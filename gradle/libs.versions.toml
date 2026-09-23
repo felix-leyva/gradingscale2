@@ -23,7 +23,7 @@ desktopPackageName = "grading-scale" # Package name for desktop distributions
 mainClassName = "de.felixlf.gradingscale2.MainKt" # Main class for JVM
 java = "17" # Java version
 
-agp = "9.4.0-alpha06" # https://developer.android.com/build/releases/gradle-plugin - AGP 9: KMP modules use com.android.kotlin.multiplatform.library, app entry point lives in :androidApp (built-in Kotlin, no KGP androidTarget). Requires Gradle >= 9.1
+agp = "9.4.1" # https://developer.android.com/build/releases/gradle-plugin - AGP 9: KMP modules use com.android.kotlin.multiplatform.library, app entry point lives in :androidApp (built-in Kotlin, no KGP androidTarget). Requires Gradle >= 9.1
 android-compileSdk = "37" # https://developer.android.com/tools/releases/platforms
 android-minSdk = "26" # https://developer.android.com/tools/releases/platforms
 android-targetSdk = "36" # https://developer.android.com/tools/releases/platforms
@@ -95,6 +95,7 @@ android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", vers
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 compose-preview-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", version.ref = "compose-plugin" }
+compose-ui-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "compose-plugin" }
 material3-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "material3Adaptive" }
 material3-adaptive-layout = { module = "org.jetbrains.compose.material3.adaptive:adaptive-layout", version.ref = "material3Adaptive" }
 material3-adaptive-navigation = { module = "org.jetbrains.compose.material3.adaptive:adaptive-navigation", version.ref = "material3Adaptive" }

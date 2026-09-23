@@ -33,6 +33,7 @@ fun AdaptiveGradeScaleSelector(
     items: PersistentList<GradeScaleNameAndId>,
     selectedItemId: String?,
     onSelectionChange: (String?) -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable (isListPaneVisible: Boolean) -> Unit,
 ) {
     // The detail pane is always the destination: on compact windows the selection happens via dropdown, never by
@@ -43,6 +44,7 @@ fun AdaptiveGradeScaleSelector(
     val isListPaneVisible = navigator.scaffoldValue[ListDetailPaneScaffoldRole.List] == PaneAdaptedValue.Expanded
 
     ListDetailPaneScaffold(
+        modifier = modifier,
         directive = navigator.scaffoldDirective,
         value = navigator.scaffoldValue,
         // Plain panes without AnimatedPane: pane animations on every window resize freeze the app on desktop

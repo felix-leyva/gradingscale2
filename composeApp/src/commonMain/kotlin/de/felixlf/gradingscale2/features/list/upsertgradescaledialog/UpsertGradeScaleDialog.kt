@@ -32,8 +32,8 @@ import gradingscale2.entities.generated.resources.default_grade_name
 import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_cancel
 import kotlinx.collections.immutable.toImmutableList
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.ui.tooling.preview.PreviewParameterProvider
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
 @Composable
 internal fun UpsertGradeScaleDialog(
