@@ -21,6 +21,7 @@ captures
 /iosApp/iosApp/GoogleService-Info.plist
 **/firebase-config.js
 /docker/docker-compose.yml
+.firebase/
 
 # design-sync working state (never committed)
 .ds-sync/

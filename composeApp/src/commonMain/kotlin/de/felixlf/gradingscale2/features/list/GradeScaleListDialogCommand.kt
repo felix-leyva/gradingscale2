@@ -5,9 +5,13 @@ import gradingscale2.entities.generated.resources.gradescale_list_menu_add_new_g
 import gradingscale2.entities.generated.resources.gradescale_list_menu_add_new_grade_scale
 import gradingscale2.entities.generated.resources.gradescale_list_menu_delete_grade_scale
 import gradingscale2.entities.generated.resources.gradescale_list_menu_edit_grade_scale
+import gradingscale2.entities.generated.resources.gradescale_list_menu_export_exam_table
 import org.jetbrains.compose.resources.StringResource
 
 sealed class GradeScaleListDialogCommand(val menuText: StringResource? = null) {
+    data class ExportExamTable(val gradeScaleId: String) :
+        GradeScaleListDialogCommand(Res.string.gradescale_list_menu_export_exam_table)
+
     data class EditGradeScale(val gradeScaleId: String) : GradeScaleListDialogCommand(Res.string.gradescale_list_menu_edit_grade_scale)
 
     data object AddNewGradeScale : GradeScaleListDialogCommand(Res.string.gradescale_list_menu_add_new_grade_scale)

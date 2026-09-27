@@ -77,4 +77,20 @@
     <string name="weighted_calculator_add_first_grade">Add First Grade</string>
     <string name="weighted_calculator_total_weight_label">Total weight</string>
     <string name="weighted_calculator_grade_count">%d partial grades</string>
+
+    <!-- Exam Table Export -->
+    <string name="gradescale_list_menu_export_exam_table">Export Exam Table</string>
+    <string name="gradescale_export_dialog_title">Export Exam Table</string>
+    <string name="gradescale_export_dialog_subtitle">Export or copy table for exam documents</string>
+    <string name="gradescale_export_option_percentage">Include percentage</string>
+    <string name="gradescale_export_option_range">Show as range</string>
+    <string name="gradescale_export_option_descending">Highest grade first</string>
+    <string name="gradescale_export_btn_copy_word">Copy for Word / Docs</string>
+    <string name="gradescale_export_btn_copy_tsv">Copy as Text / TSV</string>
+    <string name="gradescale_export_btn_copy_markdown">Copy Markdown</string>
+    <string name="gradescale_export_btn_close">Close</string>
+    <string name="gradescale_export_success_table_copied">Table copied to clipboard! Ready to paste into Word or Docs.</string>
+    <string name="gradescale_export_success_text_copied">Text copied to clipboard.</string>
+    <string name="gradescale_export_error_copying">Failed to copy to clipboard.</string>
+    <string name="gradescale_export_preview_title">Preview</string>
 </resources>

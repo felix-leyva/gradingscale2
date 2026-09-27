@@ -12,6 +12,7 @@ import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
 import de.felixlf.gradingscale2.features.calculator.CalculatorViewModel
 import de.felixlf.gradingscale2.features.import.ImportViewModelWithEvents
 import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
+import de.felixlf.gradingscale2.features.list.exportdialog.ExportExamTableViewModel
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeViewModel
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleViewModel
 import de.felixlf.gradingscale2.features.weightedgradecalculator.WeightedCalculatorViewModelWithEvents
@@ -45,6 +46,7 @@ val mainModule = module {
     viewModelOf(::ImportViewModelWithEvents)
     viewModelOf(::WeightedCalculatorViewModelWithEvents)
     viewModelOf(::WeightedGradeDialogViewModelWithEvents)
+    viewModelOf(::ExportExamTableViewModel)
 
     single<AppNavController> { (backStack: NavBackStack<NavKey>) -> AppNavControllerImpl(backStack) }
     singleOf(::SnackbarHostState)

@@ -29,6 +29,7 @@ import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.list.components.DeleteGradeScaleDialog
 import de.felixlf.gradingscale2.features.list.components.GradeScaleListContent
 import de.felixlf.gradingscale2.features.list.components.GradeScaleListHeader
+import de.felixlf.gradingscale2.features.list.exportdialog.ExportExamTableDialog
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.EditGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradedialog.InsertGradeDialog
 import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleDialog
@@ -95,6 +96,16 @@ internal fun GradeScaleListScreen(
                 },
                 onDismiss = { activeDialogCommand = null },
             )
+
+            is GradeScaleListDialogCommand.ExportExamTable -> {
+                uiState.selectedGradeScale?.let { scale ->
+                    ExportExamTableDialog(
+                        gradeScale = scale,
+                        totalPoints = uiState.totalPoints,
+                        onDismiss = { activeDialogCommand = null },
+                    )
+                } ?: run { activeDialogCommand = null }
+            }
         }
     }
 }

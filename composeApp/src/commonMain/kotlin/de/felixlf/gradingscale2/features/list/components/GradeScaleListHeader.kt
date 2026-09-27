@@ -112,6 +112,7 @@ fun GradeScaleListHeader(
                 selectedGradeScaleId?.let { id ->
                     DialogActionsMenu(
                         gradeScaleId = id,
+                        isExtended = true,
                         onAction = onOpenDialog,
                     )
                 }

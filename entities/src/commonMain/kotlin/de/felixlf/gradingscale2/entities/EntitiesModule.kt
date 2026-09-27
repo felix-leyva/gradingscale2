@@ -1,6 +1,15 @@
 package de.felixlf.gradingscale2.entities
 
 import de.felixlf.gradingscale2.entities.features.calculator.CalculatorUIModel
+import de.felixlf.gradingscale2.entities.features.export.ExamTableDataBuilder
+import de.felixlf.gradingscale2.entities.features.export.ExamTableDataBuilderImpl
+import de.felixlf.gradingscale2.entities.features.export.ExportExamTableUIModel
+import de.felixlf.gradingscale2.entities.features.export.GradeScaleTableHtmlFormatter
+import de.felixlf.gradingscale2.entities.features.export.GradeScaleTableHtmlFormatterImpl
+import de.felixlf.gradingscale2.entities.features.export.GradeScaleTableMarkdownFormatter
+import de.felixlf.gradingscale2.entities.features.export.GradeScaleTableMarkdownFormatterImpl
+import de.felixlf.gradingscale2.entities.features.export.GradeScaleTableTsvFormatter
+import de.felixlf.gradingscale2.entities.features.export.GradeScaleTableTsvFormatterImpl
 import de.felixlf.gradingscale2.entities.features.import.ImportUIModelWithEvents
 import de.felixlf.gradingscale2.entities.features.list.GradeListUIModel
 import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIFactory
@@ -93,6 +102,11 @@ val entitiesModule =
         singleOf(::SetLastSelectedGradeScaleIdUseCaseImpl).bind<SetLastSelectedGradeScaleIdUseCase>()
         singleOf(::TrackErrorUseCaseImpl).bind<TrackErrorUseCase>()
 
+        singleOf(::ExamTableDataBuilderImpl).bind<ExamTableDataBuilder>()
+        singleOf(::GradeScaleTableHtmlFormatterImpl).bind<GradeScaleTableHtmlFormatter>()
+        singleOf(::GradeScaleTableTsvFormatterImpl).bind<GradeScaleTableTsvFormatter>()
+        singleOf(::GradeScaleTableMarkdownFormatterImpl).bind<GradeScaleTableMarkdownFormatter>()
+
         // UI Model
         factoryOf(::GradeListUIModel)
         factoryOf(::CalculatorUIModel)
@@ -101,4 +115,5 @@ val entitiesModule =
         factoryOf(::UpsertGradeScaleUIStateFactory)
         factoryOf(::WeightCalculatorUIModelWithEvents)
         factoryOf(::WeightedGradeDialogUIModelWithEvents)
+        factoryOf(::ExportExamTableUIModel)
     }
