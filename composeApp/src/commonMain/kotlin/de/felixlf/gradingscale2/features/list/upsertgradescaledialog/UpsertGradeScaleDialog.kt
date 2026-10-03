@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,6 +27,7 @@ import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.theme.AppTheme
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import de.felixlf.gradingscale2.utils.dialogScopedViewModel
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.entities.generated.resources.Res
@@ -71,7 +74,10 @@ private fun UpsertGradeScaleDialog(
 ) {
     Card {
         Column(
-            modifier = Modifier.padding(24.dp).width(IntrinsicSize.Max),
+            modifier = Modifier
+                .padding(24.dp)
+                .width(IntrinsicSize.Max)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
@@ -109,6 +115,7 @@ private fun UpsertGradeScaleDialog(
     }
 }
 
+@FormFactorPreviews
 @Preview
 @Composable
 fun CreateNewGradeScaleDialogPreview() = AppTheme {

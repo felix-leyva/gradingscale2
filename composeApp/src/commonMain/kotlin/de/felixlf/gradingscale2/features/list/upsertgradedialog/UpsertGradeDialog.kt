@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -37,6 +39,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIEvent
 import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIState
 import de.felixlf.gradingscale2.entities.models.Grade
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import de.felixlf.gradingscale2.utils.dialogScopedViewModel
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.entities.generated.resources.Res
@@ -102,7 +105,10 @@ private fun UpsertGradeDialog(
 ) {
     Card {
         Column(
-            modifier = Modifier.padding(24.dp).width(IntrinsicSize.Max),
+            modifier = Modifier
+                .padding(24.dp)
+                .width(IntrinsicSize.Max)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
         ) {
@@ -203,6 +209,7 @@ private fun EditGradeTextField(
     )
 }
 
+@FormFactorPreviews
 @Preview
 @Composable
 private fun EditGradeDialogPreview() {

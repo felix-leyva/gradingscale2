@@ -12,6 +12,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import de.felixlf.gradingscale2.theme.AppTheme
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_list_dialog_delete_confirm
 import gradingscale2.entities.generated.resources.gradescale_list_dialog_delete_message
@@ -20,6 +21,7 @@ import gradingscale2.entities.generated.resources.gradescale_list_dialog_edit_ca
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 
+@FormFactorPreviews
 @Preview
 @Composable
 private fun DeleteGradeScaleDialogPreview() = AppTheme {
