@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -40,8 +41,14 @@ import de.felixlf.gradingscale2.features.weightedgradecalculator.components.Empt
 import de.felixlf.gradingscale2.features.weightedgradecalculator.components.WeightedGradeItemCard
 import de.felixlf.gradingscale2.features.weightedgradecalculator.components.WeightedHeroSummaryCard
 import de.felixlf.gradingscale2.features.weightedgradecalculator.dialogs.GradeEditDialog
+import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
+import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeSummary
+import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeWithName
+import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
 import de.felixlf.gradingscale2.uicomponents.LoadingContent
 import dev.chrisbanes.haze.hazeSource
@@ -50,8 +57,10 @@ import gradingscale2.entities.generated.resources.add_grade
 import gradingscale2.entities.generated.resources.destinations_menu_weighted_grade_calculator
 import gradingscale2.entities.generated.resources.weighted_calculator_add_grade
 import gradingscale2.entities.generated.resources.weighted_grade_list_label_title
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.uuid.Uuid
 
@@ -183,79 +192,86 @@ private fun MobileWeightedCalculatorContent(
 ) {
     val gradeScaleItems = uiState.gradeScaleNameAndIds.toPersistentList()
 
-    LazyColumn(
+    Box(
         modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentAlignment = Alignment.TopCenter,
     ) {
-        // Dropdown scale selector
-        item(key = "scale_selector") {
-            GradeScaleSelectorDropdown(
-                items = gradeScaleItems,
-                selectedItemId = uiState.selectedGradeScale?.id,
-                onSelectionChange = { id ->
-                    onSendCommand(WeightedCalculatorCommand.SelectGradeScale(id))
-                },
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        // Hero Donut Summary Card
-        item(key = "hero_summary") {
-            WeightedHeroSummaryCard(
-                weightedGradeSummary = uiState.weightedGradeSummary,
-                weightedGrades = uiState.weightedGrades,
-                totalWeight = uiState.totalWeight,
-                scaleName = uiState.selectedGradeScale?.gradeScaleName,
-            )
-        }
-
-        // Partial Grades Header
-        item(key = "grades_header") {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 4.dp, vertical = 2.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(Res.string.weighted_grade_list_label_title),
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                    color = MaterialTheme.colorScheme.onSurface,
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 720.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 96.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            // Dropdown scale selector
+            item(key = "scale_selector") {
+                GradeScaleSelectorDropdown(
+                    items = gradeScaleItems,
+                    selectedItemId = uiState.selectedGradeScale?.id,
+                    onSelectionChange = { id ->
+                        onSendCommand(WeightedCalculatorCommand.SelectGradeScale(id))
+                    },
+                    modifier = Modifier.fillMaxWidth(),
                 )
-                if (uiState.weightedGrades.isNotEmpty()) {
+            }
+
+            // Hero Donut Summary Card
+            item(key = "hero_summary") {
+                WeightedHeroSummaryCard(
+                    weightedGradeSummary = uiState.weightedGradeSummary,
+                    weightedGrades = uiState.weightedGrades,
+                    totalWeight = uiState.totalWeight,
+                    scaleName = uiState.selectedGradeScale?.gradeScaleName,
+                )
+            }
+
+            // Partial Grades Header
+            item(key = "grades_header") {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Text(
-                        text = "${uiState.weightedGrades.size} items",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline,
+                        text = stringResource(Res.string.weighted_grade_list_label_title),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                        color = MaterialTheme.colorScheme.onSurface,
                     )
+                    if (uiState.weightedGrades.isNotEmpty()) {
+                        Text(
+                            text = "${uiState.weightedGrades.size} items",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.outline,
+                        )
+                    }
                 }
             }
-        }
 
-        // Empty placeholder or Partial Grades Cards
-        if (uiState.weightedGrades.isEmpty()) {
-            item(key = "empty_placeholder") {
-                EmptyWeightedGradesPlaceholder(
-                    onAddGrade = onAddGrade,
-                )
-            }
-        } else {
-            items(
-                items = uiState.weightedGrades,
-                key = { it.grade.uuid },
-            ) { item ->
-                WeightedGradeItemCard(
-                    item = item,
-                    totalWeight = uiState.totalWeight,
-                    onEditClick = {
-                        onSendCommand(WeightedCalculatorCommand.SelectGrade(item.grade.uuid))
-                    },
-                    onDeleteClick = {
-                        onSendCommand(WeightedCalculatorCommand.RemoveGrade(item.grade.uuid))
-                    },
-                )
+            // Empty placeholder or Partial Grades Cards
+            if (uiState.weightedGrades.isEmpty()) {
+                item(key = "empty_placeholder") {
+                    EmptyWeightedGradesPlaceholder(
+                        onAddGrade = onAddGrade,
+                    )
+                }
+            } else {
+                items(
+                    items = uiState.weightedGrades,
+                    key = { it.grade.uuid },
+                ) { item ->
+                    WeightedGradeItemCard(
+                        item = item,
+                        totalWeight = uiState.totalWeight,
+                        onEditClick = {
+                            onSendCommand(WeightedCalculatorCommand.SelectGrade(item.grade.uuid))
+                        },
+                        onDeleteClick = {
+                            onSendCommand(WeightedCalculatorCommand.RemoveGrade(item.grade.uuid))
+                        },
+                    )
+                }
             }
         }
     }
@@ -373,4 +389,25 @@ private fun ExpandedWeightedCalculatorContent(
             }
         }
     }
+}
+
+@FormFactorPreviews
+@Preview
+@Composable
+private fun WeightedGradeCalculatorScreenPreview() = AppTheme {
+    val mockScale = MockGradeScalesGenerator().gradeScales.first()
+    WeightedGradeCalculatorScreen(
+        uiState = WeightCalculatorUIState(
+            gradeScaleNameAndIds = persistentListOf(
+                GradeScaleNameAndId(id = mockScale.id, name = mockScale.gradeScaleName),
+            ),
+            selectedGradeScale = mockScale,
+            grades = persistentListOf(
+                WeightedGrade(percentage = 0.95, weight = 2.0, uuid = "1"),
+                WeightedGrade(percentage = 0.80, weight = 1.0, uuid = "2"),
+            ),
+            selectedGrade = null,
+        ),
+        onSendCommand = {},
+    )
 }

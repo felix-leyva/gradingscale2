@@ -27,14 +27,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeSummary
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGradeWithName
+import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.theme.gradeColors
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.weighted_calculator_total_weight_label
 import gradingscale2.entities.generated.resources.weighted_grade_summary_title
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun WeightedHeroSummaryCard(
@@ -171,4 +176,32 @@ fun WeightedHeroSummaryCard(
             }
         }
     }
+}
+
+@FormFactorPreviews
+@Preview
+@Composable
+private fun WeightedHeroSummaryCardPreview() = AppTheme {
+    WeightedHeroSummaryCard(
+        weightedGradeSummary = WeightedGradeSummary(
+            weightedPercentage = "88.5 %",
+            weightedPercentageDouble = 0.885,
+            totalGradeName = "2+",
+            earnedPoints = "17.7",
+            totalPoints = "20.0",
+        ),
+        weightedGrades = persistentListOf(
+            WeightedGradeWithName(
+                grade = WeightedGrade(percentage = 0.90, weight = 10.0, uuid = "1"),
+                name = "Exam 1",
+            ),
+            WeightedGradeWithName(
+                grade = WeightedGrade(percentage = 0.87, weight = 10.0, uuid = "2"),
+                name = "Exam 2",
+            ),
+        ),
+        totalWeight = 20.0,
+        scaleName = "Standard High School (1-6)",
+        modifier = Modifier.padding(16.dp),
+    )
 }

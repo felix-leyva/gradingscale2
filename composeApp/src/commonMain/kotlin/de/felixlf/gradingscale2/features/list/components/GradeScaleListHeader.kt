@@ -28,6 +28,7 @@ import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.features.list.GradeScaleListDialogCommand
 import de.felixlf.gradingscale2.theme.AppTheme
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import de.felixlf.gradingscale2.uicomponents.GradeScaleSelectorDropdown
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_list_total_points
@@ -170,6 +171,7 @@ fun GradeScaleListHeader(
     }
 }
 
+@FormFactorPreviews
 @Preview
 @Composable
 private fun GradeScaleListHeaderPortraitPreview() = AppTheme {
@@ -191,6 +193,7 @@ private fun GradeScaleListHeaderPortraitPreview() = AppTheme {
     }
 }
 
+@FormFactorPreviews
 @Preview
 @Composable
 private fun GradeScaleListHeaderLandscapePreview() = AppTheme {

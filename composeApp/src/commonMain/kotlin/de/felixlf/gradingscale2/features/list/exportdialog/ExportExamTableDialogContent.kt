@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.features.export.ExportExamTableUIState
 import de.felixlf.gradingscale2.theme.AppTheme
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_export_dialog_title
 import gradingscale2.entities.generated.resources.gradescale_export_preview_title
@@ -95,6 +96,7 @@ internal fun ExportExamTableDialogContent(
     )
 }
 
+@FormFactorPreviews
 @Preview
 @Composable
 private fun ExportExamTableDialogContentPreview(
