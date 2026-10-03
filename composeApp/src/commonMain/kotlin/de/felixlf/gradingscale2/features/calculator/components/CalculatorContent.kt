@@ -20,12 +20,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import de.felixlf.gradingscale2.entities.features.calculator.GradeScaleCalculatorUIState
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.theme.AppTheme
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import de.felixlf.gradingscale2.utils.textFieldManager
 import kotlinx.collections.immutable.toImmutableList
 
 /**
  * Adaptive content layout for the calculator:
- * Displays side-by-side hero and parameters cards on wide displays (>= 720dp),
+ * Displays side-by-side hero and parameters cards on wide displays (>= 560dp),
  * and vertical stacked cards on compact mobile screens.
  */
 @Composable
@@ -57,7 +58,7 @@ fun CalculatorContent(
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        val isExpandedLayout = maxWidth >= 720.dp
+        val isExpandedLayout = maxWidth >= 560.dp
 
         if (isExpandedLayout) {
             // Adaptive wide layout: Hero card on the left, Parameters card on the right
@@ -118,6 +119,7 @@ fun CalculatorContent(
     }
 }
 
+@FormFactorPreviews
 @Preview
 @Composable
 private fun CalculatorContentPreview() = AppTheme {

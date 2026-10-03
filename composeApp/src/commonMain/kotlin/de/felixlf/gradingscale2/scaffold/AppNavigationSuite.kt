@@ -5,14 +5,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteItemColors
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteType
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.window.core.layout.WindowHeightSizeClass
 import de.felixlf.gradingscale2.navigation.AppNavController
 import de.felixlf.gradingscale2.navigation.Destinations
 import org.jetbrains.compose.resources.stringResource
@@ -31,8 +35,17 @@ fun AppNavigationSuite(
 ) {
     val containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(SURFACE_ELEVATION_DP.dp)
     val itemColors = appNavigationItemColors()
+    val adaptiveInfo = currentWindowAdaptiveInfo()
+    val customLayoutType = when {
+        adaptiveInfo.windowSizeClass.windowHeightSizeClass == WindowHeightSizeClass.COMPACT ->
+            NavigationSuiteType.NavigationRail
+        else ->
+            NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(adaptiveInfo)
+    }
+
     NavigationSuiteScaffold(
         modifier = modifier,
+        layoutType = customLayoutType,
         navigationSuiteColors = NavigationSuiteDefaults.colors(
             navigationBarContainerColor = containerColor,
             navigationRailContainerColor = containerColor,

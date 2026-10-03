@@ -3,6 +3,8 @@ package de.felixlf.gradingscale2.features.weightedgradecalculator.dialogs
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -66,7 +68,9 @@ fun GradeEditDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.weighted_grade_dialog_title)) },
         text = {
-            Column {
+            Column(
+                modifier = Modifier.verticalScroll(rememberScrollState()),
+            ) {
                 DropboxSelector(
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(Res.string.weighted_grade_dialog_grade_name),

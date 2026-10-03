@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -26,6 +27,7 @@ import de.felixlf.gradingscale2.features.import.components.ImportGradeScalesList
 import de.felixlf.gradingscale2.features.import.dialogs.ImportDialog
 import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import de.felixlf.gradingscale2.uicomponents.LoadingContent
 import dev.chrisbanes.haze.hazeSource
 import gradingscale2.entities.generated.resources.Res
@@ -89,9 +91,13 @@ private fun MainContent(
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.TopCenter,
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .widthIn(max = 760.dp),
+        ) {
             DropboxSelector(
                 elements = uiState.uniqueCountryNames,
                 selectedElement = uiState.selectedCountry,
@@ -160,6 +166,7 @@ fun ImportScreenPreviewError() {
     }
 }
 
+@FormFactorPreviews
 @Preview
 @Composable
 fun ImportScreenPreviewMainContent() {

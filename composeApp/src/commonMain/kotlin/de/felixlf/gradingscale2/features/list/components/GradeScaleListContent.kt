@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIState.GradeListItemUIState
 import de.felixlf.gradingscale2.theme.AppTheme
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.gradescale_list_column_grade
 import gradingscale2.entities.generated.resources.gradescale_list_column_min_percentage
@@ -40,8 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
  * Responsive content container for grade scale grades.
  *
  * Automatically renders:
- * - List mode: Column headers ("Grade", "Min. %", "Points Needed") + LazyColumn of [GradeScaleListItemCard]
- * - Grid mode: LazyVerticalGrid of [GradeScaleGridItemCard] (2 columns on mobile, adaptive multi-column on desktop/tablet)
+ * - List mode: Column headers ("Grade", "Min. %", "Points Needed") + LazyColumn of [GradeScaleListItemCard] (centered with max width on wide screens)
+ * - Grid mode: LazyVerticalGrid of [GradeScaleGridItemCard] (adaptive multi-column across mobile, foldable, tablet, and desktop)
  */
 @Composable
 fun GradeScaleListContent(
@@ -67,14 +69,8 @@ fun GradeScaleListContent(
     }
 
     if (isGridView) {
-        val gridCells = if (isListPaneVisible) {
-            GridCells.Adaptive(minSize = 220.dp)
-        } else {
-            GridCells.Fixed(2)
-        }
-
         LazyVerticalGrid(
-            columns = gridCells,
+            columns = GridCells.Adaptive(minSize = 170.dp),
             modifier = modifier.fillMaxSize(),
             contentPadding = PaddingValues(vertical = 12.dp, horizontal = 4.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -91,7 +87,15 @@ fun GradeScaleListContent(
             }
         }
     } else {
-        Column(modifier = modifier.fillMaxSize()) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.TopCenter,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .widthIn(max = 760.dp),
+            ) {
             // Column Headers
             Row(
                 modifier = Modifier
@@ -141,7 +145,9 @@ fun GradeScaleListContent(
         }
     }
 }
+}
 
+@FormFactorPreviews
 @Preview
 @Composable
 private fun GradeScaleListContentListPreview() = AppTheme {
@@ -160,6 +166,7 @@ private fun GradeScaleListContentListPreview() = AppTheme {
     )
 }
 
+@FormFactorPreviews
 @Preview
 @Composable
 private fun GradeScaleListContentGridPreview() = AppTheme {
