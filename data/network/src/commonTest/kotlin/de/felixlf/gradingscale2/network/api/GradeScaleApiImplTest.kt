@@ -81,7 +81,9 @@ class GradeScaleApiImplTest {
     @Test
     fun `test gradeScaleWithName returns a correct grade scale in case request was success`() = runTest {
         // Given
-        setUpMockEngineResponse {
+        var capturedUrl = ""
+        setUpMockEngineResponse { request ->
+            capturedUrl = request.url.toString()
             respond(
                 content = ByteReadChannel(gradeScaleResponse),
                 headers = headersOf("Content-Type", "application/json"),
@@ -91,10 +93,92 @@ class GradeScaleApiImplTest {
         val result = sut.gradeScaleWithName("Germany", "Berlin JGH Französisch, Spanisch, Russisch")
 
         // Then
+        assertEquals("https://something.example//gradeScales/Germany_Berlin%20JGH%20Franz%C3%B6sisch,%20Spanisch,%20Russisch.json", capturedUrl)
         val gradeScale = result.getOrNull()
         assertNotNull(gradeScale)
         assertEquals("Berlin JGH Französisch, Spanisch, Russisch", gradeScale.gradeScaleName)
         assertEquals("Germany", gradeScale.country)
         assertEquals(16, gradeScale.grades.size)
     }
+
+    @Test
+    fun `test countriesAndGrades returns RemoteError when response status is error or non-2xx`() = runTest {
+        setUpMockEngineResponse {
+            respond(
+                content = ByteReadChannel("Not Found"),
+                status = io.ktor.http.HttpStatusCode.NotFound,
+                headers = headersOf("Content-Type", "text/plain"),
+            )
+        }
+
+        val result = sut.countriesAndGrades()
+        assertTrue(result.isLeft())
+        val error = result.leftOrNull()
+        assertNotNull(error)
+        assertEquals(404, error.code)
+        assertEquals("Not Found", error.message)
+    }
+
+    @Test
+    fun `test countriesAndGrades returns RemoteError 400 when network throws exception`() = runTest {
+        setUpMockEngineResponse {
+            throw RuntimeException("Network unreachable")
+        }
+
+        val result = sut.countriesAndGrades()
+        assertTrue(result.isLeft())
+        val error = result.leftOrNull()
+        assertNotNull(error)
+        assertEquals(400, error.code)
+        assertEquals("", error.message)
+    }
+
+    @Test
+    fun `test gradeScaleWithName returns RemoteError when status is 404 or 500`() = runTest {
+        setUpMockEngineResponse {
+            respond(
+                content = ByteReadChannel("Internal Server Error"),
+                status = io.ktor.http.HttpStatusCode.InternalServerError,
+                headers = headersOf("Content-Type", "text/plain"),
+            )
+        }
+
+        val result = sut.gradeScaleWithName("Germany", "NonExistent")
+        assertTrue(result.isLeft())
+        val error = result.leftOrNull()
+        assertNotNull(error)
+        assertEquals(500, error.code)
+        assertEquals("Internal Server Error", error.message)
+    }
+
+    @Test
+    fun `test boundary status codes for 200 to 299 range`() = runTest {
+        // Status 199 (below 200) should raise RemoteError
+        setUpMockEngineResponse {
+            respond(
+                content = ByteReadChannel(""),
+                status = io.ktor.http.HttpStatusCode.fromValue(199),
+            )
+        }
+        val result199 = sut.countriesAndGrades()
+        assertTrue(result199.isLeft())
+        assertEquals(199, result199.leftOrNull()?.code)
+
+        // Status 300 (above 299) should raise RemoteError
+        setUpMockEngineResponse {
+            respond(
+                content = ByteReadChannel(""),
+                status = io.ktor.http.HttpStatusCode.MultipleChoices,
+            )
+        }
+        val result300 = sut.countriesAndGrades()
+        assertTrue(result300.isLeft())
+        assertEquals(300, result300.leftOrNull()?.code)
+
+        // Status 300 on gradeScaleWithName should raise RemoteError
+        val resultGradeScale300 = sut.gradeScaleWithName("Germany", "Scale")
+        assertTrue(resultGradeScale300.isLeft())
+        assertEquals(300, resultGradeScale300.leftOrNull()?.code)
+    }
 }
+
