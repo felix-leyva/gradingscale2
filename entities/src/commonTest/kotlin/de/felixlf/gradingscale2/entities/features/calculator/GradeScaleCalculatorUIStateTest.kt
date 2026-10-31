@@ -60,6 +60,15 @@ class GradeScaleCalculatorUIStateTest {
         assertTrue(state.availableGradeNames.isEmpty())
         assertEquals(2, state.gradeScaleItems.size)
         assertEquals(testScaleId, state.gradeScaleItems.first().id)
+        assertEquals(listOf(testScaleName, "Secondary Scale"), state.gradeScalesNames)
+
+        // Stepper defaults when earnedPoints is null
+        assertTrue(state.canIncrementPoints)
+        assertFalse(state.canDecrementPoints)
+        assertEquals(1.0, state.nextHigherPoints)
+        assertEquals(0.0, state.nextLowerPoints)
+        assertEquals(0.5, state.nextHalfHigherPoints)
+        assertEquals(0.0, state.nextHalfLowerPoints)
     }
 
     @Test
@@ -85,6 +94,8 @@ class GradeScaleCalculatorUIStateTest {
         assertEquals("85", state.percentageString)
         assertEquals(5, state.availableGradeNames.size)
         assertEquals("A", state.availableGradeNames.first())
+        assertEquals("85 %", state.percentageFormattedWithSymbol)
+        assertEquals(listOf(testScaleName, "Secondary Scale"), state.gradeScalesNames)
     }
 
     @Test
@@ -127,6 +138,69 @@ class GradeScaleCalculatorUIStateTest {
         assertFalse(zeroState.canDecrementPoints)
         assertEquals(1.0, zeroState.nextHigherPoints)
         assertEquals(0.0, zeroState.nextLowerPoints) // clamped
+        assertEquals(0.5, zeroState.nextHalfHigherPoints)
         assertEquals(0.0, zeroState.nextHalfLowerPoints) // clamped
     }
+
+    @Test
+    fun steppers_clampedAtHalfStepBoundaries() {
+        val nearMaxState = GradeScaleCalculatorUIState(
+            selectedGradeScale = testGradeScale,
+            currentPercentage = 0.998,
+            totalPoints = 100.0,
+            gradeScalesNamesWithId = scalesNamesWithId,
+        )
+        // earnedPoints = 99.8 out of 100
+        assertTrue(nearMaxState.canIncrementPoints)
+        assertTrue(nearMaxState.canDecrementPoints)
+        assertEquals(100.0, nearMaxState.nextHigherPoints) // 99.8 + 1.0 = 100.8 clamped to 100.0
+        assertEquals(100.0, nearMaxState.nextHalfHigherPoints) // 99.8 + 0.5 = 100.3 clamped to 100.0
+        assertEquals(99.3, nearMaxState.nextHalfLowerPoints, 0.001)
+
+        val nearZeroState = GradeScaleCalculatorUIState(
+            selectedGradeScale = testGradeScale,
+            currentPercentage = 0.002,
+            totalPoints = 100.0,
+            gradeScalesNamesWithId = scalesNamesWithId,
+        )
+        // earnedPoints = 0.2 out of 100
+        assertTrue(nearZeroState.canIncrementPoints)
+        assertTrue(nearZeroState.canDecrementPoints)
+        assertEquals(0.0, nearZeroState.nextLowerPoints) // 0.2 - 1.0 = -0.8 clamped to 0.0
+        assertEquals(0.0, nearZeroState.nextHalfLowerPoints) // 0.2 - 0.5 = -0.3 clamped to 0.0
+        assertEquals(0.7, nearZeroState.nextHalfHigherPoints, 0.001)
+    }
+
+    @Test
+    fun partialNullInputs_doesNotDeriveCurrentGrade() {
+        val stateNullPercentage = GradeScaleCalculatorUIState(
+            selectedGradeScale = testGradeScale,
+            currentPercentage = null,
+            totalPoints = 100.0,
+            gradeScalesNamesWithId = scalesNamesWithId,
+        )
+        assertFalse(stateNullPercentage.hasGradeResult)
+        assertNull(stateNullPercentage.currentGrade)
+        assertEquals("", stateNullPercentage.gradeName)
+        assertNull(stateNullPercentage.earnedPoints)
+
+        val stateNullPoints = GradeScaleCalculatorUIState(
+            selectedGradeScale = testGradeScale,
+            currentPercentage = 0.85,
+            totalPoints = null,
+            gradeScalesNamesWithId = scalesNamesWithId,
+        )
+        assertFalse(stateNullPoints.hasGradeResult)
+        assertNull(stateNullPoints.currentGrade)
+
+        val stateNullScale = GradeScaleCalculatorUIState(
+            selectedGradeScale = null,
+            currentPercentage = 0.85,
+            totalPoints = 100.0,
+            gradeScalesNamesWithId = scalesNamesWithId,
+        )
+        assertFalse(stateNullScale.hasGradeResult)
+        assertNull(stateNullScale.currentGrade)
+    }
 }
+
