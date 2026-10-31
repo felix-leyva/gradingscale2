@@ -377,16 +377,20 @@ open iosApp/iosApp.xcodeproj
 ```
 
 #### Web
+The web application (WasmJS) is live and available at **[https://gradingscale2.web.app](https://gradingscale2.web.app)**.
+
 ```bash
 # Run development server
 ./gradlew :composeApp:wasmJsBrowserRun
 
-# Build production bundle
-./gradlew :composeApp:wasmJsBrowserProductionWebpack̨̨̨̨
+# Build production distribution
+./gradlew :composeApp:wasmJsBrowserDistribution
+
+# Deploy to Firebase Hosting
+firebase deploy --only hosting
 ```
 
-The WebWasm version can be deployed using a docker container. Inside `docker` are included the templates to build an nginx docker and configure it to run the deployed wasmjs app.
-To ease the deployment, the `build-wasmjs.main.kts` script automates the whole process to build the app, copy the content into the `docker` directory and then via ssh transfer the docker to a remote server. Once in the server, it restart the docker with the newly deployed app.̨̨̨̨̨ 
+Alternatively, the WebWasm version can be deployed using a Docker container. Inside `docker` are included the templates to build an nginx container and configure it to run the deployed wasmjs app (`build-wasmjs.main.kts`).
 
 ### Testing
 ```bash
@@ -439,9 +443,10 @@ class GradeScaleListViewModelTest {
 }
 ```
 
-## Download
+## Download & Web App
 
-The desktop application is available for download on the [Download Section](https://felix-leyva.github.io/gradingscale2/download)
+- **Web App**: Available online at [https://gradingscale2.web.app](https://gradingscale2.web.app)
+- **Desktop Application**: Available for download on the [Download Section](https://felix-leyva.github.io/gradingscale2/download)
 
 ## Contributing
 
