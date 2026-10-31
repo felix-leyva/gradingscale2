@@ -7,6 +7,8 @@
 rm -rf .gradle
 rm -rf .kotlin
 rm -rf build
+rm -rf build-logic/.gradle
+rm -rf build-logic/build
 rm -rf composeApp/build
 rm -rf iosApp/build
 rm -rf kotlin-js-store

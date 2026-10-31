@@ -215,7 +215,7 @@ when (val result = getRemoteGradeScales()) {
 The build system uses a convention plugin approach:
 
 ```kotlin
-// buildSrc/src/main/kotlin/gs-android-app.gradle.kts
+// build-logic/src/main/kotlin/gs-android-app.gradle.kts
 plugins {
     id("com.android.application")
     id("kotlin-android")

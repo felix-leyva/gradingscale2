@@ -60,5 +60,5 @@ kotlin {
 }
 
 // Generate Firebase constants for the JVM build which does not has a plugin to generate the configuration
-// Using the extension function from buildSrc for better encapsulation
+// Using the extension function from build-logic for better encapsulation
 configureFirebaseBuildConfig()

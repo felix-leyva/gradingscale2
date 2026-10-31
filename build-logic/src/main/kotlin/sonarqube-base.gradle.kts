@@ -1,0 +1,3 @@
+import extensions.sonarQubeBaseConfig
+
+sonarQubeBaseConfig()
