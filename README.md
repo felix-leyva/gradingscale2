@@ -317,6 +317,8 @@ GradingScale2/
 
 ### Code Quality
 - **[Ktlint](https://pinterest.github.io/ktlint/)** - Kotlin code style enforcement
+- **[Kotlinx Kover](https://github.com/Kotlin/kotlinx-kover)** - Multiplatform line and branch code coverage measurement
+- **[PITest (PIT)](https://pitest.org/)** - Mutation testing to verify test suite quality and eliminate surviving mutants
 - **[Arrow](https://arrow-kt.io/)** - Functional programming and error handling
 - **Kotlin Coroutines** - Asynchronous programming
 - **PersistentList** - Immutable collections from Kotlinx Collections
@@ -394,18 +396,28 @@ Alternatively, the WebWasm version can be deployed using a Docker container. Ins
 
 ### Testing
 ```bash
-# Run all tests
-./gradlew test
+# Run all unit tests across modules
+./gradlew alltest
 
-# Run specific module tests
-./gradlew :entities:test
-./gradlew :data:network:test
+# Run tests on specific modules
+./gradlew :entities:jvmTest
+./gradlew :data:network:jvmTest
+./gradlew :data:persistance:db:jvmTest
 
 # Check code style
 ./gradlew ktlintCheck
 
 # Auto-format code
 ./gradlew ktlintFormat
+
+# Generate aggregated multiplatform code coverage report (Kover)
+./gradlew koverHtmlReport
+
+# Run PITest mutation testing on shared business logic (:entities)
+./gradlew :entities:pitestJvm
+
+# Run PITest targeting a specific class or package
+./gradlew :entities:pitestJvm -Ppitest.targetClasses="de.felixlf.gradingscale2.entities.features.calculator.*"
 ```
 
 ### Clean & Rebuild
@@ -420,28 +432,50 @@ Alternatively, the WebWasm version can be deployed using a Docker container. Ins
 
 ## Testing Strategy
 
-The project includes comprehensive unit tests focusing on:
-- **Use Cases**: Business logic validation
-- **ViewModels**: UI state management with Molecule
-- **Repositories**: Data layer operations
-- **Platform-specific**: Platform-specific functionality
+The project employs a robust multi-tiered testing and quality assurance pipeline:
 
-Example test structure:
+### 1. Multiplatform Unit Tests
+Comprehensive test suites live in `commonTest` across modules, targeting:
+- **Use Cases**: Validation of grading boundaries, point thresholds, and error handling with Arrow `Option`/`Either`.
+- **UIModels & Molecule**: State emission testing with CashApp Turbine and test dispatchers.
+- **Repositories & DAOs**: In-memory and fake DAO validation for persistence and network synchronization.
+
+Example UIModel test structure:
 ```kotlin
-class GradeScaleListViewModelTest {
-    @Test
-    fun `should update UI state when grade scale is selected`() = runTest {
-        // Given
-        val viewModel = GradeScaleListViewModel(...)
+@Test
+fun `should update UI state when grade scale is selected`() = runTest {
+    val sut = GradeListUIModel(...)
+
+    sut.uiState.test {
+        awaitItem() // initial state
+        sut.sendCommand(GradeScaleListUIEvent.SelectGradeScale("Standard Scale"))
         
-        // When
-        viewModel.sendEvent(SelectGradeScale(gradeScaleId))
-        
-        // Then
-        assertEquals(gradeScaleId, viewModel.uiState.value.selectedId)
+        val state = awaitItem()
+        assertEquals("scale-1", state.selectedGradeScale?.id)
+        cancelAndIgnoreRemainingEvents()
     }
 }
 ```
+
+### 2. Code Coverage with Kotlinx Kover
+We track line, branch, and instruction coverage across all shared Kotlin Multiplatform code using **Kotlinx Kover**:
+- **Multi-project Aggregation**: Aggregates coverage metrics across `:entities`, `:data:*`, and `:composeApp`.
+- **Filtered Metrics**: Excludes generated serialization code, build configs, and Compose/SQLDelight resources so numbers reflect handwritten business and UI logic.
+- **Report Location**: Running `./gradlew koverHtmlReport` produces an interactive HTML report at `build/reports/kover/html/index.html`.
+
+### 3. Mutation Testing with PITest (PIT)
+Traditional code coverage verifies which lines were executed, but does not guarantee whether tests detect bugs. We use **PITest** to mutation-test core calculation algorithms, table export formatters, and use cases in the `:entities` module:
+- **Fault Injection**: Automatically injects synthetic faults ("mutants") into compiled JVM bytecode—such as inverting conditionals (`>=` → `<`), mutating math operators (`+` → `-`), modifying boundary constants, and mutating return values.
+- **Killed vs. Survived**: Mutants caught by failing tests are **Killed** (pass), while undetected mutants are **Survived** (fail), exposing weak assertions or missing edge cases.
+- **Targeted Execution**: Run on the entire domain module or focused packages on demand:
+  ```bash
+  # Full domain mutation testing
+  ./gradlew :entities:pitestJvm
+
+  # Focused mutation testing on a specific feature
+  ./gradlew :entities:pitestJvm -Ppitest.targetClasses="de.felixlf.gradingscale2.entities.features.export.*"
+  ```
+- **Report Location**: HTML mutation test reports are generated at `entities/build/reports/pitest/index.html`.
 
 ## Download & Web App
 
