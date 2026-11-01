@@ -11,6 +11,7 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class InsertGradeUseCaseImplTest {
     private val dao: MockGradeScaleDao = MockGradeScaleDao()
@@ -43,6 +44,12 @@ class InsertGradeUseCaseImplTest {
 
         // Assert
         assertEquals(result, Either.Right(Unit))
+        val inserted = gradesDao.lastUpsertedGrade
+        assertEquals(namedGrade, inserted?.namedGrade)
+        assertEquals(percentage, inserted?.percentage)
+        assertEquals(gradeScaleId, inserted?.idOfGradeScale)
+        assertEquals(gradeScale.gradeScaleName, inserted?.nameOfScale)
+        assertTrue(inserted?.uuid?.isNotBlank() == true)
     }
 
     @Test

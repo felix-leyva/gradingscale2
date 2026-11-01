@@ -54,6 +54,7 @@ class WeightedGradeCalculatorUIModelTest {
     private var getAllGradeScalesUseCaseCalled = false
     private var getGradeScaleByIdUseCaseCalled = false
     private var lastGradeScaleIdParam: String? = null
+    private var lastSavedSelectedGradeScaleId: String? = null
 
     // Define functional interfaces
     private lateinit var getAllGradeScalesUseCase: GetAllGradeScalesUseCase
@@ -76,6 +77,7 @@ class WeightedGradeCalculatorUIModelTest {
         getAllGradeScalesUseCaseCalled = false
         getGradeScaleByIdUseCaseCalled = false
         lastGradeScaleIdParam = null
+        lastSavedSelectedGradeScaleId = null
         grades = MutableStateFlow(emptyList())
 
         // Create functional interface implementations
@@ -117,7 +119,7 @@ class WeightedGradeCalculatorUIModelTest {
         }
     }
 
-    private fun TestScope.initSUT() {
+    private fun TestScope.initSUT(initialSavedScaleId: String? = null) {
         // Create the model with test scope
         weightedGradeCalculatorUIModel = WeightCalculatorUIModelWithEvents(
             stateProducer = TestStateProducer(backgroundScope),
@@ -126,8 +128,11 @@ class WeightedGradeCalculatorUIModelTest {
             getAllWeightedGradesUseCase = getAllWeightedGradesUseCase,
             upsertWeightedGradeUseCase = upsertWeightedGradeUseCase,
             deleteWeightedGradeUseCase = deleteWeightedGradeUseCase,
-            getLastSelectedGradeScaleIdUseCase = { null },
-            setLastSelectedGradeScaleIdUseCase = { Option(Unit) },
+            getLastSelectedGradeScaleIdUseCase = { initialSavedScaleId },
+            setLastSelectedGradeScaleIdUseCase = { id ->
+                lastSavedSelectedGradeScaleId = id
+                Option(Unit)
+            },
         )
     }
 
@@ -180,10 +185,27 @@ class WeightedGradeCalculatorUIModelTest {
             // Verify
             assertTrue(getGradeScaleByIdUseCaseCalled)
             assertEquals(testGradeScaleId, lastGradeScaleIdParam)
+            assertEquals(testGradeScaleId, lastSavedSelectedGradeScaleId)
             assertEquals(testGradeScaleId, state.selectedGradeScale?.id)
             assertEquals(testGradeScaleName, state.selectedGradeScale?.gradeScaleName)
 
             // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun shouldRestoreSavedSelectedGradeScaleIdOnLaunch() = runTest {
+        initSUT(initialSavedScaleId = testGradeScaleId)
+
+        weightedGradeCalculatorUIModel.uiState.test {
+            awaitItem() // Skip initial loading
+            var state = awaitItem()
+            if (state.selectedGradeScale == null) {
+                state = awaitItem()
+            }
+            assertEquals(testGradeScaleId, state.selectedGradeScale?.id)
+            assertEquals(testGradeScaleName, state.selectedGradeScale?.gradeScaleName)
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -302,6 +324,11 @@ class WeightedGradeCalculatorUIModelTest {
             )
             awaitItem()
 
+            // Select the grade first
+            weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.SelectGrade("UUID"))
+            val stateSelected = awaitItem()
+            assertEquals("UUID", stateSelected.selectedGrade?.uuid)
+
             // Act: update the grade
             val updatedGrade = WeightedGrade(0.85, 2.0, "UUID")
             weightedGradeCalculatorUIModel.sendCommand(
@@ -315,6 +342,7 @@ class WeightedGradeCalculatorUIModelTest {
             assertEquals(1, state.grades.size)
             assertEquals(0.85, state.grades[0].percentage)
             assertEquals(2.0, state.grades[0].weight)
+            assertNull(state.selectedGrade)
 
             // Clean up
             cancelAndIgnoreRemainingEvents()
@@ -351,6 +379,11 @@ class WeightedGradeCalculatorUIModelTest {
             // Verify initial state
             assertEquals(2, stateAfterAdd.grades.size)
 
+            // Select the grade first
+            weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.SelectGrade("UUID1"))
+            val stateSelected = awaitItem()
+            assertEquals("UUID1", stateSelected.selectedGrade?.uuid)
+
             // Act: remove the first grade
             weightedGradeCalculatorUIModel.sendCommand(WeightedCalculatorCommand.RemoveGrade("UUID1"))
 
@@ -361,6 +394,7 @@ class WeightedGradeCalculatorUIModelTest {
             assertEquals(1, state.grades.size)
             assertEquals(0.75, state.grades[0].percentage)
             assertEquals(2.0, state.grades[0].weight)
+            assertNull(state.selectedGrade)
 
             // Clean up
             cancelAndIgnoreRemainingEvents()

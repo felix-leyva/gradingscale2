@@ -9,101 +9,257 @@ import kotlin.test.assertTrue
 
 class UpsertGradeUIStateTest {
 
+    private val sampleGrade = Grade(namedGrade = "A", percentage = 0.9, nameOfScale = "Scale1", uuid = "1234")
+    private val otherGrade = Grade(namedGrade = "B", percentage = 0.8, nameOfScale = "Scale1", uuid = "5678")
+    private val sampleScale = GradeScale(
+        id = "1",
+        gradeScaleName = "Scale1",
+        totalPoints = 10.0,
+        grades = persistentListOf(sampleGrade, otherGrade),
+    )
+
     @Test
     fun isSaveButtonEnabled_withValidData_returnsTrue() {
-        val grade = Grade(namedGrade = "A", percentage = 0.9, nameOfScale = "Scale1", uuid = "1234")
-        val gradeScale = GradeScale(id = "1", gradeScaleName = "Scale1", totalPoints = 10.0, persistentListOf(grade))
         val state = UpsertGradeUIState(
             name = "A",
             percentage = "90",
-            grade = grade,
-            gradeScale = gradeScale,
-            selectedGrade = grade,
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
         )
         assertTrue(state.isSaveButtonEnabled)
+        assertTrue(state.error.isEmpty())
+        assertFalse(state.isLoading)
+    }
+
+    @Test
+    fun isSaveButtonEnabled_whenGradeIsNull_returnsFalse() {
+        val state = UpsertGradeUIState(
+            name = "C",
+            percentage = "70",
+            grade = null,
+            gradeScale = sampleScale,
+            selectedGrade = null,
+        )
+        assertFalse(state.isSaveButtonEnabled)
+        assertTrue(state.isSaveNewButtonEnabled)
     }
 
     @Test
     fun isSaveButtonEnabled_withInvalidPercentage_returnsFalse() {
-        val grade = Grade(namedGrade = "A", percentage = 0.9, nameOfScale = "Scale1", uuid = "1234")
-        val gradeScale = GradeScale(id = "1", gradeScaleName = "Scale1", totalPoints = 10.0, persistentListOf(grade))
         val state = UpsertGradeUIState(
             name = "A",
             percentage = "110",
-            grade = grade,
-            gradeScale = gradeScale,
-            selectedGrade = grade,
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
         )
         assertFalse(state.isSaveButtonEnabled)
+        assertTrue(state.error.contains(UpsertGradeUIState.Error.INVALID_PERCENTAGE))
     }
 
     @Test
     fun isSaveButtonEnabled_withDuplicateName_returnsFalse() {
-        val grade = Grade(namedGrade = "A", percentage = 0.9, nameOfScale = "Scale1", uuid = "1234")
-        val gradeScale = GradeScale(id = "1", gradeScaleName = "Scale1", totalPoints = 10.0, persistentListOf(grade))
         val state = UpsertGradeUIState(
             name = "A",
-            percentage = "90",
-            grade = grade,
-            gradeScale = gradeScale,
-            selectedGrade = null,
+            percentage = "70",
+            grade = otherGrade,
+            gradeScale = sampleScale,
+            selectedGrade = otherGrade, // editing B, but typing A
         )
         assertFalse(state.isSaveButtonEnabled)
+        assertTrue(state.error.contains(UpsertGradeUIState.Error.DUPLICATE_NAME))
+    }
+
+    @Test
+    fun isSaveButtonEnabled_withBlankOrNullNameOrPercentage_returnsFalse() {
+        val stateBlankName = UpsertGradeUIState(
+            name = "  ",
+            percentage = "90",
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertFalse(stateBlankName.isSaveButtonEnabled)
+        assertTrue(stateBlankName.error.contains(UpsertGradeUIState.Error.INVALID_NAME))
+
+        val stateNullName = UpsertGradeUIState(
+            name = null,
+            percentage = "90",
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertFalse(stateNullName.isSaveButtonEnabled)
+
+        val stateBlankPercentage = UpsertGradeUIState(
+            name = "A",
+            percentage = "",
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertFalse(stateBlankPercentage.isSaveButtonEnabled)
+
+        val stateNullPercentage = UpsertGradeUIState(
+            name = "A",
+            percentage = null,
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertFalse(stateNullPercentage.isSaveButtonEnabled)
     }
 
     @Test
     fun isSaveNewButtonEnabled_withValidData_returnsTrue() {
-        val grade = Grade(namedGrade = "A", percentage = 0.9, nameOfScale = "Scale1", uuid = "1234")
-        val gradeScale = GradeScale(id = "1", gradeScaleName = "Scale1", totalPoints = 10.0, persistentListOf(grade))
         val state = UpsertGradeUIState(
-            name = "B",
-            percentage = "80",
-            grade = grade,
-            gradeScale = gradeScale,
+            name = "C",
+            percentage = "70",
+            grade = sampleGrade,
+            gradeScale = sampleScale,
             selectedGrade = null,
         )
         assertTrue(state.isSaveNewButtonEnabled)
     }
 
     @Test
-    fun isSaveNewButtonEnabled_withDuplicatePercentage_returnsFalse() {
-        val grade = Grade(namedGrade = "A", percentage = 0.9, nameOfScale = "Scale1", uuid = "1234")
-        val gradeScale = GradeScale(id = "1", gradeScaleName = "Scale1", totalPoints = 10.0, persistentListOf(grade))
-        val state = UpsertGradeUIState(
-            name = "B",
-            percentage = "90",
-            grade = grade,
-            gradeScale = gradeScale,
+    fun isSaveNewButtonEnabled_withDuplicateNameOrPercentage_returnsFalse() {
+        val stateDupName = UpsertGradeUIState(
+            name = "A",
+            percentage = "70",
+            grade = null,
+            gradeScale = sampleScale,
             selectedGrade = null,
         )
-        assertFalse(state.isSaveNewButtonEnabled)
+        assertFalse(stateDupName.isSaveNewButtonEnabled)
+
+        val stateDupPercentage = UpsertGradeUIState(
+            name = "C",
+            percentage = "90",
+            grade = null,
+            gradeScale = sampleScale,
+            selectedGrade = null,
+        )
+        assertFalse(stateDupPercentage.isSaveNewButtonEnabled)
+
+        val stateBlankName = UpsertGradeUIState(
+            name = "   ",
+            percentage = "70",
+            grade = null,
+            gradeScale = sampleScale,
+            selectedGrade = null,
+        )
+        assertFalse(stateBlankName.isSaveNewButtonEnabled)
+
+        val stateBlankPercentage = UpsertGradeUIState(
+            name = "C",
+            percentage = "",
+            grade = null,
+            gradeScale = sampleScale,
+            selectedGrade = null,
+        )
+        assertFalse(stateBlankPercentage.isSaveNewButtonEnabled)
     }
 
     @Test
-    fun error_withInvalidPercentage_returnsInvalidPercentageError() {
-        val grade = Grade(namedGrade = "A", percentage = 0.9, nameOfScale = "Scale1", uuid = "1234")
-        val gradeScale = GradeScale(id = "1", gradeScaleName = "Scale1", totalPoints = 10.0, persistentListOf(grade))
-        val state = UpsertGradeUIState(
-            name = "A",
-            percentage = "110",
-            grade = grade,
-            gradeScale = gradeScale,
-            selectedGrade = grade,
+    fun percentageBoundaries_validateZeroAndHundredPercent() {
+        // Exactly 0% -> valid
+        val stateZero = UpsertGradeUIState(
+            name = "Zero",
+            percentage = "0",
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
         )
-        assertTrue(state.error.contains(UpsertGradeUIState.Error.INVALID_PERCENTAGE))
+        assertFalse(stateZero.error.contains(UpsertGradeUIState.Error.INVALID_PERCENTAGE))
+
+        // Exactly 100% -> valid
+        val stateHundred = UpsertGradeUIState(
+            name = "Max",
+            percentage = "100",
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertFalse(stateHundred.error.contains(UpsertGradeUIState.Error.INVALID_PERCENTAGE))
+
+        // Below 0% -> invalid
+        val stateBelowZero = UpsertGradeUIState(
+            name = "Neg",
+            percentage = "-0.1",
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertTrue(stateBelowZero.error.contains(UpsertGradeUIState.Error.INVALID_PERCENTAGE))
+
+        // Above 100% -> invalid
+        val stateAboveHundred = UpsertGradeUIState(
+            name = "Above",
+            percentage = "100.1",
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertTrue(stateAboveHundred.error.contains(UpsertGradeUIState.Error.INVALID_PERCENTAGE))
     }
 
     @Test
-    fun error_withDuplicateName_returnsDuplicateNameError() {
-        val grade = Grade(namedGrade = "A", percentage = 0.9, nameOfScale = "Scale1", uuid = "1234")
-        val gradeScale = GradeScale(id = "1", gradeScaleName = "Scale1", totalPoints = 10.0, persistentListOf(grade))
+    fun editingSelectedGrade_retainingOwnValues_doesNotTriggerDuplicateErrors() {
         val state = UpsertGradeUIState(
             name = "A",
             percentage = "90",
-            grade = grade,
-            gradeScale = gradeScale,
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertFalse(state.error.contains(UpsertGradeUIState.Error.DUPLICATE_NAME))
+        assertFalse(state.error.contains(UpsertGradeUIState.Error.DUPLICATE_PERCENTAGE))
+    }
+
+    @Test
+    fun editingSelectedGrade_withOtherGradeDuplicatePercentage_triggersDuplicatePercentage() {
+        val state = UpsertGradeUIState(
+            name = "A",
+            percentage = "80", // matches otherGrade percentage (0.8)
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertTrue(state.error.contains(UpsertGradeUIState.Error.DUPLICATE_PERCENTAGE))
+        assertFalse(state.isSaveButtonEnabled)
+    }
+
+    @Test
+    fun isLoading_onlyTrueWhenBothGradeAndGradeScaleAreNull() {
+        val stateBothNull = UpsertGradeUIState(
+            name = "A",
+            percentage = "90",
+            grade = null,
+            gradeScale = null,
             selectedGrade = null,
         )
-        assertTrue(state.error.contains(UpsertGradeUIState.Error.DUPLICATE_NAME))
+        assertTrue(stateBothNull.isLoading)
+        assertFalse(stateBothNull.isSaveButtonEnabled)
+        assertFalse(stateBothNull.isSaveNewButtonEnabled)
+
+        val stateGradeOnly = UpsertGradeUIState(
+            name = "A",
+            percentage = "90",
+            grade = sampleGrade,
+            gradeScale = null,
+            selectedGrade = null,
+        )
+        assertFalse(stateGradeOnly.isLoading)
+
+        val stateScaleOnly = UpsertGradeUIState(
+            name = "A",
+            percentage = "90",
+            grade = null,
+            gradeScale = sampleScale,
+            selectedGrade = null,
+        )
+        assertFalse(stateScaleOnly.isLoading)
     }
 }

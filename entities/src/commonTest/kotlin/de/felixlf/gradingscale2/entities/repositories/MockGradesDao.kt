@@ -15,6 +15,7 @@ class MockGradesDao(
 ) : GradesDao {
     val gradeScales = MutableStateFlow(initialGradeScales)
     var success = true
+    var lastUpsertedGrade: Grade? = null
 
     override fun getAllGradesFromGradeScale(gradeScaleId: String): Flow<List<Grade>> = gradeScales.map { scales ->
         scales.find { it.id == gradeScaleId }?.grades ?: emptyList()
@@ -27,9 +28,12 @@ class MockGradesDao(
         }
     }
 
-    override suspend fun upsertGrade(grade: Grade): Option<Long> = when (success) {
-        true -> Option.invoke(1)
-        false -> None
+    override suspend fun upsertGrade(grade: Grade): Option<Long> {
+        lastUpsertedGrade = grade
+        return when (success) {
+            true -> Option.invoke(1)
+            false -> None
+        }
     }
 
     override suspend fun deleteGrade(gradeId: String): Option<Unit> = when {

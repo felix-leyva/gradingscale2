@@ -172,6 +172,42 @@ class GradeScaleCalculatorUIStateTest {
     }
 
     @Test
+    fun stepperHelpers_atExactBoundaries_correctlyRestrictIncrementAndDecrement() {
+        val zeroState = GradeScaleCalculatorUIState(
+            selectedGradeScale = testGradeScale,
+            currentPercentage = 0.0,
+            totalPoints = 100.0,
+            gradeScalesNamesWithId = scalesNamesWithId,
+        )
+        // earnedPoints = 0.0 out of 100
+        assertFalse(zeroState.canDecrementPoints)
+        assertTrue(zeroState.canIncrementPoints)
+        assertEquals(0.0, zeroState.nextLowerPoints)
+        assertEquals(0.0, zeroState.nextHalfLowerPoints)
+
+        val maxState = GradeScaleCalculatorUIState(
+            selectedGradeScale = testGradeScale,
+            currentPercentage = 1.0,
+            totalPoints = 100.0,
+            gradeScalesNamesWithId = scalesNamesWithId,
+        )
+        // earnedPoints = 100.0 out of 100
+        assertTrue(maxState.canDecrementPoints)
+        assertFalse(maxState.canIncrementPoints)
+        assertEquals(100.0, maxState.nextHigherPoints)
+        assertEquals(100.0, maxState.nextHalfHigherPoints)
+
+        val nullState = GradeScaleCalculatorUIState(
+            selectedGradeScale = null,
+            currentPercentage = null,
+            totalPoints = 10.0,
+            gradeScalesNamesWithId = scalesNamesWithId,
+        )
+        assertFalse(nullState.canDecrementPoints)
+        assertTrue(nullState.canIncrementPoints)
+    }
+
+    @Test
     fun partialNullInputs_doesNotDeriveCurrentGrade() {
         val stateNullPercentage = GradeScaleCalculatorUIState(
             selectedGradeScale = testGradeScale,
@@ -183,6 +219,11 @@ class GradeScaleCalculatorUIStateTest {
         assertNull(stateNullPercentage.currentGrade)
         assertEquals("", stateNullPercentage.gradeName)
         assertNull(stateNullPercentage.earnedPoints)
+        assertEquals("", stateNullPercentage.earnedPointsString)
+        assertEquals(0.0, stateNullPercentage.currentPercentageVal)
+        assertEquals(0.0, stateNullPercentage.percentage100)
+        assertEquals("", stateNullPercentage.percentageString)
+        assertEquals("- %", stateNullPercentage.percentageFormattedWithSymbol)
 
         val stateNullPoints = GradeScaleCalculatorUIState(
             selectedGradeScale = testGradeScale,
@@ -192,6 +233,8 @@ class GradeScaleCalculatorUIStateTest {
         )
         assertFalse(stateNullPoints.hasGradeResult)
         assertNull(stateNullPoints.currentGrade)
+        assertEquals(10.0, stateNullPoints.totalPointsVal)
+        assertEquals("", stateNullPoints.totalPointsString)
 
         val stateNullScale = GradeScaleCalculatorUIState(
             selectedGradeScale = null,
@@ -201,6 +244,11 @@ class GradeScaleCalculatorUIStateTest {
         )
         assertFalse(stateNullScale.hasGradeResult)
         assertNull(stateNullScale.currentGrade)
+        assertFalse(stateNullScale.hasSelectedGradeScale)
+        assertNull(stateNullScale.selectedGradeScaleId)
+        assertEquals("", stateNullScale.selectedGradeScaleName)
+        assertEquals(0, stateNullScale.availableGradeNames.size)
+        assertEquals(listOf("Standard College Scale", "Secondary Scale"), stateNullScale.gradeScalesNames)
     }
 }
 

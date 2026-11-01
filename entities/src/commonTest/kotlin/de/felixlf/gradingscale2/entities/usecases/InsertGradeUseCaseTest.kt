@@ -58,7 +58,12 @@ class InsertGradeUseCaseTest {
         // Verify the grade was added by using getAllGradesFromGradeScale
         fakeGradesRepository.getAllGradesFromGradeScale("1").test {
             val grades = awaitItem()
-            assertEquals(1, grades.size) // Original test only has 1 grade in the repository
+            assertEquals(1, grades.size)
+            assertEquals(namedGrade, grades[0].namedGrade)
+            assertEquals(percentage, grades[0].percentage)
+            assertEquals("1", grades[0].idOfGradeScale)
+            assertEquals("Test Scale", grades[0].nameOfScale)
+            assertTrue(grades[0].uuid.isNotBlank())
             cancelAndConsumeRemainingEvents()
         }
     }
