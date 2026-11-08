@@ -19,4 +19,5 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.gradle.sentry)
     implementation(libs.gradle.sentryandroid)
+    implementation(libs.gradle.koinCompiler)
 }

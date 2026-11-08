@@ -27,6 +27,12 @@ class DatabaseSchemaInitializer(
     }
 }
 
+private fun provideSqlDriver(driverFactory: DriverFactory): SqlDriver = driverFactory.createDriver()
+
+private fun provideGradeScaleQueries(database: Database): GradeScaleQueries = database.gradeScaleQueries
+
+private fun provideWeightedGradeQueries(database: Database): WeightedGradeQueries = database.weightedGradeQueries
+
 /**
  * The default implementation of the SQL DAOs.
  * In JS we cannot use SQLDelight's, so our DAOs are implemented using KStore.
@@ -34,12 +40,12 @@ class DatabaseSchemaInitializer(
 internal val sqlDaoModule = module {
     single { DatabaseSchemaInitializer(get()) }
     single { Database(get()) }
-    single<SqlDriver> { get<DriverFactory>().createDriver() }
-    single<GradeScaleQueries> { get<Database>().gradeScaleQueries }
+    singleOf(::provideSqlDriver)
+    singleOf(::provideGradeScaleQueries)
     single<GradeScaleDao> { GradeScaleDaoImpl(get()) }
     single<GradesDao> { GradesDaoImpl(gradeScaleQueries = get()) }
 
-    single<WeightedGradeQueries> { get<Database>().weightedGradeQueries }
+    singleOf(::provideWeightedGradeQueries)
     singleOf(::WeightedGradeDaoImpl).bind<WeightedGradeDao>()
     singleOf(::DbToWeightedGradeMapperImpl).bind<DbToWeightedGradeMapper>()
 }

@@ -15,12 +15,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal actual fun authPlatformModule(): Module =
     module {
         single<AnalyticsProvider> { JVMAnalyticsProviderImpl() }
-        singleOf<AuthInitializer>(::AuthInitializerImpl)
+        singleOf(::AuthInitializerImpl).bind<AuthInitializer>()
 
         single<AuthTokenProvider> {
             val authInitializer: AuthInitializer = get()

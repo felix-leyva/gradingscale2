@@ -5,10 +5,11 @@ package de.felixlf.gradingscale2.di
 import de.felixlf.gradingscale2.WebMainDiagnosticsProviderImpl
 import de.felixlf.gradingscale2.entities.network.DiagnosticsProvider
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.single
 
-internal actual val nativeDiagnosticsModule: Module =
+internal actual fun nativeDiagnosticsModule(): Module =
     module {
-        singleOf<DiagnosticsProvider>(::WebMainDiagnosticsProviderImpl)
+        single<WebMainDiagnosticsProviderImpl>() bind DiagnosticsProvider::class
     }
