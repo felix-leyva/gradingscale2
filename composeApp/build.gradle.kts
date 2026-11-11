@@ -16,6 +16,7 @@ plugins {
     id(libs2.plugins.compose.compiler.get().pluginId)
     id(libs2.plugins.ksp.get().pluginId)
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
+    id(libs2.plugins.koin.compiler.get().pluginId)
     alias(libs2.plugins.conveyor)
     // Compose 1.11+ puts hot-reload on the plugin classpath transitively, so apply without a version
     id(libs2.plugins.hot.reload.get().pluginId)
@@ -121,7 +122,9 @@ kotlin {
             implementation(libs2.napier)
             implementation(libs2.androidx.lifecycle.viewmodel)
             implementation(libs2.androidx.lifecycle.runtime.compose)
+            implementation(project.dependencies.platform(libs2.koin.bom))
             implementation(libs2.koin.core)
+            implementation(libs2.koin.annotations)
             implementation(libs2.ktor.serialization.kotlinx.json)
             implementation(libs2.koin.compose)
             implementation(libs2.koin.compose.viewmodel)

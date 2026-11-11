@@ -1,5 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
+    id("io.insert-koin.compiler.plugin")
 }
 
 kotlin {
@@ -12,6 +13,7 @@ kotlin {
         }
 
         commonMain.dependencies {
+            implementation(project.dependencies.platform(libs.libraries.koinBom))
             implementation(libs.libraries.koinCore)
             implementation(libs.libraries.kotlinxCoroutinesCore)
             implementation(libs.libraries.arrowCore)

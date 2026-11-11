@@ -13,19 +13,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.create
+import org.koin.plugin.module.dsl.single
+
+private fun provideAuthTokenProvider(): AuthTokenProvider =
+    AuthTokenProviderImpl(
+        auth = Firebase.auth,
+        scope = CoroutineScope(
+            SupervisorJob() + Dispatchers.Default + CoroutineName("authScope"),
+        ),
+    )
 
 internal actual fun authPlatformModule(): Module =
     module {
-        singleOf<AuthInitializer>(::AuthInitializerImpl)
-
-        single<AuthTokenProvider> {
-            AuthTokenProviderImpl(
-                auth = Firebase.auth,
-                scope = CoroutineScope(
-                    SupervisorJob() + Dispatchers.Default + CoroutineName("authScope"),
-                ),
-            )
-        }
+        single<AuthInitializerImpl>() bind AuthInitializer::class
+        single { create(::provideAuthTokenProvider) }
     }

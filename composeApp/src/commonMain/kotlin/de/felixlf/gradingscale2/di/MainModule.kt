@@ -3,8 +3,6 @@ package de.felixlf.gradingscale2.di
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.material3.SnackbarHostState
-import androidx.navigation3.runtime.NavBackStack
-import androidx.navigation3.runtime.NavKey
 import de.felixlf.gradingscale2.AppState
 import de.felixlf.gradingscale2.dbModule
 import de.felixlf.gradingscale2.entities.entitiesModule
@@ -22,10 +20,10 @@ import de.felixlf.gradingscale2.navigation.AppNavControllerImpl
 import de.felixlf.gradingscale2.network.di.networkModule
 import de.felixlf.gradingscale2.sharedprefs.preferencesModule
 import de.felixlf.gradingscale2.usecases.ShowSnackbarUseCaseImpl
-import org.koin.core.module.dsl.singleOf
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.single
+import org.koin.plugin.module.dsl.viewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 val mainModule = module {
@@ -39,18 +37,18 @@ val mainModule = module {
         diagnosticsModule,
     )
 
-    viewModelOf(::GradeScaleListViewModel)
-    viewModelOf(::UpsertGradeViewModel)
-    viewModelOf(::CalculatorViewModel)
-    viewModelOf(::UpsertGradeScaleViewModel)
-    viewModelOf(::ImportViewModelWithEvents)
-    viewModelOf(::WeightedCalculatorViewModelWithEvents)
-    viewModelOf(::WeightedGradeDialogViewModelWithEvents)
-    viewModelOf(::ExportExamTableViewModel)
+    viewModel<GradeScaleListViewModel>()
+    viewModel<UpsertGradeViewModel>()
+    viewModel<CalculatorViewModel>()
+    viewModel<UpsertGradeScaleViewModel>()
+    viewModel<ImportViewModelWithEvents>()
+    viewModel<WeightedCalculatorViewModelWithEvents>()
+    viewModel<WeightedGradeDialogViewModelWithEvents>()
+    viewModel<ExportExamTableViewModel>()
 
-    single<AppNavController> { (backStack: NavBackStack<NavKey>) -> AppNavControllerImpl(backStack) }
-    singleOf(::SnackbarHostState)
-    singleOf(::ShowSnackbarUseCaseImpl).bind<ShowSnackbarUseCase>()
+    single<AppNavControllerImpl>() bind AppNavController::class
+    single<SnackbarHostState>()
+    single<ShowSnackbarUseCaseImpl>() bind ShowSnackbarUseCase::class
     single<AppState> { (sharedTransitionScope: SharedTransitionScope) ->
         AppState(navController = get(), sharedTransitionScope = sharedTransitionScope)
     }

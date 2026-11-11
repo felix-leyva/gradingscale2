@@ -65,55 +65,55 @@ import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCaseImpl
 import de.felixlf.gradingscale2.entities.util.GradeScaleGenerator
 import de.felixlf.gradingscale2.entities.util.ResourceGradeScaleGenerator
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.factory
+import org.koin.plugin.module.dsl.single
 
 expect val platformEntitiesModule: Module
 
 val entitiesModule =
     module {
         includes(platformEntitiesModule)
-        singleOf(::ResourceGradeScaleGenerator).bind<GradeScaleGenerator>()
-        single<GradeScaleRepository> { GradeScaleRepositoryImpl(get()) }
-        single<GradesRepository> { GradesRepositoryImpl(get()) }
-        single<RemoteSyncRepository> { RemoteSyncRepositoryImpl(get()) }
-        singleOf(::WeightedGradesRepositoryImpl).bind<WeightedGradesRepository>()
-        singleOf(::PreferencesRepositoryImpl).bind<PreferencesRepository>()
+        single<ResourceGradeScaleGenerator>() bind GradeScaleGenerator::class
+        single<GradeScaleRepositoryImpl>() bind GradeScaleRepository::class
+        single<GradesRepositoryImpl>() bind GradesRepository::class
+        single<RemoteSyncRepositoryImpl>() bind RemoteSyncRepository::class
+        single<WeightedGradesRepositoryImpl>() bind WeightedGradesRepository::class
+        single<PreferencesRepositoryImpl>() bind PreferencesRepository::class
 
         // Use cases
-        single<GetAllGradeScalesUseCase> { GetAllGradeScalesUseCaseImpl(get(), get()) }
-        single<GetGradeScaleByIdUseCase> { GetGradeScaleByIdUseCaseImpl(get()) }
-        single<InsertGradeScaleUseCase> { InsertGradeScaleUseCaseImpl(get()) }
-        single<UpdateGradeScaleUseCase> { UpdateGradeScaleUseCaseImpl(get()) }
-        single<DeleteGradeScaleUseCase> { DeleteGradeScaleUseCaseImpl(get()) }
-        single<DeleteGradeUseCase> { DeleteGradeUseCaseImpl(get()) }
-        single<UpsertGradeUseCase> { UpsertGradeUseCaseImpl(get()) }
-        single<GetGradeByUUIDUseCase> { GetGradeByUUIDUseCaseImpl(get()) }
-        single<InsertGradeUseCase> { InsertGradeUseCaseImpl(get(), get()) }
-        singleOf(::GetRemoteGradeScaleUseCaseImpl).bind<GetRemoteGradeScaleUseCase>()
-        singleOf(::GetRemoteGradeScalesUseCaseImpl).bind<GetRemoteGradeScalesUseCase>()
-        singleOf(::ImportRemoteGradeScaleIntoDbUseCaseImpl).bind<ImportRemoteGradeScaleIntoDbUseCase>()
-        singleOf(::GetAllWeightedGradesUseCaseImpl).bind<GetAllWeightedGradesUseCase>()
-        singleOf(::DeleteWeightedGradeUseCaseImpl).bind<DeleteWeightedGradeUseCase>()
-        singleOf(::UpsertWeightedGradeUseCaseImpl).bind<UpsertWeightedGradeUseCase>()
-        singleOf(::GetLastSelectedGradeScaleIdUseCaseImpl).bind<GetLastSelectedGradeScaleIdUseCase>()
-        singleOf(::SetLastSelectedGradeScaleIdUseCaseImpl).bind<SetLastSelectedGradeScaleIdUseCase>()
-        singleOf(::TrackErrorUseCaseImpl).bind<TrackErrorUseCase>()
+        single<GetAllGradeScalesUseCaseImpl>() bind GetAllGradeScalesUseCase::class
+        single<GetGradeScaleByIdUseCaseImpl>() bind GetGradeScaleByIdUseCase::class
+        single<InsertGradeScaleUseCaseImpl>() bind InsertGradeScaleUseCase::class
+        single<UpdateGradeScaleUseCaseImpl>() bind UpdateGradeScaleUseCase::class
+        single<DeleteGradeScaleUseCaseImpl>() bind DeleteGradeScaleUseCase::class
+        single<DeleteGradeUseCaseImpl>() bind DeleteGradeUseCase::class
+        single<UpsertGradeUseCaseImpl>() bind UpsertGradeUseCase::class
+        single<GetGradeByUUIDUseCaseImpl>() bind GetGradeByUUIDUseCase::class
+        single<InsertGradeUseCaseImpl>() bind InsertGradeUseCase::class
+        single<GetRemoteGradeScaleUseCaseImpl>() bind GetRemoteGradeScaleUseCase::class
+        single<GetRemoteGradeScalesUseCaseImpl>() bind GetRemoteGradeScalesUseCase::class
+        single<ImportRemoteGradeScaleIntoDbUseCaseImpl>() bind ImportRemoteGradeScaleIntoDbUseCase::class
+        single<GetAllWeightedGradesUseCaseImpl>() bind GetAllWeightedGradesUseCase::class
+        single<DeleteWeightedGradeUseCaseImpl>() bind DeleteWeightedGradeUseCase::class
+        single<UpsertWeightedGradeUseCaseImpl>() bind UpsertWeightedGradeUseCase::class
+        single<GetLastSelectedGradeScaleIdUseCaseImpl>() bind GetLastSelectedGradeScaleIdUseCase::class
+        single<SetLastSelectedGradeScaleIdUseCaseImpl>() bind SetLastSelectedGradeScaleIdUseCase::class
+        single<TrackErrorUseCaseImpl>() bind TrackErrorUseCase::class
 
-        singleOf(::ExamTableDataBuilderImpl).bind<ExamTableDataBuilder>()
-        singleOf(::GradeScaleTableHtmlFormatterImpl).bind<GradeScaleTableHtmlFormatter>()
-        singleOf(::GradeScaleTableTsvFormatterImpl).bind<GradeScaleTableTsvFormatter>()
-        singleOf(::GradeScaleTableMarkdownFormatterImpl).bind<GradeScaleTableMarkdownFormatter>()
+        single<ExamTableDataBuilderImpl>() bind ExamTableDataBuilder::class
+        single<GradeScaleTableHtmlFormatterImpl>() bind GradeScaleTableHtmlFormatter::class
+        single<GradeScaleTableTsvFormatterImpl>() bind GradeScaleTableTsvFormatter::class
+        single<GradeScaleTableMarkdownFormatterImpl>() bind GradeScaleTableMarkdownFormatter::class
 
         // UI Model
-        factoryOf(::GradeListUIModel)
-        factoryOf(::CalculatorUIModel)
-        factoryOf(::ImportUIModelWithEvents)
-        factoryOf(::UpsertGradeUIFactory)
-        factoryOf(::UpsertGradeScaleUIStateFactory)
-        factoryOf(::WeightCalculatorUIModelWithEvents)
-        factoryOf(::WeightedGradeDialogUIModelWithEvents)
-        factoryOf(::ExportExamTableUIModel)
+        factory<GradeListUIModel>()
+        factory<CalculatorUIModel>()
+        factory<ImportUIModelWithEvents>()
+        factory<UpsertGradeUIFactory>()
+        factory<UpsertGradeScaleUIStateFactory>()
+        factory<WeightCalculatorUIModelWithEvents>()
+        factory<WeightedGradeDialogUIModelWithEvents>()
+        factory<ExportExamTableUIModel>()
     }

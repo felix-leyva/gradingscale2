@@ -5,18 +5,16 @@ package de.felixlf.gradingscale2.di
 import de.felixlf.gradingscale2.CommonDiagnosticsProviderImpl
 import de.felixlf.gradingscale2.entities.network.DiagnosticsProvider
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.single
 
 internal val defaultDiagnosticsModule = module {
-    singleOf<DiagnosticsProvider>(::CommonDiagnosticsProviderImpl)
+    single<CommonDiagnosticsProviderImpl>() bind DiagnosticsProvider::class
 }
 
-internal expect val nativeDiagnosticsModule: Module
+internal expect fun nativeDiagnosticsModule(): Module
 
-// Lazy delegate, to avoid risk of circular dependency issue
-val diagnosticsModule by lazy {
-    module {
-        includes(nativeDiagnosticsModule)
-    }
+val diagnosticsModule = module {
+    includes(nativeDiagnosticsModule())
 }

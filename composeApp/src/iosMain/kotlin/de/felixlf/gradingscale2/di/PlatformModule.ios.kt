@@ -4,12 +4,12 @@ import de.felixlf.gradingscale2.entities.features.export.TableClipboardExporter
 import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import de.felixlf.gradingscale2.export.IosTableClipboardExporter
 import de.felixlf.gradingscale2.utils.DefaultDispatcherProvider
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.single
 
 actual fun getApplicationModule() =
     module {
-        singleOf(::DefaultDispatcherProvider).bind<DispatcherProvider>()
-        singleOf(::IosTableClipboardExporter).bind<TableClipboardExporter>()
+        single<DefaultDispatcherProvider>() bind DispatcherProvider::class
+        single<IosTableClipboardExporter>() bind TableClipboardExporter::class
     }
