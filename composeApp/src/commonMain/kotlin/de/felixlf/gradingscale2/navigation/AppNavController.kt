@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.navigation
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import org.koin.core.annotation.InjectedParam
 
 /**
  * Container of the navigation back stack.
@@ -20,7 +21,9 @@ interface AppNavController {
     fun navigateTopLevel(destination: Destinations)
 }
 
-internal class AppNavControllerImpl(override val backStack: NavBackStack<NavKey>) : AppNavController {
+internal class AppNavControllerImpl(
+    @InjectedParam override val backStack: NavBackStack<NavKey>,
+) : AppNavController {
     override val current: NavKey? get() = backStack.lastOrNull()
 
     override fun navigateTopLevel(destination: Destinations) {

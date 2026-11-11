@@ -14,25 +14,26 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.plugin.module.dsl.create
+import org.koin.plugin.module.dsl.single
+
+private fun provideAuthTokenProvider(authInitializer: AuthInitializer): AuthTokenProvider {
+    authInitializer()
+    return AuthTokenProviderImpl(
+        auth = Firebase.auth,
+        scope = CoroutineScope(
+            SupervisorJob() + Dispatchers.Default + CoroutineName("authScope"),
+        ),
+    )
+}
 
 internal actual fun authPlatformModule(): Module =
     module {
-        single<AnalyticsProvider> { JVMAnalyticsProviderImpl() }
-        singleOf(::AuthInitializerImpl).bind<AuthInitializer>()
-
-        single<AuthTokenProvider> {
-            val authInitializer: AuthInitializer = get()
-            authInitializer()
-            AuthTokenProviderImpl(
-                auth = Firebase.auth,
-                scope = CoroutineScope(
-                    SupervisorJob() + Dispatchers.Default + CoroutineName("authScope"),
-                ),
-            )
-        }
+        single<JVMAnalyticsProviderImpl>() bind AnalyticsProvider::class
+        single<AuthInitializerImpl>() bind AuthInitializer::class
+        single { create(::provideAuthTokenProvider) }
     }
 
 // In JVM enviroment, the analytics provider is not yet implemented
