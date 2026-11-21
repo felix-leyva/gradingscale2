@@ -19,7 +19,7 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.entities)
+            implementation(projects.core.domain)
         }
 
         val sentryAvailable by creating {
@@ -30,10 +30,6 @@ kotlin {
 
         androidMain {
             dependsOn(sentryAvailable)
-        }
-
-        commonMain.dependencies {
-            implementation(projects.entities)
         }
 
         val webMain by getting {

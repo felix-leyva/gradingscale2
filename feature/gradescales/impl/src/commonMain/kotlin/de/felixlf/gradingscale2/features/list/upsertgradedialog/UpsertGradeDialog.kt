@@ -1,0 +1,231 @@
+package de.felixlf.gradingscale2.features.list.upsertgradedialog
+
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIEvent
+import de.felixlf.gradingscale2.entities.features.list.upsertgradedialog.UpsertGradeUIState
+import de.felixlf.gradingscale2.entities.models.Grade
+import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
+import de.felixlf.gradingscale2.utils.dialogScopedViewModel
+import de.felixlf.gradingscale2.utils.textFieldManager
+import de.felixlf.gradingscale2.core.ui.resources.Res
+import de.felixlf.gradingscale2.core.ui.resources.edit_grade_name
+import de.felixlf.gradingscale2.core.ui.resources.edit_grade_percentage
+import de.felixlf.gradingscale2.core.ui.resources.edit_grade_save_button
+import de.felixlf.gradingscale2.core.ui.resources.upsert_grade_save_as_new
+import org.jetbrains.compose.resources.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+
+/**
+ * The Insert Grade Dialog is a dialog that allows the user to insert a new grade.
+ */
+@Composable
+internal fun InsertGradeDialog(gradeScaleId: String, onDismiss: () -> Unit) {
+    val viewModel = dialogScopedViewModel<UpsertGradeViewModel>()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(gradeScaleId) { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeScaleId(gradeScaleId)) }
+    UpsertGradeDialog(onDismiss = onDismiss, uiState = uiState, viewModel = viewModel)
+}
+
+/**
+ * The Edit Grade Dialog is a dialog that allows the user to edit a grade.
+ */
+@Composable
+internal fun EditGradeDialog(uuid: String, onDismiss: () -> Unit) {
+    val viewModel = dialogScopedViewModel<UpsertGradeViewModel>()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(uuid) { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeUUID(uuid)) }
+    UpsertGradeDialog(onDismiss = onDismiss, uiState = uiState, viewModel = viewModel)
+}
+
+@Composable
+private fun UpsertGradeDialog(
+    onDismiss: () -> Unit,
+    uiState: State<UpsertGradeUIState>,
+    viewModel: UpsertGradeViewModel,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        UpsertGradeDialog(
+            uiState = uiState.value,
+            onSetPercentage = { viewModel.sendCommand(UpsertGradeUIEvent.SetPercentage(it)) },
+            onSetName = { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeName(it)) },
+            onSave = {
+                viewModel.sendCommand(UpsertGradeUIEvent.Save)
+                onDismiss()
+            },
+            onSaveNew = {
+                viewModel.sendCommand(UpsertGradeUIEvent.SaveAsNew)
+                onDismiss()
+            },
+        )
+    }
+}
+
+@Composable
+private fun UpsertGradeDialog(
+    uiState: UpsertGradeUIState,
+    onSetPercentage: (String) -> Unit = {},
+    onSetName: (String) -> Unit = {},
+    onSave: () -> Unit = {},
+    onSaveNew: () -> Unit = {},
+) {
+    Card {
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .width(IntrinsicSize.Max)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly,
+        ) {
+            if (uiState.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.padding(32.dp))
+                return@Card
+            }
+
+            val keyboardController = LocalSoftwareKeyboardController.current
+            val keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() })
+
+            EditGradeTextField(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                value = uiState.name ?: "",
+                onValueChange = onSetName,
+                label = stringResource(Res.string.edit_grade_name),
+                error = uiState.error.any { it == UpsertGradeUIState.Error.INVALID_NAME || it == UpsertGradeUIState.Error.DUPLICATE_NAME },
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = keyboardActions,
+            )
+            EditGradeTextField(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                value = uiState.percentage ?: "",
+                onValueChange = onSetPercentage,
+                label = stringResource(Res.string.edit_grade_percentage),
+                error = uiState.error.any {
+                    it == UpsertGradeUIState.Error.INVALID_PERCENTAGE ||
+                        it == UpsertGradeUIState.Error.DUPLICATE_PERCENTAGE
+                },
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Decimal,
+                    imeAction = ImeAction.Done,
+                ),
+                keyboardActions = keyboardActions,
+            )
+            uiState.error.joinToString { it.name }.ifBlank { null }?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                )
+            } ?: with(
+                LocalDensity.current,
+            ) {
+                Spacer(modifier = Modifier.requiredHeight(MaterialTheme.typography.bodyMedium.lineHeight.toDp()).padding(bottom = 16.dp))
+            }
+
+            uiState.selectedGrade?.let {
+                Button(
+                    onClick = onSave,
+                    enabled = uiState.isSaveButtonEnabled,
+                ) {
+                    Text(stringResource(Res.string.edit_grade_save_button))
+                }
+            }
+
+            Button(
+                onClick = onSaveNew,
+                enabled = uiState.isSaveNewButtonEnabled,
+            ) {
+                Text(stringResource(Res.string.upsert_grade_save_as_new))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun EditGradeTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    error: Boolean,
+    modifier: Modifier = Modifier,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+) {
+    val textFieldValue = textFieldManager(value) { onValueChange(it) }
+    BasicTextField(
+        modifier = modifier,
+        state = textFieldValue,
+        textStyle = TextStyle.Default.copy(color = MaterialTheme.colorScheme.primary),
+        lineLimits = TextFieldLineLimits.SingleLine,
+        keyboardOptions = keyboardOptions,
+        decorator = @Composable { textField ->
+            OutlinedTextFieldDefaults.DecorationBox(
+                value = textFieldValue.text.toString(),
+                label = { Text(label) },
+                innerTextField = textField,
+                enabled = true,
+                singleLine = true,
+                interactionSource = MutableInteractionSource(),
+                visualTransformation = VisualTransformation.None,
+                isError = error,
+            )
+        },
+    )
+}
+
+@FormFactorPreviews
+@Preview
+@Composable
+private fun EditGradeDialogPreview() {
+    UpsertGradeDialog(
+        uiState = UpsertGradeUIState(
+            name = "Test",
+            percentage = "50",
+            grade = Grade(
+                namedGrade = "A",
+                percentage = 0.5,
+                idOfGradeScale = "GradeScaleId",
+                nameOfScale = "Test",
+                uuid = "GradeUUID",
+            ),
+            gradeScale = null,
+            selectedGrade = null,
+        ),
+    )
+}

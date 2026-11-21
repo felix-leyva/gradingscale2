@@ -9,14 +9,15 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import de.felixlf.gradingscale2.features.calculator.GradeScaleCalculatorScreen
-import de.felixlf.gradingscale2.features.import.ImportScreen
-import de.felixlf.gradingscale2.features.list.GradeScaleListScreen
-import de.felixlf.gradingscale2.features.weightedgradecalculator.WeightedGradeCalculatorScreen
+import de.felixlf.gradingscale2.feature.calculator.api.CalculatorScreenEntry
+import de.felixlf.gradingscale2.feature.gradescales.api.GradeScalesScreenEntry
+import de.felixlf.gradingscale2.feature.importer.api.ImporterScreenEntry
+import de.felixlf.gradingscale2.feature.weightedcalculator.api.WeightedCalculatorScreenEntry
 import de.felixlf.gradingscale2.scaffold.PersistentScaffold
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import kotlinx.serialization.modules.subclass
+import org.koin.compose.koinInject
 
 /**
  * Serialization setup used to persist the back stack. Non-JVM targets (iOS, wasm) have no reflection, so every
@@ -45,17 +46,25 @@ fun MainNavHost(
         entryProvider = entryProvider {
             entry<Destinations> { destination ->
                 when (destination) {
-                    Destinations.GradeScaleList ->
-                        PersistentScaffold { GradeScaleListScreen(modifier = Modifier.padding(it)) }
+                    Destinations.GradeScaleList -> {
+                        val gradeScalesEntry = koinInject<GradeScalesScreenEntry>()
+                        PersistentScaffold { gradeScalesEntry(Modifier.padding(it)) }
+                    }
 
-                    Destinations.GradeScaleCalculator ->
-                        PersistentScaffold { GradeScaleCalculatorScreen(modifier = Modifier.padding(it)) }
+                    Destinations.GradeScaleCalculator -> {
+                        val calculatorEntry = koinInject<CalculatorScreenEntry>()
+                        PersistentScaffold { calculatorEntry(Modifier.padding(it)) }
+                    }
 
-                    Destinations.WeightedGradeCalculator ->
-                        PersistentScaffold { WeightedGradeCalculatorScreen(modifier = Modifier.padding(it)) }
+                    Destinations.WeightedGradeCalculator -> {
+                        val weightedCalculatorEntry = koinInject<WeightedCalculatorScreenEntry>()
+                        PersistentScaffold { weightedCalculatorEntry(Modifier.padding(it)) }
+                    }
 
-                    Destinations.GradeImporter ->
-                        PersistentScaffold { ImportScreen(modifier = Modifier.padding(it)) }
+                    Destinations.GradeImporter -> {
+                        val importerEntry = koinInject<ImporterScreenEntry>()
+                        PersistentScaffold { importerEntry(Modifier.padding(it)) }
+                    }
                 }
             }
         },

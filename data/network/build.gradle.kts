@@ -5,7 +5,6 @@ import java.util.Properties
 plugins {
     id("multiplatform-plugin")
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
-    id(libs2.plugins.ksp.get().pluginId)
     id(libs2.plugins.gmazzoBuildConfig.get().pluginId)
 }
 
@@ -31,7 +30,7 @@ kotlin {
             implementation(libs2.ktor.serialization.kotlinx.json)
             implementation(libs2.ktor.client.logging)
             implementation(libs2.ktor.client.auth)
-            implementation(projects.entities)
+            implementation(projects.core.domain)
         }
 
         commonTest.dependencies {

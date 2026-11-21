@@ -1,0 +1,11 @@
+package de.felixlf.gradingscale2.entities.usecases
+
+import de.felixlf.gradingscale2.entities.models.Grade
+import de.felixlf.gradingscale2.entities.repositories.GradesRepository
+import kotlinx.coroutines.flow.Flow
+
+internal class GetGradeByUUIDUseCaseImpl(private val gradesRepository: GradesRepository) : GetGradeByUUIDUseCase {
+    override fun invoke(gradeUUID: String): Flow<Grade?> {
+        return gradesRepository.getGradeById(gradeUUID)
+    }
+}

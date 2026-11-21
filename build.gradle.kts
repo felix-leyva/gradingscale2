@@ -9,7 +9,19 @@ plugins {
 }
 
 dependencies {
-    kover(project(":entities"))
+    kover(project(":core:domain"))
+    kover(project(":core:usecases:api"))
+    kover(project(":core:usecases:impl"))
+    kover(project(":core:presentation"))
+    kover(project(":core:ui"))
+    kover(project(":feature:calculator:api"))
+    kover(project(":feature:calculator:impl"))
+    kover(project(":feature:importer:api"))
+    kover(project(":feature:importer:impl"))
+    kover(project(":feature:weightedcalculator:api"))
+    kover(project(":feature:weightedcalculator:impl"))
+    kover(project(":feature:gradescales:api"))
+    kover(project(":feature:gradescales:impl"))
     kover(project(":data:network"))
     kover(project(":data:persistance:db"))
     kover(project(":composeApp"))
@@ -26,7 +38,7 @@ kover {
                 )
                 packages(
                     "gradingscale2.composeapp.generated.resources",
-                    "gradingscale2.entities.generated.resources",
+                    "de.felixlf.gradingscale2.core.ui.resources",
                 )
             }
         }

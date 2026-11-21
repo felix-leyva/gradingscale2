@@ -1,3 +1,0 @@
-package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
-
-sealed interface WeightedCalculatorEvent

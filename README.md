@@ -9,6 +9,7 @@ A multi-platform grading scale calculator built with Kotlin Multiplatform and Co
 - **Custom Grade Scale Management**: Create, edit, and manage multiple grading scales with different point systems and grade boundaries
 - **Weighted Grade Calculator**: Calculate weighted averages for courses with different component weights (assignments, exams, projects)
 - **Import Grade Scales**: Import pre-defined grading scales from various educational systems
+- **Exam Table Export**: Export exam point/grade lookup tables as formatted HTML/Word or TSV to the clipboard with configurable columns, point/percentage ranges, and sorting
 - **Real-time Calculations**: Instant grade calculations as you input scores
 - **Multi-Scale Support**: Switch between different grading scales seamlessly
 
@@ -19,38 +20,37 @@ A multi-platform grading scale calculator built with Kotlin Multiplatform and Co
 
 ## Architecture
 
-### Layered Architecture Implementation
+### Hexagonal Architecture & API/Impl Modularization
 
-The project follows Layered Architecture principles with clear separation of concerns across three main layers such that the Domain Layer
-keeps the business logic and interfaces, which are then implemented by the data layer whenever `data framework` logic is needed (dependency
-inversion principle). The Presentation layer could also be considered a `presentation framework` layer which however focuses only on the UI
-and navigation.
+The project follows **Hexagonal Architecture (Ports & Adapters)** combined with **feature-slice modularization** and strict **`:api` / `:impl` separation** across both features and use cases:
 
-Due the extension of the app, only `technological` dimension is being used, but no `domain feature` dimension.
+- **Hexagon Core (`:core:domain`, `:core:usecases:api`, `:core:usecases:impl`)**: `:core:domain` holds pure Kotlin domain models and outbound port interfaces (DAOs, network API, auth, diagnostics, clipboard, seed generator) with zero Compose or Koin dependencies. `:core:usecases:api` exposes pure Kotlin use case and export service interfaces, while `:core:usecases:impl` keeps all implementations and repository classes `internal`.
+- **Driving Adapters — Feature Modules (`:feature:<name>:{api,impl}`)**: Four domain-aligned features (`gradescales`, `calculator`, `weightedcalculator`, `importer`). Each `:api` exposes its composable `*ScreenEntry` contract; each `:impl` encapsulates its Screens, ViewModels, Molecule UIModels/UIStates, dialogs, and Koin module as `internal`. Feature `:impl` modules depend only on `:api` modules and never on sibling `:impl` or `:data:*` modules.
+- **Technical Core (`:core:presentation`, `:core:ui`)**: `:core:presentation` provides Molecule `UIModel` / `StateProducer` infrastructure; `:core:ui` hosts the shared Material 3 theme, adaptive components, snackbar feedback port/impl, and Compose Multiplatform string/seed resources.
+- **Driven Adapters (`:data:*`)**: `:data:network`, `:data:authFirebase`, `:data:diagnostics`, and `:data:persistance:{db,sharedprefs,wasmjs-storage}` implement the outbound port interfaces from `:core:domain` without any transitive Compose or Molecule dependency.
+- **Composition Roots (`:composeApp`, `:androidApp`)**: `:composeApp` is a thin app shell that assembles all Koin modules into `mainModule`, hosts Navigation 3 (`Destinations` + `MainNavHost`), and provides platform entry points (`Main`, `MainViewController`, `main`). `:androidApp` is the thin AGP 9 Android application wrapper.
 
-```
+```mermaid
+flowchart TD
+    androidApp[":androidApp (Android Entry)"] --> composeApp[":composeApp (Composition Root / Nav3 Host)"]
 
-┌────────────────────────-────────────────────────────────┐
-│                     Domain Layer                        │
-│                  (entities module)                      │
-│    • Use Cases (Business Logic)                         │
-│    • Repository Interfaces                              │
-│    • Domain Models                                      │
-└────────────────────────┬────────────────────────────────┘
-                         |---------------------------------------------------------------┐
-                         |                                                               |
-                         |                                                               |
-                         |                                                               |
-┌─────────────────────────────────────────────────────────┐     ┌────────────────────────┴────────────────────────────────┐
-│                      Data Layer                         │     │                    Presentation Layer                   │
-│               (data/* submodules)                       │     │               (composeApp module)                       │
-│    • Repository Implementations                         │     │    • Compose UI Screens                                 │
-│    • Local Database (SQLDelight)                        │     │    • ViewModels with Molecule State Management          │           
-│    • Remote API (Ktor)                                  │     │    • Platform-specific UI implementations               │           
-│    • Preferences (Multiplatform Settings)               │     |                                                         |
-└─────────────────────────────────────────────────────────┘     └────────────────────────-────────────────────────────────┘
+    composeApp --> featureApi[":feature:*:api (*ScreenEntry)"]
+    composeApp --> featureImpl[":feature:*:impl (Screens, VMs, UIModels)"]
+    composeApp --> usecasesImpl[":core:usecases:impl (UseCase & Repo Impls)"]
+    composeApp --> dataAdapters[":data:* (DB, Network, Auth, Diagnostics)"]
 
+    featureImpl --> featureApi
+    featureImpl --> usecasesApi[":core:usecases:api (UseCase Interfaces)"]
+    featureImpl --> corePresentation[":core:presentation (Molecule UIModel)"]
+    featureImpl --> coreUi[":core:ui (Theme, Shared Components, Res)"]
+    featureImpl --> coreDomain[":core:domain (Pure Models & Outbound Ports)"]
 
+    usecasesImpl --> usecasesApi
+    usecasesImpl --> coreDomain
+    dataAdapters --> coreDomain
+    usecasesApi --> coreDomain
+    corePresentation --> coreDomain
+    coreUi --> coreDomain
 ```
 
 ### Key Architectural Decisions
@@ -60,21 +60,25 @@ The project uses [CashApp's Molecule](https://github.com/cashapp/molecule) for s
 
 ```kotlin
 interface UIModel<UIState, UICommand> {
-    val scope: UIModelScope
+    val stateProducer: StateProducer
 
     val uiState: StateFlow<UIState>
 
-    @Composable
-    fun produceUI(): UIState
+    val scope: CoroutineScope
+        get() = stateProducer.scope
 
     fun sendCommand(command: UICommand)
 }
+
+interface UIModelWithEvents<UIState, UICommand, UIEvent> :
+    UIModel<UIState, UICommand>,
+    UIEventDispatcher<UIEvent>
 ```
 **Benefits of Molecule:**
 - **Reactive by Design**: UI state recomposes automatically when dependencies change
 - **Testable**: State logic can be tested without Android framework dependencies
 - **Composable Logic**: Leverage Compose's powerful state management primitives
-- **Clear Data Flow**: Unidirectional data flow with events and state
+- **Clear Data Flow**: Unidirectional data flow with commands, state, and optional one-off `UIEvent` channels (`UIModelWithEvents`)
 
 
 It also separates the UIModel, from the Android Framework Specific UIModel, allowing easier testing and use in different platforms even without the Navigation/Jetpack ComposeUI. 
@@ -82,48 +86,71 @@ It also separates the UIModel, from the Android Framework Specific UIModel, allo
 In case you require to link your UIModels to the Android or Jetpack ComposeUI Navigation/Lifecycle, you can then use a ViewModel and tie its scope into the ViewModel. The functionallity can be easily added via interface implementation with the `by` class delegation.
 
 ```kotlin
-class CalculatorViewModel(
+internal class CalculatorViewModel(
     calculatorUIModel: CalculatorUIModel,
 ) : ViewModel(calculatorUIModel.scope),
-UIModel<GradeScaleCalculatorUIState, CalculatorUIEvent> by calculatorUIModel
-
+    UIModel<GradeScaleCalculatorUIState, CalculatorUIEvent> by calculatorUIModel
 ```
-This reduces boilerplate and allows to keep this logic out of the platform `:composeApp` module.
+This keeps presentation state logic decoupled inside `:core:presentation` and encapsulated within each `:feature:*:impl` module while keeping `:composeApp` focused on app shell wiring.
 
 
-#### Adaptive Layout with Persistent Scaffolds
+#### Adaptive Layout, Navigation 3 & Persistent Scaffolds
 
-The adaptive layout system uses a unique approach with single per-destination Scaffolds that maintain navigation state across all screens:
+Top-level navigation and adaptive chrome live in `:composeApp`, decoupled from feature implementations through `:feature:*:api` contracts:
+
+- **`AppNavigationSuite`**: Wraps Material 3 `NavigationSuiteScaffold` using `currentWindowAdaptiveInfo()` to switch automatically between a bottom navigation bar (compact screens) and a navigation rail (landscape, tablet, and desktop).
+- **`MainNavHost` (JetBrains Navigation 3)**: Uses `NavDisplay`, `entryProvider`, explicit polymorphic serialization of `Destinations : NavKey` in `SavedStateConfiguration` (required on non-JVM targets like iOS and WasmJS), and lazy Koin-injected `*ScreenEntry` interfaces from `:feature:*:api`.
+- **`PersistentScaffold` & `ScaffoldState`**: Each destination wraps its content in `PersistentScaffold`, combining Navigation 3's `LocalNavAnimatedContentScope` with `SharedTransitionScope` (via `AppState`) for shared element transitions.
 
 ```kotlin
-@Composable
-fun AnimatedContentScope.PersistentScaffold(
-    navigationRail: @Composable ScaffoldState.() -> Unit = { DefaultNavigationRail() },
-    bottomBar: @Composable ScaffoldState.() -> Unit = { DefaultNavigationBar() },
-    content: @Composable ScaffoldState.(PaddingValues) -> Unit,
-) {
-    val windowSizeClass = calculateWindowSizeClass()
-    
-    // Automatically adapts between NavigationRail (tablet/desktop) 
-    // and BottomNavigation (mobile)
-    when (windowSizeClass.widthSizeClass) {
-        WindowWidthSizeClass.Compact -> {
-            // Mobile: Bottom navigation
-            BottomNavigationScaffold(bottomBar, content)
-        }
-        else -> {
-            // Tablet/Desktop: Navigation rail
-            NavigationRailScaffold(navigationRail, content)
+// :composeApp MainNavHost.kt
+internal val navSavedStateConfiguration = SavedStateConfiguration {
+    serializersModule = SerializersModule {
+        polymorphic(NavKey::class) {
+            subclass(Destinations::class)
         }
     }
 }
+
+NavDisplay(
+    backStack = appNavController.backStack,
+    entryDecorators = listOf(
+        rememberSaveableStateHolderNavEntryDecorator(),
+        rememberViewModelStoreNavEntryDecorator(),
+    ),
+    entryProvider = entryProvider {
+        entry<Destinations> { destination ->
+            when (destination) {
+                Destinations.GradeScaleList -> {
+                    val gradeScalesEntry = koinInject<GradeScalesScreenEntry>()
+                    PersistentScaffold { gradeScalesEntry(Modifier.padding(it)) }
+                }
+
+                Destinations.GradeScaleCalculator -> {
+                    val calculatorEntry = koinInject<CalculatorScreenEntry>()
+                    PersistentScaffold { calculatorEntry(Modifier.padding(it)) }
+                }
+
+                Destinations.WeightedGradeCalculator -> {
+                    val weightedCalculatorEntry = koinInject<WeightedCalculatorScreenEntry>()
+                    PersistentScaffold { weightedCalculatorEntry(Modifier.padding(it)) }
+                }
+
+                Destinations.GradeImporter -> {
+                    val importerEntry = koinInject<ImporterScreenEntry>()
+                    PersistentScaffold { importerEntry(Modifier.padding(it)) }
+                }
+            }
+        }
+    },
+)
 ```
 
 **Key Features:**
-- **Shared Element Transitions**: Smooth animations between screens using `SharedTransitionScope`
-- **State Persistence**: Navigation components maintain their state across screen changes
-- **Adaptive Components**: Automatically switches UI components based on screen size
-- **Centralized State**: `ScaffoldState` acts as a container for both `AnimatedVisibilityScope` and `SharedTransitionScope`
+- **Shared Element Transitions**: Smooth animations between screens using `SharedTransitionScope` (`AppState`)
+- **State Persistence**: Saveable back stack and entry-scoped `ViewModelStore` across destinations
+- **Adaptive Components**: Automatically switches between bottom bar and navigation rail based on window size class
+- **Strict Feature Isolation**: `:composeApp` depends only on `:feature:*:api` `*ScreenEntry` contracts inside `MainNavHost`
 
 #### Immutability with PersistentList
 
@@ -155,15 +182,17 @@ data class GradeScale(
 The architecture is fully reactive using Kotlin Coroutines Flow:
 
 ```kotlin
-interface GradeScaleRepository {
+internal interface GradeScaleRepository {
     fun getGradeScaleById(id: String): SharedFlow<GradeScale?>
     fun getGradeScales(): SharedFlow<ImmutableList<GradeScale>>
 }
 
-class GradeScaleRepositoryImpl : GradeScaleRepository {
+internal class GradeScaleRepositoryImpl(
+    private val gradeScaleDao: GradeScaleDao,
+    private val scope: CoroutineScope = CoroutineScope(CoroutineName("GradeScaleRepositoryImpl")),
+) : GradeScaleRepository {
     override fun getGradeScales(): SharedFlow<ImmutableList<GradeScale>> =
         gradeScaleDao.getGradeScales()
-            .map { list -> list.toImmutableList() }
             .shareIn(
                 scope = scope,
                 started = SharingStarted.Lazily,
@@ -183,21 +212,23 @@ class GradeScaleRepositoryImpl : GradeScaleRepository {
 The project uses [Arrow](https://arrow-kt.io/) for functional error handling, avoiding exceptions in favor of explicit error types:
 
 ```kotlin
-// Using Option for nullable results
-class InsertGradeScaleUseCaseImpl : InsertGradeScaleUseCase {
+// Using Option for nullable results (:core:usecases:impl)
+internal class InsertGradeScaleUseCaseImpl(
+    val gradeScaleRepository: GradeScaleRepository,
+) : InsertGradeScaleUseCase {
     override suspend operator fun invoke(...): Option<String> = option {
-        val currentScales = gradeScaleRepository.getGradeScales().firstOrNull()
+        val currentScales = gradeScaleRepository.getGradeScales().firstOrNull() ?: persistentListOf()
         // Arrow's bind() for monadic composition
         gradeScaleRepository.upsertGradeScale(initialGradeScale).bind()
     }
 }
 
-// Using Either for operations that can fail
-interface RemoteSyncRepository {
+// Using Either for operations that can fail (:core:usecases:impl)
+internal interface RemoteSyncRepository {
     suspend fun countriesAndGrades(): Either<RemoteError, List<CountryGradingScales>>
 }
 
-// Clean error handling in UI
+// Clean error handling in UIModel / feature
 when (val result = getRemoteGradeScales()) {
     is Either.Right -> updateUI(result.value)
     is Either.Left -> showError(result.value)
@@ -212,53 +243,69 @@ when (val result = getRemoteGradeScales()) {
 
 #### Gradle Convention Plugins
 
-The build system uses a convention plugin approach:
+The build system uses focused role-based convention plugins in `build-logic/src/main/kotlin/`:
+
+- **`kmp-library-pure`**: Pure Kotlin KMP modules (`:core:domain`, `:core:usecases:api`) with no Compose or Koin dependencies
+- **`kmp-library-di`**: `kmp-library-pure` + Koin Core & Koin Compiler Plugin (`:core:usecases:impl`)
+- **`kmp-compose-runtime`**: `kmp-library-di` + Compose Runtime, Molecule, and Lifecycle ViewModel (`:core:presentation`)
+- **`kmp-compose-feature-api`**: `kmp-library-pure` + Kotlinx Serialization, Compose UI, and Navigation 3 (`:feature:*:api`)
+- **`kmp-compose-feature-impl`**: `kmp-compose-runtime` + Material 3, Compose Resources, and Koin Compose ViewModel (`:feature:*:impl`, `:core:ui`)
 
 ```kotlin
-// build-logic/src/main/kotlin/gs-android-app.gradle.kts
+// feature/calculator/impl/build.gradle.kts
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
-    // Common configurations
+    id("kmp-compose-feature-impl")
 }
 
-android {
-    // Standardized Android app configuration
-}
+kotlin {
+    androidLibrary {
+        namespace = libs.versions.packagename + ".feature.calculator.impl"
+    }
 
-// Applied to apps as:
-plugins {
-    id("gs-android-app")
+    sourceSets {
+        commonMain.dependencies {
+            implementation(projects.feature.calculator.api)
+            implementation(projects.core.domain)
+            implementation(projects.core.usecases.api)
+            implementation(projects.core.presentation)
+            implementation(projects.core.ui)
+        }
+    }
 }
 ```
 
-This approach provides:
-- **Consistency**: All modules follow the same configuration patterns
-- **Maintainability**: Update configurations in one place
-- **Type Safety**: Kotlin DSL provides IDE support and compile-time checking
-- **Modularity**: Different plugins for different module types
-
 #### Dependency Injection with Koin
 
-The project uses Koin with a modular, platform-aware structure:
+The project uses **Koin 4.2.2 with the Koin Compiler Plugin** (compile-time graph verification) and per-module Koin Compiler Plugin DSL:
 
 ```kotlin
-// Feature module
-val calculatorModule = module {
-    factory { CalculatorViewModel(get(), get()) }
-    factory { CalculatorUIModel(get(), get()) }
+// :feature:calculator:impl
+val calculatorFeatureModule = module {
+    factory<CalculatorUIModel>()
+    viewModel<CalculatorViewModel>()
+    single<CalculatorScreenEntry> {
+        CalculatorScreenEntry { modifier ->
+            GradeScaleCalculatorScreen(modifier = modifier)
+        }
+    }
 }
 
-// Platform-specific module
-expect val platformModule: Module
-
-// Initialization
-fun initKoin() = startKoin {
-    modules(
-        calculatorModule,
-        gradeScaleModule,
-        platformModule, // Platform-specific implementations
-        dataModule,
+// :composeApp composition root (MainModule.kt)
+val mainModule = module {
+    includes(
+        getApplicationModule(),
+        authModule,
+        dbModule,
+        networkModule,
+        presentationModule,
+        coreUiModule,
+        usecasesModule,
+        calculatorFeatureModule,
+        importerFeatureModule,
+        weightedCalculatorFeatureModule,
+        gradeScalesFeatureModule,
+        preferencesModule,
+        diagnosticsModule,
     )
 }
 ```
@@ -267,70 +314,78 @@ fun initKoin() = startKoin {
 
 ```
 GradingScale2/
-├── composeApp/          # UI Layer - Compose Multiplatform app
-│   ├── commonMain/      # Shared UI code
-│   ├── androidMain/     # Android-specific UI
-│   ├── iosMain/         # iOS-specific UI
-│   ├── jsMain/          # Web-specific UI
-│   └── jvmMain/         # Desktop-specific UI
+├── androidApp/                 # Thin Android application entry point
+├── composeApp/                 # Composition root (App shell, Nav3 host, Koin assembly, platform entrypoints)
 │
-├── entities/            # Domain Layer
-│   ├── models/          # Domain models
-│   ├── repositories/    # Repository interfaces
-│   ├── usecases/        # Business logic
-│   └── uimodel/         # UI state models
+├── core/                       # Technical & Domain Core
+│   ├── domain/                 # Pure Kotlin domain models & outbound ports (DAOs, APIs, platform ports)
+│   ├── usecases/
+│   │   ├── api/                # Pure Kotlin use case & export service interfaces
+│   │   └── impl/               # Internal use case, export service, and repository implementations + Koin module
+│   ├── presentation/           # Molecule UIModel / StateProducer infrastructure
+│   └── ui/                     # Shared Compose theme, components, Snackbar use case, and Compose resources
 │
-└── data/                # Data Layer
-    ├── network/         # Ktor HTTP client
-    ├── authFirebase/    # Firebase authentication
+├── feature/                    # Feature Modules (API / Impl separation)
+│   ├── gradescales/            # :api (*ScreenEntry) & :impl (List, CRUD & Export dialogs, VMs, UIModels)
+│   ├── calculator/             # :api & :impl (Grade Scale Calculator)
+│   ├── weightedcalculator/     # :api & :impl (Weighted Grade Calculator & dialog)
+│   └── importer/               # :api & :impl (Remote Grade Scale Importer)
+│
+└── data/                       # Driven Adapters (Data / Infrastructure Layer)
+    ├── network/                # Ktor HTTP client
+    ├── authFirebase/           # Firebase authentication
+    ├── diagnostics/            # Sentry diagnostics
     └── persistance/
-        ├── db/          # SQLDelight database
-        └── sharedprefs/ # Multiplatform Settings
+        ├── db/                 # SQLDelight database / Web KStore
+        ├── sharedprefs/        # KStore preferences
+        └── wasmjs-storage/     # Web localStorage KStore backend
 ```
 
 ## Tech Stack
 
 ### Core Technologies
-- **[Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)** (2.1.21) - Share code across platforms
-- **[Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/)** (1.8.1) - Modern declarative UI framework
-- **[Material 3 Adaptive](https://m3.material.io/)** - Adaptive design system
+- **[Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html)** (2.4.21) - Share code across platforms
+- **[Android Gradle Plugin](https://developer.android.com/build/releases/gradle-plugin)** (9.5.0) - `com.android.kotlin.multiplatform.library` with thin `:androidApp` entry point
+- **[Compose Multiplatform](https://www.jetbrains.com/compose-multiplatform/)** (1.12.2) - Modern declarative UI framework
+- **[Material 3 Adaptive](https://m3.material.io/)** (1.3.0) - Adaptive design system & Navigation Suite
+- **[Haze](https://github.com/chrisbanes/haze)** (1.7.3) - Progressive blur / glassmorphism effects
 
 ### State Management & UI
-- **[CashApp Molecule](https://github.com/cashapp/molecule)** - Compose-based state management
-- **[Navigation Compose](https://developer.android.com/jetpack/compose/navigation)** - Type-safe navigation
+- **[CashApp Molecule](https://github.com/cashapp/molecule)** (2.2.0) - Compose-based reactive state management
+- **[JetBrains Navigation 3](https://kotlinlang.org/docs/multiplatform/compose-navigation-3.html)** (1.2.0) & **Lifecycle ViewModel Navigation 3** (2.11.0) - Type-safe multiplatform navigation
 
 ### Networking & Data
-- **[Ktor](https://ktor.io/)** - Multiplatform HTTP client
-- **[SQLDelight](https://github.com/cashapp/sqldelight)** - Type-safe SQL database
-- **[Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization)** - JSON parsing
-- **[Multiplatform Settings](https://github.com/russhwolf/multiplatform-settings)** - Key-value storage
+- **[Ktor](https://ktor.io/)** (3.6.1) - Multiplatform HTTP client
+- **[SQLDelight](https://github.com/cashapp/sqldelight)** (2.4.1) - Type-safe SQL database (Android, iOS, JVM Desktop)
+- **[Kotlinx Serialization](https://github.com/Kotlin/kotlinx.serialization)** (1.12.0) - JSON & polymorphic `NavKey` serialization
+- **[KStore](https://github.com/xxfast/KStore)** (1.1.0) - Multiplatform file and web `localStorage` persistence
 
 ### Dependency Injection
-- **[Koin](https://insert-koin.io/)** - Pragmatic lightweight DI framework
+- **[Koin](https://insert-koin.io/)** (4.2.2) & **Koin Compiler Plugin** (1.2.3) - Compile-time verified multiplatform DI
 
-### Platform Integration
+### Platform Integration & Observability
 - **[Firebase](https://firebase.google.com/)** - Authentication & Analytics
-  - Android/iOS: GitLive Firebase SDK
-  - Web: Firebase JS SDK via CDN
-  - Desktop: GitLive Firebase SDK
-- **[Conveyor](https://conveyor.hydraulic.dev/)** - Desktop app distribution
+  - Android/iOS/Desktop: GitLive Firebase SDK (2.7.0)
+  - Web: Firebase JS interop
+- **[Sentry KMP](https://docs.sentry.io/platforms/kotlin/guides/kotlin-multiplatform/)** (0.29.0) - Multiplatform crash reporting and diagnostics
+- **[Conveyor](https://conveyor.hydraulic.dev/)** (2.0) - Desktop app distribution
 
 ### Code Quality
 - **[Ktlint](https://pinterest.github.io/ktlint/)** - Kotlin code style enforcement
-- **[Kotlinx Kover](https://github.com/Kotlin/kotlinx-kover)** - Multiplatform line and branch code coverage measurement
-- **[PITest (PIT)](https://pitest.org/)** - Mutation testing to verify test suite quality and eliminate surviving mutants
-- **[Arrow](https://arrow-kt.io/)** - Functional programming and error handling
-- **Kotlin Coroutines** - Asynchronous programming
-- **PersistentList** - Immutable collections from Kotlinx Collections
+- **[Kotlinx Kover](https://github.com/Kotlin/kotlinx-kover)** (0.9.11) - Multiplatform line and branch code coverage measurement
+- **[PITest (PIT)](https://pitest.org/)** (1.30.1) - Mutation testing to verify test suite quality and eliminate surviving mutants
+- **[Arrow](https://arrow-kt.io/)** (2.3.0) - Functional programming and error handling (`Option`, `Either`, `Raise`)
+- **[Kotlin Coroutines](https://github.com/Kotlin/kotlinx.coroutines)** (1.11.0) - Asynchronous programming
+- **[Kotlinx Collections Immutable](https://github.com/Kotlin/kotlinx.collections.immutable)** (0.5.2) - Persistent & immutable collections
 
 ## 📱 Platform Support
 
 | Platform | Status | Min Version | Notes |
 |----------|--------|-------------|-------|
-| Android  | ✅ | API 24 (7.0) | Full feature support |
-| iOS      | ✅ | iOS 14.0 | Native SwiftUI integration |
-| Desktop  | ✅ | JVM 17 | Windows, macOS, Linux |
-| Web      | ✅ | Modern browsers | JS/WASM targets |
+| Android  | ✅ | API 26 (8.0) | `compileSdk` 37, `targetSdk` 36 |
+| iOS      | ✅ | iOS 15.3 | Native SwiftUI integration (`iosArm64`, `iosSimulatorArm64`) |
+| Desktop  | ✅ | JVM 17 | Windows, macOS, Linux (packaged via Conveyor) |
+| Web      | ✅ | Modern browsers | WasmJS target |
 
 ## 🚀 Getting Started
 
@@ -342,8 +397,8 @@ GradingScale2/
 
 ### Clone the Repository
 ```bash
-git clone https://github.com/yourusername/GradingScale2.git
-cd GradingScale2
+git clone https://github.com/felix-leyva/gradingscale2.git
+cd gradingscale2
 ```
 
 ### Build & Run
@@ -364,9 +419,6 @@ cd GradingScale2
 
 # Open in Xcode
 open iosApp/iosApp.xcodeproj
-
-# Run from Xcode or use:
-./gradlew :composeApp:iosSimulatorArm64Test
 ```
 
 #### Desktop
@@ -396,11 +448,13 @@ Alternatively, the WebWasm version can be deployed using a Docker container. Ins
 
 ### Testing
 ```bash
-# Run all unit tests across modules
-./gradlew alltest
+# Run all JVM and Android host unit tests across all modules
+./gradlew jvmTest
+./gradlew testAndroidHostTest
 
 # Run tests on specific modules
-./gradlew :entities:jvmTest
+./gradlew :core:usecases:impl:jvmTest
+./gradlew :feature:gradescales:impl:jvmTest
 ./gradlew :data:network:jvmTest
 ./gradlew :data:persistance:db:jvmTest
 
@@ -413,11 +467,11 @@ Alternatively, the WebWasm version can be deployed using a Docker container. Ins
 # Generate aggregated multiplatform code coverage report (Kover)
 ./gradlew koverHtmlReport
 
-# Run PITest mutation testing on shared business logic (:entities)
-./gradlew :entities:pitestJvm
+# Run PITest mutation testing on use cases, repositories, and data adapters
+./gradlew :core:usecases:impl:pitestJvm :data:network:pitestJvm :data:persistance:db:pitestJvm
 
 # Run PITest targeting a specific class or package
-./gradlew :entities:pitestJvm -Ppitest.targetClasses="de.felixlf.gradingscale2.entities.features.calculator.*"
+./gradlew :core:usecases:impl:pitestJvm -Ppitest.targetClasses="de.felixlf.gradingscale2.entities.usecases.*"
 ```
 
 ### Clean & Rebuild
@@ -459,23 +513,21 @@ fun `should update UI state when grade scale is selected`() = runTest {
 
 ### 2. Code Coverage with Kotlinx Kover
 We track line, branch, and instruction coverage across all shared Kotlin Multiplatform code using **Kotlinx Kover**:
-- **Multi-project Aggregation**: Aggregates coverage metrics across `:entities`, `:data:*`, and `:composeApp`.
+- **Multi-project Aggregation**: Aggregates coverage metrics across `:core:*`, `:feature:*`, `:data:*`, and `:composeApp`.
 - **Filtered Metrics**: Excludes generated serialization code, build configs, and Compose/SQLDelight resources so numbers reflect handwritten business and UI logic.
 - **Report Location**: Running `./gradlew koverHtmlReport` produces an interactive HTML report at `build/reports/kover/html/index.html`.
 
 ### 3. Mutation Testing with PITest (PIT)
-Traditional code coverage verifies which lines were executed, but does not guarantee whether tests detect bugs. We use **PITest** to mutation-test core calculation algorithms, table export formatters, and use cases in the `:entities` module:
+Traditional code coverage verifies which lines were executed, but does not guarantee whether tests detect bugs. We use **PITest** to mutation-test use cases, repositories, export formatters, and data adapters in `:core:usecases:impl`, `:data:network`, and `:data:persistance:db`:
 - **Fault Injection**: Automatically injects synthetic faults ("mutants") into compiled JVM bytecode—such as inverting conditionals (`>=` → `<`), mutating math operators (`+` → `-`), modifying boundary constants, and mutating return values.
 - **Killed vs. Survived**: Mutants caught by failing tests are **Killed** (pass), while undetected mutants are **Survived** (fail), exposing weak assertions or missing edge cases.
-- **Targeted Execution**: Run on the entire domain module or focused packages on demand:
+- **Targeted Execution**:
   ```bash
-  # Full domain mutation testing
-  ./gradlew :entities:pitestJvm
-
-  # Focused mutation testing on a specific feature
-  ./gradlew :entities:pitestJvm -Ppitest.targetClasses="de.felixlf.gradingscale2.entities.features.export.*"
+  ./gradlew :core:usecases:impl:pitestJvm
+  ./gradlew :data:network:pitestJvm
+  ./gradlew :data:persistance:db:pitestJvm
   ```
-- **Report Location**: HTML mutation test reports are generated at `entities/build/reports/pitest/index.html`.
+- **Report Location**: HTML mutation test reports are generated under `<module>/build/reports/pitest/index.html` (for example, `core/usecases/impl/build/reports/pitest/index.html`).
 
 ## Download & Web App
 

@@ -15,7 +15,7 @@ kotlin {
     }
     sourceSets {
         commonMain.dependencies {
-            implementation(project(":entities"))
+            implementation(projects.core.domain)
             implementation(libs2.kstore)
             implementation(libs2.kotlinx.serialization)
         }

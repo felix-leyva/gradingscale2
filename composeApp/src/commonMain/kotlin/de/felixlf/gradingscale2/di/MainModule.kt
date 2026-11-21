@@ -2,28 +2,22 @@ package de.felixlf.gradingscale2.di
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.material3.SnackbarHostState
 import de.felixlf.gradingscale2.AppState
+import de.felixlf.gradingscale2.core.presentation.di.presentationModule
+import de.felixlf.gradingscale2.core.ui.di.coreUiModule
+import de.felixlf.gradingscale2.core.usecases.di.usecasesModule
 import de.felixlf.gradingscale2.dbModule
-import de.felixlf.gradingscale2.entities.entitiesModule
-import de.felixlf.gradingscale2.entities.usecases.ShowSnackbarUseCase
-import de.felixlf.gradingscale2.features.calculator.CalculatorViewModel
-import de.felixlf.gradingscale2.features.import.ImportViewModelWithEvents
-import de.felixlf.gradingscale2.features.list.GradeScaleListViewModel
-import de.felixlf.gradingscale2.features.list.exportdialog.ExportExamTableViewModel
-import de.felixlf.gradingscale2.features.list.upsertgradedialog.UpsertGradeViewModel
-import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGradeScaleViewModel
-import de.felixlf.gradingscale2.features.weightedgradecalculator.WeightedCalculatorViewModelWithEvents
-import de.felixlf.gradingscale2.features.weightedgradecalculator.dialogs.WeightedGradeDialogViewModelWithEvents
+import de.felixlf.gradingscale2.feature.calculator.di.calculatorFeatureModule
+import de.felixlf.gradingscale2.feature.gradescales.di.gradeScalesFeatureModule
+import de.felixlf.gradingscale2.feature.importer.di.importerFeatureModule
+import de.felixlf.gradingscale2.feature.weightedcalculator.di.weightedCalculatorFeatureModule
 import de.felixlf.gradingscale2.navigation.AppNavController
 import de.felixlf.gradingscale2.navigation.AppNavControllerImpl
 import de.felixlf.gradingscale2.network.di.networkModule
 import de.felixlf.gradingscale2.sharedprefs.preferencesModule
-import de.felixlf.gradingscale2.usecases.ShowSnackbarUseCaseImpl
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.plugin.module.dsl.single
-import org.koin.plugin.module.dsl.viewModel
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 val mainModule = module {
@@ -32,23 +26,18 @@ val mainModule = module {
         authModule,
         dbModule,
         networkModule,
-        entitiesModule,
+        presentationModule,
+        coreUiModule,
+        usecasesModule,
+        calculatorFeatureModule,
+        importerFeatureModule,
+        weightedCalculatorFeatureModule,
+        gradeScalesFeatureModule,
         preferencesModule,
         diagnosticsModule,
     )
 
-    viewModel<GradeScaleListViewModel>()
-    viewModel<UpsertGradeViewModel>()
-    viewModel<CalculatorViewModel>()
-    viewModel<UpsertGradeScaleViewModel>()
-    viewModel<ImportViewModelWithEvents>()
-    viewModel<WeightedCalculatorViewModelWithEvents>()
-    viewModel<WeightedGradeDialogViewModelWithEvents>()
-    viewModel<ExportExamTableViewModel>()
-
     single<AppNavControllerImpl>() bind AppNavController::class
-    single<SnackbarHostState>()
-    single<ShowSnackbarUseCaseImpl>() bind ShowSnackbarUseCase::class
     single<AppState> { (sharedTransitionScope: SharedTransitionScope) ->
         AppState(navController = get(), sharedTransitionScope = sharedTransitionScope)
     }
