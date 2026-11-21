@@ -14,7 +14,6 @@ plugins {
     id(libs2.plugins.androidMultiplatformLibrary.get().pluginId)
     id(libs2.plugins.jetbrainsCompose.get().pluginId)
     id(libs2.plugins.compose.compiler.get().pluginId)
-    id(libs2.plugins.ksp.get().pluginId)
     id(libs2.plugins.kotlinxSerialization.get().pluginId)
     id(libs2.plugins.koin.compiler.get().pluginId)
     alias(libs2.plugins.conveyor)
@@ -130,11 +129,21 @@ kotlin {
             implementation(libs2.koin.compose.viewmodel)
             implementation(libs2.kotlinx.collections.immutable)
             implementation(libs2.molecule.runtime)
+            implementation(libs2.arrow.core)
 
-            // Arrow
-            implementation(libs2.arrow.optics)
-
-            implementation(projects.entities)
+            implementation(projects.core.domain)
+            implementation(projects.core.usecases.api)
+            implementation(projects.core.usecases.impl)
+            implementation(projects.core.presentation)
+            implementation(projects.core.ui)
+            implementation(projects.feature.calculator.api)
+            implementation(projects.feature.calculator.impl)
+            implementation(projects.feature.importer.api)
+            implementation(projects.feature.importer.impl)
+            implementation(projects.feature.weightedcalculator.api)
+            implementation(projects.feature.weightedcalculator.impl)
+            implementation(projects.feature.gradescales.api)
+            implementation(projects.feature.gradescales.impl)
             implementation(projects.data.authFirebase)
             implementation(projects.data.network)
             implementation(projects.data.persistance.db)
@@ -203,12 +212,6 @@ compose {
 }
 
 dependencies {
-    add("kspCommonMainMetadata", libs2.arrow.optics.ksp.plugin)
-    add("kspJvm", libs2.arrow.optics.ksp.plugin)
-    add("kspAndroid", libs2.arrow.optics.ksp.plugin)
-    add("kspIosArm64", libs2.arrow.optics.ksp.plugin)
-    add("kspIosSimulatorArm64", libs2.arrow.optics.ksp.plugin)
-    add("kspWasmJs", libs2.arrow.optics.ksp.plugin)
     // Use the configurations created by the Conveyor plugin to tell Gradle/Conveyor where to find the artifacts for each platform.
     linuxAmd64(compose.desktop.linux_x64)
     macAmd64(compose.desktop.macos_x64)

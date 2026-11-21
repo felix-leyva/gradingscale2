@@ -36,7 +36,7 @@ kotlin {
         }
 
         commonMain.dependencies {
-            implementation(projects.entities)
+            implementation(projects.core.domain)
             implementation(libs2.napier)
         }
 

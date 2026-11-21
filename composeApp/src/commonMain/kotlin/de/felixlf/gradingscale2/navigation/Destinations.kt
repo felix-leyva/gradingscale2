@@ -7,11 +7,11 @@ import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Download
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation3.runtime.NavKey
-import gradingscale2.entities.generated.resources.Res
-import gradingscale2.entities.generated.resources.destinations_menu_grade_importerr
-import gradingscale2.entities.generated.resources.destinations_menu_grade_scale_detail
-import gradingscale2.entities.generated.resources.destinations_menu_grade_scale_list
-import gradingscale2.entities.generated.resources.destinations_menu_weighted_grade_calculator
+import de.felixlf.gradingscale2.core.ui.resources.Res
+import de.felixlf.gradingscale2.core.ui.resources.destinations_menu_grade_importerr
+import de.felixlf.gradingscale2.core.ui.resources.destinations_menu_grade_scale_detail
+import de.felixlf.gradingscale2.core.ui.resources.destinations_menu_grade_scale_list
+import de.felixlf.gradingscale2.core.ui.resources.destinations_menu_weighted_grade_calculator
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 

@@ -29,7 +29,7 @@ kotlin {
         }
 
         commonMain.dependencies {
-            implementation(project(":entities"))
+            implementation(projects.core.domain)
             implementation(libs2.kotlinx.collections.immutable)
             implementation(libs2.coroutines.extensions)
             implementation(libs2.sqldelight.runtime)
