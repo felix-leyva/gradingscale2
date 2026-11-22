@@ -18,6 +18,7 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
@@ -533,6 +534,73 @@ class WeightedGradeCalculatorUIModelTest {
             assertEquals("D", finalState.weightedGrades[0].name) // 65% should be D
 
             // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun recompositionsOnSelectGradeDoNotRecreateOrRecollectFlows() = runTest {
+        var allGradeScalesCalls = 0
+        var allGradeScalesCollections = 0
+        var gradeScaleByIdCalls = 0
+        var gradeScaleByIdCollections = 0
+        var allWeightedGradesCalls = 0
+        var allWeightedGradesCollections = 0
+
+        val sut = WeightCalculatorUIModelWithEvents(
+            stateProducer = TestStateProducer(backgroundScope),
+            getAllGradeScales = GetAllGradeScalesUseCase {
+                allGradeScalesCalls++
+                flowOf(persistentListOf(testGradeScale)).onStart { allGradeScalesCollections++ }
+            },
+            getGradeScaleByIdUseCase = GetGradeScaleByIdUseCase { id ->
+                gradeScaleByIdCalls++
+                flowOf(if (id == testGradeScaleId) testGradeScale else null).onStart { gradeScaleByIdCollections++ }
+            },
+            getAllWeightedGradesUseCase = GetAllWeightedGradesUseCase {
+                allWeightedGradesCalls++
+                grades.map { it.toImmutableList() }.onStart { allWeightedGradesCollections++ }
+            },
+            upsertWeightedGradeUseCase = upsertWeightedGradeUseCase,
+            deleteWeightedGradeUseCase = deleteWeightedGradeUseCase,
+            getLastSelectedGradeScaleIdUseCase = { null },
+            setLastSelectedGradeScaleIdUseCase = { Option(Unit) },
+        )
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.isLoading) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(WeightedCalculatorCommand.SelectGradeScale(testGradeScaleId))
+            while (current.selectedGradeScale?.id != testGradeScaleId) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(
+                WeightedCalculatorCommand.AddGradeAtPos(
+                    position = 0,
+                    grade = WeightedGrade(0.85, 1.0, "UUID1"),
+                ),
+            )
+            while (current.grades.isEmpty()) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(WeightedCalculatorCommand.SelectGrade("UUID1"))
+            assertEquals("UUID1", awaitItem().selectedGrade?.uuid)
+            sut.sendCommand(WeightedCalculatorCommand.SelectGrade(null))
+            assertNull(awaitItem().selectedGrade)
+            sut.sendCommand(WeightedCalculatorCommand.SelectGrade("UUID1"))
+            assertEquals("UUID1", awaitItem().selectedGrade?.uuid)
+
+            assertEquals(1, allGradeScalesCalls)
+            assertEquals(1, allGradeScalesCollections)
+            assertEquals(1, gradeScaleByIdCalls)
+            assertEquals(1, gradeScaleByIdCollections)
+            assertEquals(1, allWeightedGradesCalls)
+            assertEquals(1, allWeightedGradesCollections)
             cancelAndIgnoreRemainingEvents()
         }
     }

@@ -21,6 +21,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
@@ -249,6 +250,54 @@ class UpsertGradeScaleUIStateFactoryTest {
                 ),
                 awaitItem(),
             )
+        }
+    }
+
+    @Test
+    fun `recompositions on SetNewName do not recreate or re-collect getAllGradeScalesUseCase flow`() = runTest {
+        var allGradeScalesCalls = 0
+        var allGradeScalesCollections = 0
+        val countingUseCase = GetAllGradeScalesUseCase {
+            allGradeScalesCalls++
+            flowOf(mockGradeScales.toImmutableList()).onStart { allGradeScalesCollections++ }
+        }
+        val sut = UpsertGradeScaleUIStateFactory(
+            getAllGradeScalesUseCase = countingUseCase,
+            insertGradeScaleUseCase = defaultInsertGradeScaleUseCase,
+            updateGradeScaleUseCase = defaultUpdateGradeScaleUseCase,
+            showSnackbarUseCase = mockShowSnackbarUseCase,
+            stateProducer = TestStateProducer(backgroundScope),
+        )
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.existingGradeScaleNames.isEmpty()) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetOperation(Insert))
+            while (current.state != Loaded(Insert)) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetNewName("A"))
+            while (current.newName != "A") {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetNewName("AB"))
+            while (current.newName != "AB") {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetNewName("ABC"))
+            while (current.newName != "ABC") {
+                current = awaitItem()
+            }
+
+            assertEquals(1, allGradeScalesCalls)
+            assertEquals(1, allGradeScalesCollections)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }

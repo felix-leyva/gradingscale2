@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
@@ -32,7 +33,8 @@ class UpsertGradeScaleUIStateFactory(
     private var operation by mutableStateOf<State.Operation?>(null)
 
     override val uiState: StateFlow<UpsertGradeScaleUIState> by stateProducer {
-        val existingGradeScaleNames = getAllGradeScalesUseCase().asState(persistentListOf()).map { gradeScale ->
+        val allGradeScalesFlow = remember { getAllGradeScalesUseCase() }
+        val existingGradeScaleNames = allGradeScalesFlow.asState(persistentListOf()).map { gradeScale ->
             GradeScaleNameAndId(
                 name = gradeScale.gradeScaleName,
                 id = gradeScale.id,

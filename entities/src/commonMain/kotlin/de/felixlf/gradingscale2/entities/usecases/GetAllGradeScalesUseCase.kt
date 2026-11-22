@@ -17,9 +17,9 @@ internal class GetAllGradeScalesUseCaseImpl(
     private val generator: GradeScaleGenerator,
 ) : GetAllGradeScalesUseCase {
     override fun invoke(): Flow<ImmutableList<GradeScale>> =
-        gradeScaleRepository.getGradeScales()
+        gradeScaleRepository.gradeScales
             .onStart {
-                if (gradeScaleRepository.getGradeScales().first().isEmpty()) {
+                if (gradeScaleRepository.gradeScales.first().isEmpty()) {
                     generator.getGradeScales()
                         .forEach { gradeScaleRepository.upsertGradeScale(it) }
                 }

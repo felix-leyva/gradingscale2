@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.repositories
 import arrow.core.Option
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 
 /**
@@ -12,12 +13,12 @@ internal interface GradeScaleRepository {
     /**
      * Get a [GradeScale] by its unique identifier.
      */
-    fun getGradeScaleById(id: String): SharedFlow<GradeScale?>
+    fun getGradeScaleById(id: String): Flow<GradeScale?>
 
     /**
-     * Get all [GradeScale]s.
+     * Shared stream of all [GradeScale]s.
      */
-    fun getGradeScales(): SharedFlow<ImmutableList<GradeScale>>
+    val gradeScales: SharedFlow<ImmutableList<GradeScale>>
 
     /**
      * Insert or update a [GradeScale] and return its id.

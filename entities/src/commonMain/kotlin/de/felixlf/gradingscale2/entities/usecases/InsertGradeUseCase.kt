@@ -26,7 +26,7 @@ internal class InsertGradeUseCaseImpl(
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun invoke(gradeScaleId: String, percentage: Double, namedGrade: String): Either<InsertGradeUseCaseError, Unit> =
         either {
-            val gradeScales = gradeScaleRepository.getGradeScales().first()
+            val gradeScales = gradeScaleRepository.gradeScales.first()
             val gradeScale =
                 ensureNotNull(gradeScales.firstOrNull { it.id == gradeScaleId }) { InsertGradeUseCaseError.GradeScaleIdNotFound }
             ensure(gradeScale.grades.none { it.namedGrade == namedGrade }) { InsertGradeUseCaseError.GradeWithSameNameAlreadyExists }

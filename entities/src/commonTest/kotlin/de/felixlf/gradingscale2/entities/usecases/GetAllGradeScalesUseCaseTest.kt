@@ -84,7 +84,7 @@ class GetAllGradeScalesUseCaseTest {
         }
 
         // Then - verify that the repository has been populated
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(mockGenerator.gradeScales.size, scales.size)
             cancelAndConsumeRemainingEvents()

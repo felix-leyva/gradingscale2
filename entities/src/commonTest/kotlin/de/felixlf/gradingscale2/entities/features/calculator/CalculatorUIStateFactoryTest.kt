@@ -10,6 +10,7 @@ import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUse
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -156,6 +157,64 @@ class CalculatorUIStateFactoryTest {
                 assertEquals(0.9, currentGrade?.percentage)
                 assertEquals(mockGradeScales.first().gradeByPercentage(0.9).namedGrade, currentGrade?.grade?.namedGrade)
             }
+        }
+    }
+
+    @Test
+    fun `recompositions on local state updates do not recreate or re-collect flows`() = runTest {
+        var allGradeScalesCalls = 0
+        var allGradeScalesCollections = 0
+        var getScaleByIdCalls = 0
+        var getScaleByIdCollections = 0
+
+        val countingAllScalesUseCase = GetAllGradeScalesUseCase {
+            allGradeScalesCalls++
+            flowOf(mockGradeScales.toImmutableList()).onStart { allGradeScalesCollections++ }
+        }
+        val countingScaleByIdUseCase = GetGradeScaleByIdUseCase { id ->
+            getScaleByIdCalls++
+            flowOf(mockGradeScales.find { it.id == id }).onStart { getScaleByIdCollections++ }
+        }
+
+        val sut = CalculatorUIModel(
+            stateProducer = TestStateProducer(backgroundScope),
+            allGradeScalesUseCase = countingAllScalesUseCase,
+            getGradeScaleByIdUseCase = countingScaleByIdUseCase,
+            getLastSelectedGradeScaleIdUseCase = GetLastSelectedGradeScaleIdUseCase { null },
+            setLastSelectedGradeScaleIdUseCase = SetLastSelectedGradeScaleIdUseCase { Option(Unit) },
+        )
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.gradeScalesNamesWithId.isEmpty()) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(CalculatorUIEvent.SelectGradeScale(current.gradeScalesNames.first()))
+            while (current.selectedGradeScale == null) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(CalculatorUIEvent.SetTotalPoints(20.0))
+            while (current.totalPoints != 20.0) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(CalculatorUIEvent.SetPercentage(0.75))
+            while (current.currentPercentage != 0.75) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(CalculatorUIEvent.SetPoints(10.0))
+            while (current.currentPercentage != 0.5) {
+                current = awaitItem()
+            }
+
+            assertEquals(1, allGradeScalesCalls)
+            assertEquals(1, allGradeScalesCollections)
+            assertEquals(1, getScaleByIdCalls)
+            assertEquals(1, getScaleByIdCollections)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }

@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.features.list
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SetTotalPoints
@@ -44,9 +45,11 @@ class GradeListUIModel(
                 gradeScaleId = it
             }
         }
-        val selectedGradeScale = gradeScaleId?.let { getGradeScaleByIdUseCase(it).asState(null) }
+        val allGradeScalesFlow = remember { allGradeScalesUseCase() }
+        val selectedGradeScaleFlow = remember(gradeScaleId) { gradeScaleId?.let { getGradeScaleByIdUseCase(it) } }
+        val selectedGradeScale = selectedGradeScaleFlow?.asState(null)
         val modifiedGradeScale = selectedGradeScale?.copy(totalPoints = totalPoints)
-        val gradeScalesNamesWithId = allGradeScalesUseCase().asState(persistentListOf()).map {
+        val gradeScalesNamesWithId = allGradeScalesFlow.asState(persistentListOf()).map {
             GradeScaleListUIState.GradeScaleNameWithId(
                 gradeScaleName = it.gradeScaleName,
                 gradeScaleId = it.id,

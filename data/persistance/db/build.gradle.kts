@@ -38,6 +38,7 @@ kotlin {
 
         jvmMain.dependencies {
             implementation(libs2.sqlite.driver)
+            implementation(libs2.appdirs)
         }
 
         val wasmJsMain by getting {

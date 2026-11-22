@@ -6,7 +6,14 @@ import arrow.core.Option
 import arrow.core.Some
 import de.felixlf.gradingscale2.entities.daos.GradesDao
 import de.felixlf.gradingscale2.entities.models.Grade
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -26,7 +33,7 @@ class GradesRepositoryImplTest {
 
     @Test
     fun `getAllGradesFromGradeScale returns grades for a grade scale`() = runTest {
-        repository = GradesRepositoryImpl(mockDao, this)
+        repository = GradesRepositoryImpl(mockDao)
 
         // Given
         val gradeScaleId = "1"
@@ -60,7 +67,7 @@ class GradesRepositoryImplTest {
     @Test
     fun `getAllGradesFromGradeScale returns empty list for non-existing grade scale`() = runTest {
         // Given
-        repository = GradesRepositoryImpl(mockDao, this)
+        repository = GradesRepositoryImpl(mockDao)
         val nonExistingGradeScaleId = "999"
 
         // When/Then
@@ -74,7 +81,7 @@ class GradesRepositoryImplTest {
     @Test
     fun `getGradeById returns grade when it exists`() = runTest {
         // Given
-        repository = GradesRepositoryImpl(mockDao, this)
+        repository = GradesRepositoryImpl(mockDao)
         val gradeId = "uuid1"
         val grade = Grade(
             namedGrade = "A",
@@ -97,7 +104,7 @@ class GradesRepositoryImplTest {
     @Test
     fun `getGradeById returns null for non-existing grade`() = runTest {
         // Given
-        repository = GradesRepositoryImpl(mockDao, this)
+        repository = GradesRepositoryImpl(mockDao)
         val nonExistingGradeId = "non-existing"
 
         // When/Then
@@ -111,7 +118,7 @@ class GradesRepositoryImplTest {
     @Test
     fun `upsertGrade delegates to DAO and returns its result`() = runTest {
         // Given
-        repository = GradesRepositoryImpl(mockDao, this)
+        repository = GradesRepositoryImpl(mockDao)
         val grade = Grade(
             namedGrade = "A",
             percentage = 0.9,
@@ -133,7 +140,7 @@ class GradesRepositoryImplTest {
     @Test
     fun `upsertGrade returns None when DAO fails`() = runTest {
         // Given
-        repository = GradesRepositoryImpl(mockDao, this)
+        repository = GradesRepositoryImpl(mockDao)
         val grade = Grade(
             namedGrade = "A",
             percentage = 0.9,
@@ -154,7 +161,7 @@ class GradesRepositoryImplTest {
     @Test
     fun `deleteGrade delegates to DAO and returns its result`() = runTest {
         // Given
-        repository = GradesRepositoryImpl(mockDao, this)
+        repository = GradesRepositoryImpl(mockDao)
         val gradeId = "uuid1"
         val grade = Grade(
             namedGrade = "A",
@@ -177,7 +184,7 @@ class GradesRepositoryImplTest {
     @Test
     fun `deleteGrade returns None when DAO fails`() = runTest {
         // Given
-        repository = GradesRepositoryImpl(mockDao, this)
+        repository = GradesRepositoryImpl(mockDao)
         val gradeId = "uuid1"
         val grade = Grade(
             namedGrade = "A",
@@ -200,7 +207,7 @@ class GradesRepositoryImplTest {
     @Test
     fun `deleteGrade returns None for non-existing grade`() = runTest {
         // Given
-        repository = GradesRepositoryImpl(mockDao, this)
+        repository = GradesRepositoryImpl(mockDao)
         val nonExistingGradeId = "non-existing"
         mockDao.success = true
 
@@ -209,6 +216,79 @@ class GradesRepositoryImplTest {
 
         // Then
         assertTrue(result is None)
+    }
+
+    @Test
+    fun `getAllGradesFromGradeScale and getGradeById do not leak active collectors after collection cancels`() = runTest {
+        val activeCollectors = MutableStateFlow(0)
+        val grade = Grade(
+            namedGrade = "A",
+            percentage = 0.9,
+            idOfGradeScale = "1",
+            nameOfScale = "Test Scale",
+            uuid = "uuid1",
+        )
+        val gradesState = MutableStateFlow(listOf(grade))
+        val countingDao = object : GradesDao {
+            override fun getAllGradesFromGradeScale(gradeScaleId: String): Flow<List<Grade>> = gradesState
+                .map { list -> list.filter { it.idOfGradeScale == gradeScaleId } }
+                .onStart { activeCollectors.update { it + 1 } }
+                .onCompletion { activeCollectors.update { it - 1 } }
+
+            override fun getGradeById(gradeId: String): Flow<Grade?> = gradesState
+                .map { list -> list.find { it.uuid == gradeId } }
+                .onStart { activeCollectors.update { it + 1 } }
+                .onCompletion { activeCollectors.update { it - 1 } }
+
+            override suspend fun upsertGrade(grade: Grade): Option<Long> = Some(1L)
+
+            override suspend fun deleteGrade(gradeId: String): Option<Unit> = Some(Unit)
+        }
+        val sut = GradesRepositoryImpl(gradesDao = countingDao)
+
+        repeat(5) {
+            sut.getAllGradesFromGradeScale("1").first()
+            sut.getGradeById("uuid1").first()
+        }
+        assertEquals(0, activeCollectors.value)
+    }
+
+    @Test
+    fun `getAllGradesFromGradeScale recovers after transient upstream dao error`() = runTest {
+        val expectedGrades = listOf(
+            Grade(
+                namedGrade = "A",
+                percentage = 0.9,
+                idOfGradeScale = "1",
+                nameOfScale = "Test Scale",
+                uuid = "uuid1",
+            ),
+        )
+        var calls = 0
+        val flakyDao = object : GradesDao {
+            override fun getAllGradesFromGradeScale(gradeScaleId: String): Flow<List<Grade>> = flow {
+                if (calls++ == 0) {
+                    throw IllegalStateException("Transient DB error")
+                }
+                emit(expectedGrades)
+            }
+
+            override fun getGradeById(gradeId: String): Flow<Grade?> = flow {
+                emit(expectedGrades.find { it.uuid == gradeId })
+            }
+
+            override suspend fun upsertGrade(grade: Grade): Option<Long> = Some(1L)
+
+            override suspend fun deleteGrade(gradeId: String): Option<Unit> = Some(Unit)
+        }
+        val sut = GradesRepositoryImpl(gradesDao = flakyDao)
+
+        val firstAttempt = runCatching { sut.getAllGradesFromGradeScale("1").first() }
+        assertTrue(firstAttempt.isFailure)
+
+        val recovered = sut.getAllGradesFromGradeScale("1").first()
+        assertEquals(expectedGrades, recovered)
+        assertEquals(2, calls)
     }
 }
 

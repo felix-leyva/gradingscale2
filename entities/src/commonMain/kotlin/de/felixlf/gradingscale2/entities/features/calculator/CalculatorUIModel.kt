@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.features.calculator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModel
@@ -43,8 +44,10 @@ class CalculatorUIModel(
             gradeScaleId = getLastSelectedGradeScaleIdUseCase()
         }
 
-        val selectedGradeScale = gradeScaleId?.let { getGradeScaleByIdUseCase(it).asState(null) }
-        val gradeScalesNamesWithId = allGradeScalesUseCase().asState(persistentListOf()).map {
+        val allGradeScalesFlow = remember { allGradeScalesUseCase() }
+        val selectedGradeScaleFlow = remember(gradeScaleId) { gradeScaleId?.let { getGradeScaleByIdUseCase(it) } }
+        val selectedGradeScale = selectedGradeScaleFlow?.asState(null)
+        val gradeScalesNamesWithId = allGradeScalesFlow.asState(persistentListOf()).map {
             GradeScaleCalculatorUIState.GradeScaleNameWithId(
                 gradeScaleName = it.gradeScaleName,
                 gradeScaleId = it.id,

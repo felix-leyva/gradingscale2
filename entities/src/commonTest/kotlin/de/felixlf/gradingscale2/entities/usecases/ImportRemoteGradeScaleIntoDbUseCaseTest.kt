@@ -49,7 +49,7 @@ class ImportRemoteGradeScaleIntoDbUseCaseTest {
         )
 
         // Verify repository state
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(1, scales.size)
 
@@ -102,7 +102,7 @@ class ImportRemoteGradeScaleIntoDbUseCaseTest {
         assertTrue(result.isSome())
 
         // Verify repository state
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(2, scales.size)
 
@@ -167,7 +167,7 @@ class ImportRemoteGradeScaleIntoDbUseCaseTest {
         assertTrue(result.isSome())
 
         // Verify repository state
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(3, scales.size)
 
@@ -200,7 +200,7 @@ class ImportRemoteGradeScaleIntoDbUseCaseTest {
         assertTrue(result.isNone())
 
         // Verify repository state (unchanged)
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(0, scales.size)
 
