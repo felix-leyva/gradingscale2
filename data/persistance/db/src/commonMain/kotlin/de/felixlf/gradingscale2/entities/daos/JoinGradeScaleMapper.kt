@@ -9,6 +9,7 @@ internal class JoinGradeScaleMapper {
     fun mapToJoinedGradeScaleWithGradeDao(
         gradeScaleId: String,
         gradeScaleName: String,
+        totalPoints: Double,
         gradeUuid: String,
         namedGrade: String,
         percentage: Double,
@@ -17,6 +18,7 @@ internal class JoinGradeScaleMapper {
         JoinedGradeScaleWithGradeDao(
             gradeScaleId = gradeScaleId,
             gradeScaleName = gradeScaleName,
+            totalPoints = totalPoints,
             gradeUuid = gradeUuid,
             namedGrade = namedGrade,
             percentage = percentage,
@@ -42,7 +44,7 @@ internal class JoinGradeScaleMapper {
                 GradeScale(
                     id = firstGrade.scaleId,
                     gradeScaleName = firstGrade.gradeScaleName,
-                    totalPoints = 1.0,
+                    totalPoints = firstGrade.totalPoints,
                     grades = gradesList,
                 )
             }.toPersistentList()

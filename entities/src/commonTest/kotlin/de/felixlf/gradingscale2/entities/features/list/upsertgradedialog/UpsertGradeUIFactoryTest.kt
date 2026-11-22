@@ -11,9 +11,11 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -258,6 +260,42 @@ class UpsertGradeUIFactoryTest {
 
             assertNull(upsertedGrade)
 
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun save_and_saveAsNew_withNonNumericOrOutOfRangeOrNullPercentage_doNotCrashOrInvokeUseCases() = runTest {
+        val sut = createSUT()
+
+        sut.uiState.test {
+            awaitItem()
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeScaleId("scale-1"))
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeName("C"))
+            runCurrent()
+
+            // Null percentage
+            sut.sendCommand(UpsertGradeUIEvent.Save)
+            sut.sendCommand(UpsertGradeUIEvent.SaveAsNew)
+            runCurrent()
+
+            // Non-numeric percentage
+            sut.sendCommand(UpsertGradeUIEvent.SetPercentage("abc"))
+            runCurrent()
+            sut.sendCommand(UpsertGradeUIEvent.Save)
+            sut.sendCommand(UpsertGradeUIEvent.SaveAsNew)
+            runCurrent()
+
+            // Out-of-range percentage
+            sut.sendCommand(UpsertGradeUIEvent.SetPercentage("150"))
+            runCurrent()
+            sut.sendCommand(UpsertGradeUIEvent.Save)
+            sut.sendCommand(UpsertGradeUIEvent.SaveAsNew)
+            runCurrent()
+
+            assertNull(upsertedGrade)
+            assertNull(insertedNamedGrade)
             cancelAndIgnoreRemainingEvents()
         }
     }

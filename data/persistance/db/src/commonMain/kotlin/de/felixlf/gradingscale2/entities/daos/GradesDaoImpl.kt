@@ -4,7 +4,6 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import arrow.core.Option
-import arrow.core.raise.option
 import de.felixlf.gradingscale2.GradeScaleQueries
 import de.felixlf.gradingscale2.entities.models.Grade
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,7 +27,7 @@ internal class GradesDaoImpl(
             .mapToOneOrNull(dispatcher)
     }
 
-    override suspend fun upsertGrade(grade: Grade): Option<Long> = option {
+    override suspend fun upsertGrade(grade: Grade): Option<Long> = Option.catch {
         gradeScaleQueries.upsertGrade(
             uuid = grade.uuid,
             named_grade = grade.namedGrade,
@@ -37,8 +36,7 @@ internal class GradesDaoImpl(
         )
     }
 
-    override suspend fun deleteGrade(gradeId: String): Option<Unit> = option {
+    override suspend fun deleteGrade(gradeId: String): Option<Unit> = Option.catch {
         gradeScaleQueries.deleteGradesByUuid(gradeId)
-//        ensure(driver.execute(null, "SELECT changes() AS affected_rows", 0).await() == 0L)
     }
 }

@@ -3,7 +3,6 @@ package de.felixlf.gradingscale2.entities.daos
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import arrow.core.Option
-import arrow.core.raise.option
 import de.felixlf.gradingscale2.GradeScaleQueries
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import kotlinx.collections.immutable.ImmutableList
@@ -34,11 +33,12 @@ internal class GradeScaleDaoImpl(
             .map(mapper::mapToGradeScale)
 
     override suspend fun upsertGradeScale(gradeScale: GradeScale): Option<Unit> =
-        option {
+        Option.catch {
             gradeScaleQueries.transactionWithResult {
                 gradeScaleQueries.upsertGradeScale(
                     id = gradeScale.id,
                     grade_scale_name = gradeScale.gradeScaleName,
+                    total_points = gradeScale.totalPoints,
                 )
                 gradeScale.sortedPointedGrades.forEach { grade ->
                     gradeScaleQueries.upsertGrade(
@@ -52,7 +52,10 @@ internal class GradeScaleDaoImpl(
         }
 
     override suspend fun deleteGradeScale(gradeScaleId: String): Option<Unit> =
-        option {
-            gradeScaleQueries.deleteGradesByUuid(gradeScaleId)
+        Option.catch {
+            gradeScaleQueries.transactionWithResult {
+                gradeScaleQueries.deleteGradesByScaleId(gradeScaleId)
+                gradeScaleQueries.deleteGradeScaleById(gradeScaleId)
+            }
         }
 }

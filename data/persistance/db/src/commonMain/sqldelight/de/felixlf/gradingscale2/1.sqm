@@ -1,0 +1,1 @@
+ALTER TABLE grade_scale ADD COLUMN total_points REAL NOT NULL DEFAULT 10.0;

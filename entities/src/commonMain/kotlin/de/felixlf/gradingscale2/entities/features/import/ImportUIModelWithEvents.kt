@@ -40,9 +40,10 @@ class ImportUIModelWithEvents(
     private var selectedCountry: Country? by mutableStateOf(null)
     private var error: StringResource? by mutableStateOf(null)
     private var isLoading by mutableStateOf(true)
+    private var isImporting = false
 
     override val uiState: StateFlow<ImportUIState> by stateProducer {
-        LaunchedEffect(error) { loadGrades() }
+        LaunchedEffect(Unit) { loadGrades() }
         ImportUIState(
             countryGradingScales = countriesAndGrades,
             displayedGradeScaleDTO = displayedGradeScaleDTO,
@@ -53,33 +54,42 @@ class ImportUIModelWithEvents(
     }
 
     private suspend fun loadGrades() {
-        if (error == null) {
-            isLoading = true
+        error = null
+        isLoading = true
+        try {
             getRemoteGradeScalesUseCase()
                 .onRight { countriesAndGrades = it }
                 .onLeft {
                     trackErrorUseCase("$TAG#loadGrades", it.message, it.code)
                     error = Res.string.import_grade_get_remote_grades_error
                 }
+        } finally {
             isLoading = false
         }
     }
 
     override fun sendCommand(command: ImportCommand) {
         when (command) {
-            is ImportCommand.ImportGradeScale -> doLoadingOperation {
-                displayedGradeScaleDTO?.let {
-                    importRemoteGradeScaleIntoDbUseCase(it)
-                        .onSome {
-                            scope.launch {
+            is ImportCommand.ImportGradeScale -> {
+                if (isImporting) return
+                val dto = displayedGradeScaleDTO ?: return
+                isImporting = true
+                doLoadingOperation {
+                    try {
+                        importRemoteGradeScaleIntoDbUseCase(dto)
+                            .onSome {
                                 displayedGradeScaleDTO = null
-                                showSnackbarUseCase(
-                                    message = Res.string.import_grade_save_success_message,
-                                    actionLabel = null,
-                                    duration = ShowSnackbarUseCase.SnackbarDuration.Short,
-                                )
+                                scope.launch {
+                                    showSnackbarUseCase(
+                                        message = Res.string.import_grade_save_success_message,
+                                        actionLabel = null,
+                                        duration = ShowSnackbarUseCase.SnackbarDuration.Short,
+                                    )
+                                }
                             }
-                        }
+                    } finally {
+                        isImporting = false
+                    }
                 }
             }
 
@@ -105,8 +115,11 @@ class ImportUIModelWithEvents(
     private fun doLoadingOperation(operation: suspend () -> Unit) {
         scope.launch {
             isLoading = true
-            operation()
-            isLoading = false
+            try {
+                operation()
+            } finally {
+                isLoading = false
+            }
         }
     }
 

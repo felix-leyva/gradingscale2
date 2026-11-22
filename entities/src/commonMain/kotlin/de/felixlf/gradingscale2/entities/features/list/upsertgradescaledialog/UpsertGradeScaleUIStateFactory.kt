@@ -31,6 +31,7 @@ class UpsertGradeScaleUIStateFactory(
     private var newGradeScaleName by mutableStateOf("")
     private var uiSaveState by mutableStateOf<State>(State.Loading)
     private var operation by mutableStateOf<State.Operation?>(null)
+    private var initializedOperation by mutableStateOf<State.Operation?>(null)
 
     override val uiState: StateFlow<UpsertGradeScaleUIState> by stateProducer {
         val allGradeScalesFlow = remember { getAllGradeScalesUseCase() }
@@ -42,11 +43,23 @@ class UpsertGradeScaleUIStateFactory(
         }.toImmutableList()
 
         LaunchedEffect(existingGradeScaleNames, operation) {
-            (operation as? State.Operation.Update)?.let { operation ->
-                val gradeScale = existingGradeScaleNames.find { it.id == operation.currentGradeScaleId }
-                newGradeScaleName = gradeScale?.name ?: ""
+            val currentOp = operation ?: return@LaunchedEffect
+            if (initializedOperation == currentOp) return@LaunchedEffect
+            when (currentOp) {
+                is State.Operation.Insert -> {
+                    uiSaveState = State.Loaded(currentOp)
+                    initializedOperation = currentOp
+                }
+
+                is State.Operation.Update -> {
+                    val gradeScale = existingGradeScaleNames.find { it.id == currentOp.currentGradeScaleId }
+                    if (gradeScale != null || existingGradeScaleNames.isNotEmpty()) {
+                        newGradeScaleName = gradeScale?.name ?: ""
+                        uiSaveState = State.Loaded(currentOp)
+                        initializedOperation = currentOp
+                    }
+                }
             }
-            operation?.let { uiSaveState = State.Loaded(it) }
         }
 
         UpsertGradeScaleUIState(

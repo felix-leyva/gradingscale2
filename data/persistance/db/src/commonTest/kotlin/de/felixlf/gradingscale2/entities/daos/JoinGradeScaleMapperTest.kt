@@ -13,6 +13,7 @@ class JoinGradeScaleMapperTest {
             mapper.mapToJoinedGradeScaleWithGradeDao(
                 gradeScaleId = "scale1",
                 gradeScaleName = "Scale 1",
+                totalPoints = 100.0,
                 gradeUuid = "grade1",
                 namedGrade = "A",
                 percentage = 0.9,
@@ -21,6 +22,7 @@ class JoinGradeScaleMapperTest {
 
         assertEquals("scale1", result.gradeScaleId)
         assertEquals("Scale 1", result.gradeScaleName)
+        assertEquals(100.0, result.totalPoints)
         assertEquals("grade1", result.gradeUuid)
         assertEquals("A", result.namedGrade)
         assertEquals(0.9, result.percentage)
@@ -34,6 +36,7 @@ class JoinGradeScaleMapperTest {
                 JoinedGradeScaleWithGradeDao(
                     gradeScaleId = "scale1",
                     gradeScaleName = "Scale 1",
+                    totalPoints = 100.0,
                     gradeUuid = "grade1",
                     namedGrade = "A",
                     percentage = 0.90,
@@ -42,6 +45,7 @@ class JoinGradeScaleMapperTest {
                 JoinedGradeScaleWithGradeDao(
                     gradeScaleId = "scale1",
                     gradeScaleName = "Scale 1",
+                    totalPoints = 100.0,
                     gradeUuid = "grade2",
                     namedGrade = "B",
                     percentage = 0.80,
@@ -55,7 +59,7 @@ class JoinGradeScaleMapperTest {
         val gradeScale = result.first()
         assertEquals("scale1", gradeScale.id)
         assertEquals("Scale 1", gradeScale.gradeScaleName)
-        assertEquals(1.0, gradeScale.totalPoints)
+        assertEquals(100.0, gradeScale.totalPoints)
         assertEquals(2, gradeScale.grades.size)
 
         val gradeA = gradeScale.grades.first { it.namedGrade == "A" }
@@ -77,6 +81,7 @@ class JoinGradeScaleMapperTest {
             JoinedGradeScaleWithGradeDao(
                 gradeScaleId = "scale1",
                 gradeScaleName = "Scale 1",
+                totalPoints = 50.0,
                 gradeUuid = "g1",
                 namedGrade = "A",
                 percentage = 0.90,
@@ -85,6 +90,7 @@ class JoinGradeScaleMapperTest {
             JoinedGradeScaleWithGradeDao(
                 gradeScaleId = "scale2",
                 gradeScaleName = "Scale 2",
+                totalPoints = 20.0,
                 gradeUuid = "g2",
                 namedGrade = "Pass",
                 percentage = 0.50,
@@ -93,6 +99,7 @@ class JoinGradeScaleMapperTest {
             JoinedGradeScaleWithGradeDao(
                 gradeScaleId = "scale1",
                 gradeScaleName = "Scale 1",
+                totalPoints = 50.0,
                 gradeUuid = "g3",
                 namedGrade = "B",
                 percentage = 0.80,
@@ -106,10 +113,12 @@ class JoinGradeScaleMapperTest {
 
         val scale1 = result.first { it.id == "scale1" }
         assertEquals("Scale 1", scale1.gradeScaleName)
+        assertEquals(50.0, scale1.totalPoints)
         assertEquals(2, scale1.grades.size)
 
         val scale2 = result.first { it.id == "scale2" }
         assertEquals("Scale 2", scale2.gradeScaleName)
+        assertEquals(20.0, scale2.totalPoints)
         assertEquals(1, scale2.grades.size)
         assertEquals("Pass", scale2.grades.first().namedGrade)
     }
@@ -128,6 +137,7 @@ class JoinGradeScaleMapperTest {
                 JoinedGradeScaleWithGradeDao(
                     gradeScaleId = "scale1",
                     gradeScaleName = "Scale 1",
+                    totalPoints = 10.0,
                     gradeUuid = "grade1",
                     namedGrade = "A",
                     percentage = 0.90,
@@ -141,7 +151,7 @@ class JoinGradeScaleMapperTest {
         val gradeScale = result.first()
         assertEquals("scale1", gradeScale.id)
         assertEquals("Scale 1", gradeScale.gradeScaleName)
-        assertEquals(1.0, gradeScale.totalPoints)
+        assertEquals(10.0, gradeScale.totalPoints)
         assertEquals(1, gradeScale.sortedPointedGrades.size)
     }
 }

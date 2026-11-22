@@ -82,25 +82,34 @@ class UpsertGradeUIFactory(
 
     private fun save(event: UpsertGradeUIEvent) {
         scope.launch {
-            val gradeName = requireNotNull(gradeName)
-            val percentage = requireNotNull(percentage?.toDoubleOrNull()?.div(100.0))
-            val gradeScaleId = requireNotNull(gradeScaleId)
-            val selectedGrade = selectedGrade
+            val name = gradeName?.takeIf { it.isNotBlank() } ?: return@launch
+            val parsedPercentage = percentage?.trim()?.toDoubleOrNull()
+                ?.takeIf { it.isFinite() }
+                ?.div(100.0)
+                ?.takeIf { it in 0.0..1.0 }
+                ?: return@launch
+            val scaleId = gradeScaleId ?: return@launch
+            val currentSelectedGrade = selectedGrade
+            val validationState = UpsertGradeUIState(
+                name = gradeName,
+                percentage = percentage,
+                grade = currentSelectedGrade,
+                gradeScale = currentGradeScale,
+                selectedGrade = currentSelectedGrade,
+            )
             when {
-                currentState?.error?.isNotEmpty() == true -> return@launch
-
-                event is UpsertGradeUIEvent.Save && selectedGrade != null -> {
-                    val updatedGrade = selectedGrade.copy(
-                        namedGrade = gradeName,
-                        percentage = percentage,
+                event is UpsertGradeUIEvent.Save && currentSelectedGrade != null && validationState.isSaveButtonEnabled -> {
+                    val updatedGrade = currentSelectedGrade.copy(
+                        namedGrade = name,
+                        percentage = parsedPercentage,
                     )
                     upsertGradeUseCase(updatedGrade)
                 }
 
-                event is UpsertGradeUIEvent.SaveAsNew -> insertGradeUseCase(
-                    gradeScaleId = gradeScaleId,
-                    percentage = percentage,
-                    namedGrade = gradeName,
+                event is UpsertGradeUIEvent.SaveAsNew && validationState.isSaveNewButtonEnabled -> insertGradeUseCase(
+                    gradeScaleId = scaleId,
+                    percentage = parsedPercentage,
+                    namedGrade = name,
                 )
             }
         }

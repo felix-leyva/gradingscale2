@@ -15,11 +15,12 @@ data class UpsertGradeUIState(
     val selectedGrade: Grade?,
 ) {
 
-    private val percentageToDouble = percentage?.ifEmpty { "-1" }?.toDoubleOrNull()?.div(100)
-    private val duplicatedPercentage = gradeScale?.grades?.map { it.percentage }?.contains(percentageToDouble) == true
+    private val percentageToDouble = percentage?.trim()?.toDoubleOrNull()?.takeIf { it.isFinite() }?.div(100)
+    private val duplicatedPercentage =
+        percentageToDouble != null && gradeScale?.grades?.map { it.percentage }?.contains(percentageToDouble) == true
     private val percentageFieldErrors =
         when {
-            percentageToDouble != null && percentageToDouble !in 0.0..1.0 -> Error.INVALID_PERCENTAGE
+            percentage != null && (percentageToDouble == null || percentageToDouble !in 0.0..1.0) -> Error.INVALID_PERCENTAGE
             selectedGrade?.percentage != percentageToDouble && duplicatedPercentage -> Error.DUPLICATE_PERCENTAGE
 
             else -> null
@@ -40,7 +41,7 @@ data class UpsertGradeUIState(
         !(grade == null || isLoading || !error.isEmpty() || name.isNullOrBlank() || percentage.isNullOrBlank())
 
     val isSaveNewButtonEnabled: Boolean =
-        !(isLoading || name.isNullOrBlank() || percentage.isNullOrBlank() || duplicatedName || duplicatedPercentage)
+        !(isLoading || !error.isEmpty() || name.isNullOrBlank() || percentage.isNullOrBlank() || duplicatedName || duplicatedPercentage)
 
     enum class Error { INVALID_PERCENTAGE, INVALID_NAME, DUPLICATE_NAME, DUPLICATE_PERCENTAGE }
 }
