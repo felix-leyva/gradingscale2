@@ -9,6 +9,11 @@ import de.felixlf.gradingscale2.BuildConfigs.PACKAGE_NAME
 import net.harawata.appdirs.AppDirsFactory
 import java.io.File
 import java.nio.file.Files
+import java.util.Properties
+
+internal fun createJvmSqliteProperties(): Properties = Properties().apply {
+    put("foreign_keys", "true")
+}
 
 internal class JVMDriverFactory : DriverFactory {
     override fun createDriver(): SqlDriver {
@@ -17,6 +22,9 @@ internal class JVMDriverFactory : DriverFactory {
             ?: AppDirsFactory.getInstance().getUserDataDir(PACKAGE_NAME, null, ORGANIZATION)
         val dbFile = File(dbDir, "gradingscale.db")
         dbFile.parentFile?.let { Files.createDirectories(it.toPath()) }
-        return JdbcSqliteDriver("jdbc:sqlite:${dbFile.absolutePath}")
+        return JdbcSqliteDriver(
+            url = "jdbc:sqlite:${dbFile.absolutePath}",
+            properties = createJvmSqliteProperties(),
+        )
     }
 }

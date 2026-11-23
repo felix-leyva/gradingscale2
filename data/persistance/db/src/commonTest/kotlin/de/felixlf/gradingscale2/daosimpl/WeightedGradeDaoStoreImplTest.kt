@@ -72,7 +72,7 @@ class WeightedGradeDaoStoreImplTest {
         val result = dao.upsertWeightedGrade(grade)
 
         // Then
-        assertEquals(0L.some(), result)
+        assertEquals(1L.some(), result)
         val grades = dao.getAllWeightedGrades().first()
         assertEquals(1, grades.size)
         assertEquals(grade, grades.first())

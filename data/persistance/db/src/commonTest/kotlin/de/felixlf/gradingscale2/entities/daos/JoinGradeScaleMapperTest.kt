@@ -154,4 +154,40 @@ class JoinGradeScaleMapperTest {
         assertEquals(10.0, gradeScale.totalPoints)
         assertEquals(1, gradeScale.sortedPointedGrades.size)
     }
+
+    @Test
+    fun mapToGradeScale_preservesScaleWithNullGradeColumnsFromLeftJoin_A3_04() {
+        val joinedGradesAndScales = listOf(
+            mapper.mapToJoinedGradeScaleWithGradeDao(
+                gradeScaleId = "empty-scale",
+                gradeScaleName = "Empty Scale",
+                totalPoints = 40.0,
+                gradeUuid = null,
+                namedGrade = null,
+                percentage = null,
+                scaleId = null,
+            ),
+            mapper.mapToJoinedGradeScaleWithGradeDao(
+                gradeScaleId = "non-empty-scale",
+                gradeScaleName = "Non Empty",
+                totalPoints = 10.0,
+                gradeUuid = "g-1",
+                namedGrade = "1",
+                percentage = 0.9,
+                scaleId = "non-empty-scale",
+            ),
+        )
+
+        val result = mapper.mapToGradeScale(joinedGradesAndScales)
+
+        assertEquals(2, result.size)
+        val emptyScale = result.first { it.id == "empty-scale" }
+        assertEquals("Empty Scale", emptyScale.gradeScaleName)
+        assertEquals(40.0, emptyScale.totalPoints)
+        assertTrue(emptyScale.grades.isEmpty())
+
+        val nonEmpty = result.first { it.id == "non-empty-scale" }
+        assertEquals(1, nonEmpty.grades.size)
+        assertEquals("1", nonEmpty.grades.single().namedGrade)
+    }
 }

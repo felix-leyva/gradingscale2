@@ -1,8 +1,6 @@
 package de.felixlf.gradingscale2.daosimpl
 
 import arrow.core.Option
-import arrow.core.none
-import arrow.core.some
 import de.felixlf.gradingscale2.entities.daos.WeightedGradeDao
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.store.WeightedGradesStore
@@ -15,16 +13,14 @@ class WeightedGradeDaoStoreImpl(
         return weightedGradesStore.getAllWeightedGrades()
     }
 
-    override suspend fun upsertWeightedGrade(weightedGrade: WeightedGrade): Option<Long> {
-        weightedGradesStore.upsertWeightedGrade(weightedGrade)
-        return 0L.some()
-    }
-
-    override suspend fun deleteWeightedGrade(weightedGradeId: String): Option<Unit> {
-        return if (weightedGradesStore.deleteWeightedGrade(weightedGradeId)) {
-            Unit.some()
-        } else {
-            none()
+    override suspend fun upsertWeightedGrade(weightedGrade: WeightedGrade): Option<Long> =
+        Option.catch {
+            weightedGradesStore.upsertWeightedGrade(weightedGrade)
+            1L
         }
-    }
+
+    override suspend fun deleteWeightedGrade(weightedGradeId: String): Option<Unit> =
+        Option.catch {
+            weightedGradesStore.deleteWeightedGrade(weightedGradeId)
+        }.filter { deleted -> deleted }.map {}
 }

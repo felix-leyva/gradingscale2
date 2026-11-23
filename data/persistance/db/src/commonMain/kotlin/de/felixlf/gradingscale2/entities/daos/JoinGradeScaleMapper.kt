@@ -10,10 +10,10 @@ internal class JoinGradeScaleMapper {
         gradeScaleId: String,
         gradeScaleName: String,
         totalPoints: Double,
-        gradeUuid: String,
-        namedGrade: String,
-        percentage: Double,
-        scaleId: String,
+        gradeUuid: String?,
+        namedGrade: String?,
+        percentage: Double?,
+        scaleId: String?,
     ): JoinedGradeScaleWithGradeDao =
         JoinedGradeScaleWithGradeDao(
             gradeScaleId = gradeScaleId,
@@ -27,24 +27,27 @@ internal class JoinGradeScaleMapper {
 
     fun mapToGradeScale(joinedGradesAndScales: List<JoinedGradeScaleWithGradeDao>): ImmutableList<GradeScale> =
         joinedGradesAndScales
-            .groupBy { it.scaleId }
-            .map { (_, grades) ->
-                val firstGrade = grades.first()
+            .groupBy { it.gradeScaleId }
+            .map { (_, rows) ->
+                val firstRow = rows.first()
                 val gradesList =
-                    grades
-                        .map { grade ->
+                    rows
+                        .mapNotNull { row ->
+                            val uuid = row.gradeUuid ?: return@mapNotNull null
+                            val namedGrade = row.namedGrade ?: return@mapNotNull null
+                            val percentage = row.percentage ?: return@mapNotNull null
                             Grade(
-                                namedGrade = grade.namedGrade,
-                                percentage = grade.percentage,
-                                idOfGradeScale = grade.scaleId,
-                                nameOfScale = grade.gradeScaleName,
-                                uuid = grade.gradeUuid,
+                                namedGrade = namedGrade,
+                                percentage = percentage,
+                                idOfGradeScale = row.scaleId ?: row.gradeScaleId,
+                                nameOfScale = row.gradeScaleName,
+                                uuid = uuid,
                             )
                         }.toPersistentList()
                 GradeScale(
-                    id = firstGrade.scaleId,
-                    gradeScaleName = firstGrade.gradeScaleName,
-                    totalPoints = firstGrade.totalPoints,
+                    id = firstRow.gradeScaleId,
+                    gradeScaleName = firstRow.gradeScaleName,
+                    totalPoints = firstRow.totalPoints,
                     grades = gradesList,
                 )
             }.toPersistentList()

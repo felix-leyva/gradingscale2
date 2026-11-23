@@ -53,21 +53,26 @@ class WeightedGradesStoreProvider(
 
     override suspend fun deleteWeightedGrade(weightedGradeId: String): Boolean {
         return withContext(dispatcherProvider.io) {
-            var deleted = false
-            weightedGradesStore.update { data ->
-                val currentData = data ?: WeightedGradesStoreData(persistentListOf())
-                val indexToRemove = currentData.weightedGrades.indexOfFirst { it.uuid == weightedGradeId }
-                if (indexToRemove != -1) {
-                    deleted = true
-                    val updatedGrades = currentData.weightedGrades.mutate { grades ->
-                        grades.removeAt(indexToRemove)
+            val existing = weightedGradesStore.get()
+            if (existing?.weightedGrades?.any { it.uuid == weightedGradeId } != true) {
+                false
+            } else {
+                var deleted = false
+                weightedGradesStore.update { data ->
+                    val currentData = data ?: WeightedGradesStoreData(persistentListOf())
+                    val indexToRemove = currentData.weightedGrades.indexOfFirst { it.uuid == weightedGradeId }
+                    if (indexToRemove != -1) {
+                        deleted = true
+                        val updatedGrades = currentData.weightedGrades.mutate { grades ->
+                            grades.removeAt(indexToRemove)
+                        }
+                        currentData.copy(weightedGrades = updatedGrades)
+                    } else {
+                        currentData
                     }
-                    currentData.copy(weightedGrades = updatedGrades)
-                } else {
-                    currentData
                 }
+                deleted
             }
-            deleted
         }
     }
 }

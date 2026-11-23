@@ -80,7 +80,7 @@ class JVMDriverFactoryPersistenceTest {
         factory.createDriver().use { driver1 ->
             DatabaseSchemaInitializer(driver1).initSchema()
             val db1 = Database(driver1)
-            val gradeScaleDao1 = GradeScaleDaoImpl(db1.gradeScaleQueries, Dispatchers.IO)
+            val gradeScaleDao1 = GradeScaleDaoImpl(db1.gradeScaleQueries, testDispatchers)
             val weightedDao1 = WeightedGradeDaoImpl(
                 dbToWeightedGradeMapper = DbToWeightedGradeMapperImpl(),
                 queries = db1.weightedGradeQueries,
@@ -107,7 +107,7 @@ class JVMDriverFactoryPersistenceTest {
             assertEquals(Database.Schema.version, userVersion)
 
             val db2 = Database(driver2)
-            val gradeScaleDao2 = GradeScaleDaoImpl(db2.gradeScaleQueries, Dispatchers.IO)
+            val gradeScaleDao2 = GradeScaleDaoImpl(db2.gradeScaleQueries, testDispatchers)
             val weightedDao2 = WeightedGradeDaoImpl(
                 dbToWeightedGradeMapper = DbToWeightedGradeMapperImpl(),
                 queries = db2.weightedGradeQueries,
@@ -159,5 +159,24 @@ class JVMDriverFactoryPersistenceTest {
         }
 
         assertEquals(listOf(expectedWeightedGrade), loaded)
+    }
+
+    @Test
+    fun jvmDriverFactory_enables_foreign_key_constraints_by_default_A3_06() = runBlocking {
+        val factory = JVMDriverFactory()
+        factory.createDriver().use { driver ->
+            val fkEnabled = driver.executeQuery(
+                identifier = null,
+                sql = "PRAGMA foreign_keys",
+                mapper = { cursor ->
+                    when (val next = cursor.next()) {
+                        is QueryResult.Value -> QueryResult.Value(if (next.value) cursor.getLong(0) ?: 0L else 0L)
+                        is QueryResult.AsyncValue -> QueryResult.AsyncValue { if (next.await()) cursor.getLong(0) ?: 0L else 0L }
+                    }
+                },
+                parameters = 0,
+            ).await()
+            assertEquals(1L, fkEnabled, "A3-06: JVMDriverFactory must enable PRAGMA foreign_keys = ON")
+        }
     }
 }
