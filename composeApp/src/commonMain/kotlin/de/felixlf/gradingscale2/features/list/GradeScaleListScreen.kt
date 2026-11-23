@@ -149,7 +149,7 @@ private fun GradeScaleListScreen(
             selectAllOnSettle = true,
             isFocused = isTotalPointsFocused,
         ) {
-            applyTotalPointsInput(this, it, uiState.totalPointsString, onSetTotalPoints, selectAllOnCommit = isTotalPointsFocused)
+            applyTotalPointsInput(this, it, uiState.totalPointsString, onSetTotalPoints, isEditing = isTotalPointsFocused)
         }
 
         Box(

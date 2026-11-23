@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.selectAll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,14 +19,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.features.calculator.GradeScaleCalculatorUIState
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import de.felixlf.gradingscale2.entities.util.toLocaleDoubleOrNull
 import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
-import de.felixlf.gradingscale2.utils.hasTrailingDecimalSeparator
 import de.felixlf.gradingscale2.utils.isPartialDecimalToken
 import de.felixlf.gradingscale2.utils.textFieldManager
 import kotlinx.collections.immutable.toImmutableList
@@ -62,7 +60,7 @@ fun CalculatorContent(
         selectAllOnSettle = true,
         isFocused = isTotalPointsFocused,
     ) {
-        applyTotalPointsInput(this, it, uiState.totalPointsString, onSetTotalPoints, selectAllOnCommit = isTotalPointsFocused)
+        applyTotalPointsInput(this, it, uiState.totalPointsString, onSetTotalPoints, isEditing = isTotalPointsFocused)
     }
 
     val pointState = textFieldManager(
@@ -77,7 +75,7 @@ fun CalculatorContent(
             maxPoints = uiState.totalPointsVal,
             fallbackText = uiState.earnedPointsString,
             onSetPoints = onSetPoints,
-            selectAllOnCommit = isPointsFocused,
+            isEditing = isPointsFocused,
         )
     }
 
@@ -87,7 +85,7 @@ fun CalculatorContent(
         selectAllOnSettle = true,
         isFocused = isPercentageFocused,
     ) {
-        applyPercentageInput(this, it, uiState.percentageString, onSetPercentage, selectAllOnCommit = isPercentageFocused)
+        applyPercentageInput(this, it, uiState.percentageString, onSetPercentage, isEditing = isPercentageFocused)
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
@@ -183,14 +181,10 @@ private fun CalculatorContentPreview() = AppTheme {
     )
 }
 
-private fun TextFieldState.replaceText(text: String, selectAll: Boolean) {
+private fun TextFieldState.replaceText(text: String) {
     edit {
         replace(0, length, text)
-        if (selectAll) {
-            selectAll()
-        } else {
-            selection = TextRange(length)
-        }
+        selection = TextRange(length)
     }
 }
 
@@ -199,24 +193,29 @@ internal fun applyTotalPointsInput(
     rawText: String,
     fallbackText: String,
     onSetTotalPoints: (Double) -> Unit,
-    selectAllOnCommit: Boolean = true,
+    isEditing: Boolean = false,
 ) {
-    if (isPartialDecimalToken(rawText)) return
-    val trimmed = rawText.trim()
-    if (trimmed.isEmpty()) {
-        onSetTotalPoints(1.0)
-        textFieldState.replaceText("1", selectAll = selectAllOnCommit)
+    if (isPartialDecimalToken(rawText)) {
+        // Keep partial input while editing; once the user is done restore the last valid value.
+        if (!isEditing) textFieldState.replaceText(fallbackText)
         return
     }
-    if (trimmed == "0." || trimmed == "0,") return
+    val trimmed = rawText.trim()
+    if (trimmed.isEmpty()) {
+        // While the user is editing, keep the field blank instead of writing a default
+        // number back into it; the previous value is restored once editing ends.
+        if (isEditing) return
+        textFieldState.replaceText(fallbackText)
+        return
+    }
     val parsed = trimmed.toLocaleDoubleOrNull()
     if (parsed != null && parsed > 0.0) {
+        // Domain validation still applies; never rewrite or re-select the user's own input.
         onSetTotalPoints(parsed)
-        if (selectAllOnCommit && !hasTrailingDecimalSeparator(trimmed)) {
-            textFieldState.edit { selectAll() }
-        }
     } else {
-        textFieldState.replaceText(fallbackText, selectAll = selectAllOnCommit)
+        // Out-of-range text is the user's own input: leave it until they finish editing.
+        if (isEditing) return
+        textFieldState.replaceText(fallbackText)
     }
 }
 
@@ -226,23 +225,24 @@ internal fun applyEarnedPointsInput(
     maxPoints: Double,
     fallbackText: String,
     onSetPoints: (Double) -> Unit,
-    selectAllOnCommit: Boolean = true,
+    isEditing: Boolean = false,
 ) {
-    if (isPartialDecimalToken(rawText)) return
+    if (isPartialDecimalToken(rawText)) {
+        if (!isEditing) textFieldState.replaceText(fallbackText)
+        return
+    }
     val trimmed = rawText.trim()
     if (trimmed.isEmpty()) {
-        onSetPoints(0.0)
-        textFieldState.replaceText("0", selectAll = selectAllOnCommit)
+        if (isEditing) return
+        textFieldState.replaceText(fallbackText)
         return
     }
     val parsed = trimmed.toLocaleDoubleOrNull()
     if (parsed != null && parsed in 0.0..maxPoints) {
         onSetPoints(parsed)
-        if (selectAllOnCommit && !hasTrailingDecimalSeparator(trimmed)) {
-            textFieldState.edit { selectAll() }
-        }
     } else {
-        textFieldState.replaceText(fallbackText, selectAll = selectAllOnCommit)
+        if (isEditing) return
+        textFieldState.replaceText(fallbackText)
     }
 }
 
@@ -251,22 +251,23 @@ internal fun applyPercentageInput(
     rawText: String,
     fallbackText: String,
     onSetPercentage: (Double) -> Unit,
-    selectAllOnCommit: Boolean = true,
+    isEditing: Boolean = false,
 ) {
-    if (isPartialDecimalToken(rawText)) return
+    if (isPartialDecimalToken(rawText)) {
+        if (!isEditing) textFieldState.replaceText(fallbackText)
+        return
+    }
     val trimmed = rawText.trim()
     if (trimmed.isEmpty()) {
-        onSetPercentage(0.0)
-        textFieldState.replaceText("0", selectAll = selectAllOnCommit)
+        if (isEditing) return
+        textFieldState.replaceText(fallbackText)
         return
     }
     val parsed = trimmed.toLocaleDoubleOrNull()
     if (parsed != null && parsed in 0.0..100.0) {
         onSetPercentage(parsed / 100.0)
-        if (selectAllOnCommit && !hasTrailingDecimalSeparator(trimmed)) {
-            textFieldState.edit { selectAll() }
-        }
     } else {
-        textFieldState.replaceText(fallbackText, selectAll = selectAllOnCommit)
+        if (isEditing) return
+        textFieldState.replaceText(fallbackText)
     }
 }
