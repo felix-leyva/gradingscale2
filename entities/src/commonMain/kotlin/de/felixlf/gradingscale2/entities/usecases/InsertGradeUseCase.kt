@@ -16,7 +16,7 @@ fun interface InsertGradeUseCase {
 }
 
 enum class InsertGradeUseCaseError {
-    GradeWithSameNameAlreadyExists, GradeScaleIdNotFound, PercentageAlreadyExists, ErrorInsertingGrade
+    GradeWithSameNameAlreadyExists, GradeScaleIdNotFound, PercentageAlreadyExists, ErrorInsertingGrade, InvalidPercentage
 }
 
 internal class InsertGradeUseCaseImpl(
@@ -26,6 +26,7 @@ internal class InsertGradeUseCaseImpl(
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun invoke(gradeScaleId: String, percentage: Double, namedGrade: String): Either<InsertGradeUseCaseError, Unit> =
         either {
+            ensure(percentage.isFinite() && percentage in 0.0..1.0) { InsertGradeUseCaseError.InvalidPercentage }
             val gradeScales = gradeScaleRepository.gradeScales.first()
             val gradeScale =
                 ensureNotNull(gradeScales.firstOrNull { it.id == gradeScaleId }) { InsertGradeUseCaseError.GradeScaleIdNotFound }

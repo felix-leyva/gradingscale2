@@ -18,33 +18,35 @@ internal val FirebaseAuthPlugin =
 
         on(Send) { request ->
             // Gets the latest id Token
-            withTimeoutOrNull(5000) { provider.getTokenFlow().first { it != null } }?.let(request::addAuthToken)
+            withTimeoutOrNull(pluginConfig.tokenTimeoutMs) { provider.getTokenFlow().first { it != null } }
+                ?.let(request::setAuthToken)
 
             val originalCall = proceed(request)
 
-            // In case we receive an unauthorized response, we try to refresh the token
-            originalCall.response.run {
+            // In case we receive an unauthorized response, refresh the token and retry once
+            if (originalCall.response.status == HttpStatusCode.Unauthorized) {
                 val updatedIdToken = provider.refreshToken().getOrNull()
-                when {
-                    status == HttpStatusCode.Unauthorized && updatedIdToken != null -> {
-                        request.addAuthToken(updatedIdToken)
-                        proceed(request)
-                    }
-
-                    else -> originalCall
+                if (updatedIdToken != null) {
+                    request.setAuthToken(updatedIdToken)
+                    proceed(request)
+                } else {
+                    originalCall
                 }
+            } else {
+                originalCall
             }
         }
     }
 
 internal class FirebaseAuthProviderPluginConfig {
     var tokenProvider: AuthTokenProvider? = null
+    var tokenTimeoutMs: Long = 5_000L
 }
 
 /**
- * Adds the authentication token to the request.
- * as indicated by: https://firebase.google.com/docs/database/rest/auth#authenticate_with_an_id_token
+ * Sets or replaces the Firebase authentication token query parameter on the request.
+ * See: https://firebase.google.com/docs/database/rest/auth#authenticate_with_an_id_token
  */
-private fun HttpRequestBuilder.addAuthToken(idToken: String) = url {
-    parameters.append("auth", idToken)
+private fun HttpRequestBuilder.setAuthToken(idToken: String) = url {
+    parameters["auth"] = idToken
 }

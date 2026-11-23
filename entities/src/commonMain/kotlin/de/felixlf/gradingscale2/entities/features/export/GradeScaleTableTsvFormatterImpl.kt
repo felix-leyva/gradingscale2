@@ -49,8 +49,15 @@ class GradeScaleTableTsvFormatterImpl : GradeScaleTableTsvFormatter {
         return sb.toString().trimEnd('\n')
     }
 
-    private fun String.sanitizeTsv(): String =
-        replace("\t", " ")
+    private fun String.sanitizeTsv(): String {
+        val cleaned = replace("\t", " ")
             .replace("\r", " ")
             .replace("\n", " ")
+        val firstNonWhitespace = cleaned.trimStart().firstOrNull()
+        return if (firstNonWhitespace != null && firstNonWhitespace in FORMULA_PREFIXES) "'$cleaned" else cleaned
+    }
+
+    private companion object {
+        val FORMULA_PREFIXES = setOf('=', '+', '-', '@')
+    }
 }

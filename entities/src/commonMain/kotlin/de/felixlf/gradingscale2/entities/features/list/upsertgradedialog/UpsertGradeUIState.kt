@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.features.list.upsertgradedialog
 import androidx.compose.runtime.Stable
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
+import de.felixlf.gradingscale2.entities.util.toLocaleDoubleOrNull
 import kotlinx.collections.immutable.PersistentSet
 import kotlinx.collections.immutable.toPersistentSet
 
@@ -13,9 +14,10 @@ data class UpsertGradeUIState(
     val grade: Grade?,
     val gradeScale: GradeScale?,
     val selectedGrade: Grade?,
+    val isSaved: Boolean = false,
 ) {
 
-    private val percentageToDouble = percentage?.trim()?.toDoubleOrNull()?.takeIf { it.isFinite() }?.div(100)
+    private val percentageToDouble = percentage?.toLocaleDoubleOrNull()?.div(100)
     private val duplicatedPercentage =
         percentageToDouble != null && gradeScale?.grades?.map { it.percentage }?.contains(percentageToDouble) == true
     private val percentageFieldErrors =
@@ -35,13 +37,13 @@ data class UpsertGradeUIState(
 
     val error: PersistentSet<Error> = setOfNotNull(percentageFieldErrors, nameFieldErrors).toPersistentSet()
 
-    val isLoading: Boolean = grade == null && gradeScale == null
+    val isLoading: Boolean = gradeScale == null
 
     val isSaveButtonEnabled: Boolean =
-        !(grade == null || isLoading || !error.isEmpty() || name.isNullOrBlank() || percentage.isNullOrBlank())
+        !(grade == null || isLoading || isSaved || !error.isEmpty() || name.isNullOrBlank() || percentage.isNullOrBlank())
 
     val isSaveNewButtonEnabled: Boolean =
-        !(isLoading || !error.isEmpty() || name.isNullOrBlank() || percentage.isNullOrBlank() || duplicatedName || duplicatedPercentage)
+        !(isLoading || isSaved || !error.isEmpty() || name.isNullOrBlank() || percentage.isNullOrBlank() || duplicatedName || duplicatedPercentage)
 
     enum class Error { INVALID_PERCENTAGE, INVALID_NAME, DUPLICATE_NAME, DUPLICATE_PERCENTAGE }
 }

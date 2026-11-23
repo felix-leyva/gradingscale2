@@ -394,4 +394,35 @@ class UpsertGradeScaleUIStateFactoryTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `rapid double Save invokes insertGradeScaleUseCase only once`() = runTest {
+        var insertCount = 0
+        val countingInsert = InsertGradeScaleUseCase { name, defaultGrade ->
+            delay(10)
+            insertCount++
+            savedName = name
+            savedDefaultGradeName = defaultGrade
+            Option("new-id")
+        }
+        val sut = setUseCase(insertGradeScaleUseCase = countingInsert)
+
+        sut.uiState.test {
+            sut.sendCommand(UpserGradeScaleUIEvent.SetOperation(Insert))
+            runCurrent()
+            assertEquals(Loaded(Insert), expectMostRecentItem().state)
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetNewName("New Scale"))
+            runCurrent()
+
+            sut.sendCommand(UpserGradeScaleUIEvent.Save("A"))
+            sut.sendCommand(UpserGradeScaleUIEvent.Save("A"))
+            testScheduler.advanceTimeBy(50)
+            testScheduler.runCurrent()
+
+            assertEquals(1, insertCount)
+            assertEquals(UpsertGradeScaleUIState.State.Success("new-id"), expectMostRecentItem().state)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 }

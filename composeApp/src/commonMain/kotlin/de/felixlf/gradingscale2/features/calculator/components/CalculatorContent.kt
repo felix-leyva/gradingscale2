@@ -1,5 +1,7 @@
 package de.felixlf.gradingscale2.features.calculator.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -8,19 +10,25 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.selectAll
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import de.felixlf.gradingscale2.entities.features.calculator.GradeScaleCalculatorUIState
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.entities.util.toLocaleDoubleOrNull
 import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.uicomponents.FormFactorPreviews
+import de.felixlf.gradingscale2.utils.hasTrailingDecimalSeparator
+import de.felixlf.gradingscale2.utils.isPartialDecimalToken
 import de.felixlf.gradingscale2.utils.textFieldManager
 import kotlinx.collections.immutable.toImmutableList
 
@@ -41,20 +49,45 @@ fun CalculatorContent(
     val totalPointsFocusRequester = remember { FocusRequester() }
     val pointsFocusRequester = remember { FocusRequester() }
     val percentageFocusRequester = remember { FocusRequester() }
+    val totalPointsInteractionSource = remember { MutableInteractionSource() }
+    val pointsInteractionSource = remember { MutableInteractionSource() }
+    val percentageInteractionSource = remember { MutableInteractionSource() }
+    val isTotalPointsFocused by totalPointsInteractionSource.collectIsFocusedAsState()
+    val isPointsFocused by pointsInteractionSource.collectIsFocusedAsState()
+    val isPercentageFocused by percentageInteractionSource.collectIsFocusedAsState()
 
-    val totalPointsState = textFieldManager(uiState.totalPointsString) {
-        onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
-        edit { selectAll() }
+    val totalPointsState = textFieldManager(
+        externalFieldValue = uiState.totalPointsString,
+        isNumeric = true,
+        selectAllOnSettle = true,
+        isFocused = isTotalPointsFocused,
+    ) {
+        applyTotalPointsInput(this, it, uiState.totalPointsString, onSetTotalPoints, selectAllOnCommit = isTotalPointsFocused)
     }
 
-    val pointState = textFieldManager(uiState.earnedPointsString) {
-        onSetPoints(it.toDoubleOrNull() ?: 0.0)
-        edit { selectAll() }
+    val pointState = textFieldManager(
+        externalFieldValue = uiState.earnedPointsString,
+        isNumeric = true,
+        selectAllOnSettle = true,
+        isFocused = isPointsFocused,
+    ) {
+        applyEarnedPointsInput(
+            textFieldState = this,
+            rawText = it,
+            maxPoints = uiState.totalPointsVal,
+            fallbackText = uiState.earnedPointsString,
+            onSetPoints = onSetPoints,
+            selectAllOnCommit = isPointsFocused,
+        )
     }
 
-    val percentageState = textFieldManager(uiState.percentageString) {
-        onSetPercentage((it.toDoubleOrNull()?.div(100)) ?: 0.0)
-        edit { selectAll() }
+    val percentageState = textFieldManager(
+        externalFieldValue = uiState.percentageString,
+        isNumeric = true,
+        selectAllOnSettle = true,
+        isFocused = isPercentageFocused,
+    ) {
+        applyPercentageInput(this, it, uiState.percentageString, onSetPercentage, selectAllOnCommit = isPercentageFocused)
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
@@ -87,6 +120,9 @@ fun CalculatorContent(
                         totalPointsFocusRequester = totalPointsFocusRequester,
                         pointsFocusRequester = pointsFocusRequester,
                         percentageFocusRequester = percentageFocusRequester,
+                        totalPointsInteractionSource = totalPointsInteractionSource,
+                        pointsInteractionSource = pointsInteractionSource,
+                        percentageInteractionSource = percentageInteractionSource,
                     )
                 }
             }
@@ -113,6 +149,9 @@ fun CalculatorContent(
                     totalPointsFocusRequester = totalPointsFocusRequester,
                     pointsFocusRequester = pointsFocusRequester,
                     percentageFocusRequester = percentageFocusRequester,
+                    totalPointsInteractionSource = totalPointsInteractionSource,
+                    pointsInteractionSource = pointsInteractionSource,
+                    percentageInteractionSource = percentageInteractionSource,
                 )
             }
         }
@@ -142,4 +181,92 @@ private fun CalculatorContentPreview() = AppTheme {
         onSetPercentage = {},
         onSelectGradeName = {},
     )
+}
+
+private fun TextFieldState.replaceText(text: String, selectAll: Boolean) {
+    edit {
+        replace(0, length, text)
+        if (selectAll) {
+            selectAll()
+        } else {
+            selection = TextRange(length)
+        }
+    }
+}
+
+internal fun applyTotalPointsInput(
+    textFieldState: TextFieldState,
+    rawText: String,
+    fallbackText: String,
+    onSetTotalPoints: (Double) -> Unit,
+    selectAllOnCommit: Boolean = true,
+) {
+    if (isPartialDecimalToken(rawText)) return
+    val trimmed = rawText.trim()
+    if (trimmed.isEmpty()) {
+        onSetTotalPoints(1.0)
+        textFieldState.replaceText("1", selectAll = selectAllOnCommit)
+        return
+    }
+    if (trimmed == "0." || trimmed == "0,") return
+    val parsed = trimmed.toLocaleDoubleOrNull()
+    if (parsed != null && parsed > 0.0) {
+        onSetTotalPoints(parsed)
+        if (selectAllOnCommit && !hasTrailingDecimalSeparator(trimmed)) {
+            textFieldState.edit { selectAll() }
+        }
+    } else {
+        textFieldState.replaceText(fallbackText, selectAll = selectAllOnCommit)
+    }
+}
+
+internal fun applyEarnedPointsInput(
+    textFieldState: TextFieldState,
+    rawText: String,
+    maxPoints: Double,
+    fallbackText: String,
+    onSetPoints: (Double) -> Unit,
+    selectAllOnCommit: Boolean = true,
+) {
+    if (isPartialDecimalToken(rawText)) return
+    val trimmed = rawText.trim()
+    if (trimmed.isEmpty()) {
+        onSetPoints(0.0)
+        textFieldState.replaceText("0", selectAll = selectAllOnCommit)
+        return
+    }
+    val parsed = trimmed.toLocaleDoubleOrNull()
+    if (parsed != null && parsed in 0.0..maxPoints) {
+        onSetPoints(parsed)
+        if (selectAllOnCommit && !hasTrailingDecimalSeparator(trimmed)) {
+            textFieldState.edit { selectAll() }
+        }
+    } else {
+        textFieldState.replaceText(fallbackText, selectAll = selectAllOnCommit)
+    }
+}
+
+internal fun applyPercentageInput(
+    textFieldState: TextFieldState,
+    rawText: String,
+    fallbackText: String,
+    onSetPercentage: (Double) -> Unit,
+    selectAllOnCommit: Boolean = true,
+) {
+    if (isPartialDecimalToken(rawText)) return
+    val trimmed = rawText.trim()
+    if (trimmed.isEmpty()) {
+        onSetPercentage(0.0)
+        textFieldState.replaceText("0", selectAll = selectAllOnCommit)
+        return
+    }
+    val parsed = trimmed.toLocaleDoubleOrNull()
+    if (parsed != null && parsed in 0.0..100.0) {
+        onSetPercentage(parsed / 100.0)
+        if (selectAllOnCommit && !hasTrailingDecimalSeparator(trimmed)) {
+            textFieldState.edit { selectAll() }
+        }
+    } else {
+        textFieldState.replaceText(fallbackText, selectAll = selectAllOnCommit)
+    }
 }

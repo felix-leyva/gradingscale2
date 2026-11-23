@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.features.calculator.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,6 +56,9 @@ fun CalculatorParametersCard(
     pointsFocusRequester: FocusRequester,
     percentageFocusRequester: FocusRequester,
     modifier: Modifier = Modifier,
+    totalPointsInteractionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    pointsInteractionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    percentageInteractionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -85,8 +89,9 @@ fun CalculatorParametersCard(
                         .focusProperties { next = pointsFocusRequester },
                     state = totalPointsState,
                     label = stringResource(Res.string.calculator_screen_total_points_input),
+                    interactionSource = totalPointsInteractionSource,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
+                        keyboardType = KeyboardType.Decimal,
                         imeAction = ImeAction.Next,
                     ),
                 )
@@ -101,8 +106,9 @@ fun CalculatorParametersCard(
                         },
                     state = pointState,
                     label = stringResource(Res.string.calculator_screen_points_input),
+                    interactionSource = pointsInteractionSource,
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
+                        keyboardType = KeyboardType.Decimal,
                         imeAction = ImeAction.Next,
                     ),
                 )
@@ -121,9 +127,10 @@ fun CalculatorParametersCard(
                         .focusProperties { previous = pointsFocusRequester },
                     state = percentageState,
                     label = stringResource(Res.string.calculator_screen_percentage_input),
+                    interactionSource = percentageInteractionSource,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done,
-                        keyboardType = KeyboardType.Number,
+                        keyboardType = KeyboardType.Decimal,
                     ),
                 )
 

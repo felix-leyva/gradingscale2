@@ -78,6 +78,7 @@ class UpsertGradeScaleUIStateFactory(
     }
 
     private fun save(event: UpserGradeScaleUIEvent.Save) {
+        if (uiSaveState == State.Loading || uiSaveState is State.Success) return
         uiSaveState = State.Loading
         scope.launch {
             val id = (operation as? State.Operation.Update)?.currentGradeScaleId

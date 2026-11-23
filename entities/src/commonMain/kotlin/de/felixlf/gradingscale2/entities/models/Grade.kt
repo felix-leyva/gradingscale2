@@ -11,6 +11,6 @@ data class Grade(
     val uuid: String,
 ) {
     init {
-        require(percentage in 0.0..1.0) { "Percentage must be between 0 and 1" }
+        require(percentage.isFinite() && percentage in 0.0..1.0) { "Percentage must be between 0 and 1" }
     }
 }

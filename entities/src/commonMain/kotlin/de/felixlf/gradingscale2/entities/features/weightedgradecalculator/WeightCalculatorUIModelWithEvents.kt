@@ -42,7 +42,12 @@ class WeightCalculatorUIModelWithEvents(
     private var openedGradeId by mutableStateOf<String?>(null)
 
     override val uiState: StateFlow<WeightCalculatorUIState> by stateProducer {
-        LaunchedEffect(Unit) { getLastSelectedGradeScaleIdUseCase()?.let { selectedGradeScaleId = it } }
+        LaunchedEffect(Unit) {
+            val savedId = getLastSelectedGradeScaleIdUseCase()
+            if (selectedGradeScaleId == null && !savedId.isNullOrBlank()) {
+                selectedGradeScaleId = savedId
+            }
+        }
         val allWeightedGradesFlow = remember { getAllWeightedGradesUseCase() }
         val allGradeScalesFlow = remember { getAllGradeScales() }
         val selectedGradeScaleFlow = remember(selectedGradeScaleId) {

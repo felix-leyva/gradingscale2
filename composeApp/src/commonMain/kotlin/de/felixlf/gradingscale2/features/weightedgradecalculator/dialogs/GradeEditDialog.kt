@@ -14,13 +14,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog.WeightedGradeDialogCommand
+import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.dialog.WeightedGradeDialogUIState
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.features.calculator.CalculatorTextField
 import de.felixlf.gradingscale2.uicomponents.DropboxSelector
+import de.felixlf.gradingscale2.utils.dialogScopedViewModel
 import de.felixlf.gradingscale2.utils.textFieldManager
 import gradingscale2.entities.generated.resources.Res
 import gradingscale2.entities.generated.resources.weighted_grade_dialog_cancel
@@ -32,7 +37,6 @@ import gradingscale2.entities.generated.resources.weighted_grade_dialog_save
 import gradingscale2.entities.generated.resources.weighted_grade_dialog_title
 import gradingscale2.entities.generated.resources.weighted_grade_dialog_total_points
 import org.jetbrains.compose.resources.stringResource
-import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,9 +46,12 @@ fun GradeEditDialog(
     onSave: (WeightedGrade) -> Unit,
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
+    isNewGrade: Boolean = false,
 ) {
-    val viewModel = koinViewModel<WeightedGradeDialogViewModelWithEvents>()
+    val viewModel = dialogScopedViewModel<WeightedGradeDialogViewModelWithEvents>()
     val uiState by viewModel.uiState.collectAsState()
+    var hasSubmitted by remember(grade.uuid) { mutableStateOf(false) }
+
     LaunchedEffect(grade, gradeScale) {
         viewModel.sendCommand(
             WeightedGradeDialogCommand.Init(
@@ -54,13 +61,25 @@ fun GradeEditDialog(
         )
     }
 
-    val percentageTextField = textFieldManager(uiState.percentageString) {
+    val percentageTextField = textFieldManager(
+        externalFieldValue = uiState.percentageString,
+        delay = 0L,
+        isNumeric = true,
+    ) {
         viewModel.sendCommand(WeightedGradeDialogCommand.SetPercentage(it))
     }
-    val weightTextField = textFieldManager(uiState.weightString) {
+    val weightTextField = textFieldManager(
+        externalFieldValue = uiState.weightString,
+        delay = 0L,
+        isNumeric = true,
+    ) {
         viewModel.sendCommand(WeightedGradeDialogCommand.SetWeight(it))
     }
-    val relativeWeightTextField = textFieldManager(uiState.relativeWeightString) {
+    val relativeWeightTextField = textFieldManager(
+        externalFieldValue = uiState.relativeWeightString,
+        delay = 0L,
+        isNumeric = true,
+    ) {
         viewModel.sendCommand(WeightedGradeDialogCommand.SetRelativeWeight(it))
     }
 
@@ -106,16 +125,10 @@ fun GradeEditDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val percentage = (percentageTextField.text.toString().toDoubleOrNull() ?: 0.0) / 100
-                    val weight = weightTextField.text.toString().toDoubleOrNull() ?: 0.0
-
-                    onSave(
-                        WeightedGrade(
-                            percentage = percentage,
-                            weight = weight,
-                            uuid = grade.uuid,
-                        ),
-                    )
+                    if (!hasSubmitted) {
+                        hasSubmitted = true
+                        onSave(resolveWeightedGradeForSave(uiState = uiState, fallbackGrade = grade))
+                    }
                 },
             ) {
                 Text(
@@ -129,20 +142,41 @@ fun GradeEditDialog(
                 Text(stringResource(Res.string.weighted_grade_dialog_cancel))
             }
 
-            Column {
-                TextButton(
-                    onClick = {
-                        onDelete()
-                        onDismiss()
-                    },
-                    content = {
-                        Text(
-                            text = stringResource(Res.string.weighted_grade_dialog_delete),
-                            color = MaterialTheme.colorScheme.error,
-                        )
-                    },
-                )
+            if (!isNewGrade) {
+                Column {
+                    TextButton(
+                        onClick = {
+                            onDelete()
+                            onDismiss()
+                        },
+                        content = {
+                            Text(
+                                text = stringResource(Res.string.weighted_grade_dialog_delete),
+                                color = MaterialTheme.colorScheme.error,
+                            )
+                        },
+                    )
+                }
             }
         },
+    )
+}
+
+internal fun resolveWeightedGradeForSave(
+    uiState: WeightedGradeDialogUIState,
+    fallbackGrade: WeightedGrade,
+): WeightedGrade {
+    val safePercentage = (uiState.percentage ?: fallbackGrade.percentage)
+        .takeIf { it.isFinite() }
+        ?.coerceIn(0.0, 1.0)
+        ?: fallbackGrade.percentage.coerceIn(0.0, 1.0)
+    val safeWeight = (uiState.weight ?: fallbackGrade.weight)
+        .takeIf { it.isFinite() && it >= 0.01 }
+        ?: fallbackGrade.weight.takeIf { it.isFinite() && it >= 0.01 }
+        ?: 1.0
+    return WeightedGrade(
+        percentage = safePercentage,
+        weight = safeWeight,
+        uuid = fallbackGrade.uuid,
     )
 }

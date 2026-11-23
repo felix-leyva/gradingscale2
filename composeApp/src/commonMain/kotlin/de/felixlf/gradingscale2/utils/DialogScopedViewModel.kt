@@ -1,18 +1,34 @@
 package de.felixlf.gradingscale2.utils
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
+
+@Composable
+@PublishedApi
+internal fun rememberDialogViewModelStoreOwner(): ViewModelStoreOwner {
+    val owner = remember {
+        object : ViewModelStoreOwner {
+            override val viewModelStore: ViewModelStore = ViewModelStore()
+        }
+    }
+    DisposableEffect(owner) {
+        onDispose {
+            owner.viewModelStore.clear()
+        }
+    }
+    return owner
+}
 
 /**
  * Creates a ViewModel scoped to a dialog from the current composition.
- * The ViewModel will be scoped to the dialog and will be destroyed when the dialog is dismissed.
+ * The ViewModel is hosted in a dedicated [ViewModelStore] that is cleared when the dialog leaves composition.
  */
-@OptIn(ExperimentalUuidApi::class)
 @Composable
 inline fun <reified ViewModel : androidx.lifecycle.ViewModel> dialogScopedViewModel(): ViewModel {
-    val randomUUID = rememberSaveable { Uuid.random().toString() }
-    return koinViewModel<ViewModel>(key = randomUUID)
+    val dialogStoreOwner = rememberDialogViewModelStoreOwner()
+    return koinViewModel<ViewModel>(viewModelStoreOwner = dialogStoreOwner)
 }

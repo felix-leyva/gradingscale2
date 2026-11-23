@@ -13,6 +13,6 @@ fun interface GetLastSelectedGradeScaleIdUseCase {
 
 internal class GetLastSelectedGradeScaleIdUseCaseImpl(private val preferencesRepository: PreferencesRepository) : GetLastSelectedGradeScaleIdUseCase {
     override suspend fun invoke(): String? {
-        return preferencesRepository.getLastSelectedGradeScaleId().first()
+        return preferencesRepository.getLastSelectedGradeScaleId().first()?.takeIf { it.isNotBlank() }
     }
 }

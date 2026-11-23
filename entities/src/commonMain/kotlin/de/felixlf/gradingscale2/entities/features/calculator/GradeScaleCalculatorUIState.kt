@@ -36,9 +36,13 @@ data class GradeScaleCalculatorUIState(
     val totalPointsString: String = totalPoints?.stringWithDecimals() ?: ""
 
     val currentGrade: PointedGrade? = when {
-        selectedGradeScale != null && currentPercentage != null && totalPoints != null -> selectedGradeScale.gradeByPercentage(
-            percentage = currentPercentage,
-        ).grade.copy(percentage = currentPercentage).toPointedGrade(totalPoints)
+        selectedGradeScale != null && currentPercentage != null && totalPoints != null && totalPoints.isFinite() && totalPoints > 0.0 -> {
+            val safePercentage = if (currentPercentage.isFinite()) currentPercentage.coerceIn(0.0, 1.0) else 0.0
+            selectedGradeScale.gradeByPercentageOrNull(percentage = safePercentage)
+                ?.grade
+                ?.copy(percentage = safePercentage)
+                ?.toPointedGrade(totalPoints)
+        }
 
         else -> null
     }

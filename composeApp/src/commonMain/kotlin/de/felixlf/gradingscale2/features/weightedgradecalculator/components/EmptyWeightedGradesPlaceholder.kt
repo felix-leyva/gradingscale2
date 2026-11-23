@@ -38,6 +38,7 @@ import org.jetbrains.compose.resources.stringResource
 fun EmptyWeightedGradesPlaceholder(
     onAddGrade: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -90,6 +91,7 @@ fun EmptyWeightedGradesPlaceholder(
 
             Button(
                 onClick = onAddGrade,
+                enabled = enabled,
                 shape = RoundedCornerShape(12.dp),
             ) {
                 Icon(

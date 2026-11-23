@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -17,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -84,11 +87,18 @@ private fun UpsertGradeScaleDialog(
             when (uiState.state) {
                 UpsertGradeScaleUIState.State.Loading -> CircularProgressIndicator()
                 is UpsertGradeScaleUIState.State.Loaded -> {
-                    val textFieldState = textFieldManager(uiState.newName ?: "") {
+                    val textFieldState = textFieldManager(
+                        externalFieldValue = uiState.newName ?: "",
+                        delay = 0L,
+                    ) {
                         onSetNewName(it)
                     }
                     CalculatorTextField(
                         state = textFieldState,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done,
+                        ),
                     )
                     uiState.error?.errorDescriptions?.let {
                         Text(stringResource(it))
@@ -98,7 +108,13 @@ private fun UpsertGradeScaleDialog(
                         horizontalArrangement = Arrangement.SpaceEvenly,
                     ) {
                         Button(
-                            onClick = onSave,
+                            onClick = {
+                                val currentName = textFieldState.text.toString()
+                                if (currentName != (uiState.newName ?: "")) {
+                                    onSetNewName(currentName)
+                                }
+                                onSave()
+                            },
                             enabled = uiState.isSaveEnabled,
                         ) {
                             Text(stringResource((uiState.state as UpsertGradeScaleUIState.State.Loaded).operation.button))

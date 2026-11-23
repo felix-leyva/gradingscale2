@@ -1,5 +1,7 @@
 package de.felixlf.gradingscale2.features.list
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +28,7 @@ import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIState
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
+import de.felixlf.gradingscale2.features.calculator.components.applyTotalPointsInput
 import de.felixlf.gradingscale2.features.list.components.DeleteGradeScaleDialog
 import de.felixlf.gradingscale2.features.list.components.GradeScaleListContent
 import de.felixlf.gradingscale2.features.list.components.GradeScaleListHeader
@@ -138,8 +141,15 @@ private fun GradeScaleListScreen(
         },
         modifier = modifier.fillMaxSize(),
     ) { isListPaneVisible ->
-        val totalPointsState = textFieldManager(uiState.totalPointsString) {
-            onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
+        val totalPointsInteractionSource = remember { MutableInteractionSource() }
+        val isTotalPointsFocused by totalPointsInteractionSource.collectIsFocusedAsState()
+        val totalPointsState = textFieldManager(
+            externalFieldValue = uiState.totalPointsString,
+            isNumeric = true,
+            selectAllOnSettle = true,
+            isFocused = isTotalPointsFocused,
+        ) {
+            applyTotalPointsInput(this, it, uiState.totalPointsString, onSetTotalPoints, selectAllOnCommit = isTotalPointsFocused)
         }
 
         Box(
@@ -168,6 +178,7 @@ private fun GradeScaleListScreen(
                         }
                     },
                     onOpenDialog = onOpenDialog,
+                    totalPointsInteractionSource = totalPointsInteractionSource,
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
