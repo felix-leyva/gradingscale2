@@ -219,7 +219,7 @@ class GradeScaleApiImplTest {
     }
 
     @Test
-    fun `countriesAndGrades returns RemoteError on null body, HTML body, and non-array country values`() = runTest {
+    fun `countriesAndGrades returns RemoteError on null body HTML body and non-array country values`() = runTest {
         val payloads = listOf(
             "null",
             "<html>error</html>",

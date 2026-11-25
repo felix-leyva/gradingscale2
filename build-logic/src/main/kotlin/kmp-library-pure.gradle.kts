@@ -62,3 +62,11 @@ kotlin {
         }
     }
 }
+
+// The wasmJs test task is disabled above, so no Compose UI test ever runs on that target and the
+// Skiko executable binary it would need is not required. The Compose plugin's configuration check
+// (CMP-4906) does not know the task is disabled and fails the build for any module whose commonTest
+// sources touch Compose UI, so switch it off together with the tests it guards.
+tasks.matching { it.name == "checkComposeUiTestConfigurationForWasmJs" }.configureEach {
+    enabled = false
+}
