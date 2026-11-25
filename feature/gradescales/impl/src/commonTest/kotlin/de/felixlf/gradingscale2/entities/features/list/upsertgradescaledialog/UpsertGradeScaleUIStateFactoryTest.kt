@@ -20,10 +20,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
@@ -249,6 +252,177 @@ class UpsertGradeScaleUIStateFactoryTest {
                 ),
                 awaitItem(),
             )
+        }
+    }
+
+    @Test
+    fun `recompositions on SetNewName do not recreate or re-collect getAllGradeScalesUseCase flow`() = runTest {
+        var allGradeScalesCalls = 0
+        var allGradeScalesCollections = 0
+        val countingUseCase = GetAllGradeScalesUseCase {
+            allGradeScalesCalls++
+            flowOf(mockGradeScales.toImmutableList()).onStart { allGradeScalesCollections++ }
+        }
+        val sut = UpsertGradeScaleUIStateFactory(
+            getAllGradeScalesUseCase = countingUseCase,
+            insertGradeScaleUseCase = defaultInsertGradeScaleUseCase,
+            updateGradeScaleUseCase = defaultUpdateGradeScaleUseCase,
+            showSnackbarUseCase = mockShowSnackbarUseCase,
+            stateProducer = TestStateProducer(backgroundScope),
+        )
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.existingGradeScaleNames.isEmpty()) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetOperation(Insert))
+            while (current.state != Loaded(Insert)) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetNewName("A"))
+            while (current.newName != "A") {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetNewName("AB"))
+            while (current.newName != "AB") {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetNewName("ABC"))
+            while (current.newName != "ABC") {
+                current = awaitItem()
+            }
+
+            assertEquals(1, allGradeScalesCalls)
+            assertEquals(1, allGradeScalesCollections)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `db emission after save does not overwrite Success or SaveError`() = runTest {
+        val scalesFlow = MutableStateFlow(mockGradeScales.toImmutableList())
+        val insertSuccessWithEmission = InsertGradeScaleUseCase { name, _ ->
+            scalesFlow.value = (
+                scalesFlow.value + mockGradeScales.first().copy(id = "new-id", gradeScaleName = name)
+                ).toImmutableList()
+            Option("new-id")
+        }
+        val sutSuccess = UpsertGradeScaleUIStateFactory(
+            getAllGradeScalesUseCase = GetAllGradeScalesUseCase { scalesFlow },
+            insertGradeScaleUseCase = insertSuccessWithEmission,
+            updateGradeScaleUseCase = defaultUpdateGradeScaleUseCase,
+            showSnackbarUseCase = mockShowSnackbarUseCase,
+            stateProducer = TestStateProducer(backgroundScope),
+        )
+
+        sutSuccess.uiState.test {
+            sutSuccess.sendCommand(UpserGradeScaleUIEvent.SetOperation(Insert))
+            runCurrent()
+            assertEquals(Loaded(Insert), expectMostRecentItem().state)
+
+            sutSuccess.sendCommand(UpserGradeScaleUIEvent.SetNewName("Persisted Scale"))
+            sutSuccess.sendCommand(UpserGradeScaleUIEvent.Save("grade"))
+            runCurrent()
+
+            assertEquals(UpsertGradeScaleUIState.State.Success("new-id"), expectMostRecentItem().state)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        val failingScalesFlow = MutableStateFlow(mockGradeScales.toImmutableList())
+        val insertFailWithEmission = InsertGradeScaleUseCase { _, _ ->
+            failingScalesFlow.value = failingScalesFlow.value.drop(1).toImmutableList()
+            None
+        }
+        val sutError = UpsertGradeScaleUIStateFactory(
+            getAllGradeScalesUseCase = GetAllGradeScalesUseCase { failingScalesFlow },
+            insertGradeScaleUseCase = insertFailWithEmission,
+            updateGradeScaleUseCase = defaultUpdateGradeScaleUseCase,
+            showSnackbarUseCase = mockShowSnackbarUseCase,
+            stateProducer = TestStateProducer(backgroundScope),
+        )
+
+        sutError.uiState.test {
+            sutError.sendCommand(UpserGradeScaleUIEvent.SetOperation(Insert))
+            runCurrent()
+            assertEquals(Loaded(Insert), expectMostRecentItem().state)
+
+            sutError.sendCommand(UpserGradeScaleUIEvent.SetNewName("Failing Scale"))
+            sutError.sendCommand(UpserGradeScaleUIEvent.Save("grade"))
+            runCurrent()
+
+            assertEquals(UpsertGradeScaleUIState.State.SaveError, expectMostRecentItem().state)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `db emission while editing in Update mode does not overwrite user input`() = runTest {
+        val scalesFlow = MutableStateFlow(mockGradeScales.toImmutableList())
+        val targetScale = mockGradeScales[2]
+        val sut = UpsertGradeScaleUIStateFactory(
+            getAllGradeScalesUseCase = GetAllGradeScalesUseCase { scalesFlow },
+            insertGradeScaleUseCase = defaultInsertGradeScaleUseCase,
+            updateGradeScaleUseCase = defaultUpdateGradeScaleUseCase,
+            showSnackbarUseCase = mockShowSnackbarUseCase,
+            stateProducer = TestStateProducer(backgroundScope),
+        )
+
+        sut.uiState.test {
+            sut.sendCommand(UpserGradeScaleUIEvent.SetOperation(Update(targetScale.id)))
+            runCurrent()
+            val initialized = expectMostRecentItem()
+            assertEquals(targetScale.gradeScaleName, initialized.newName)
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetNewName("Custom Edited Name"))
+            runCurrent()
+            assertEquals("Custom Edited Name", expectMostRecentItem().newName)
+
+            // Unrelated DB emission happens while user is still typing
+            scalesFlow.value = (
+                scalesFlow.value + mockGradeScales.first().copy(id = "other-new", gradeScaleName = "Other")
+                ).toImmutableList()
+            runCurrent()
+
+            val afterEmission = expectMostRecentItem()
+            assertEquals("Custom Edited Name", afterEmission.newName)
+            assertEquals(Loaded(Update(targetScale.id)), afterEmission.state)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `rapid double Save invokes insertGradeScaleUseCase only once`() = runTest {
+        var insertCount = 0
+        val countingInsert = InsertGradeScaleUseCase { name, defaultGrade ->
+            delay(10)
+            insertCount++
+            savedName = name
+            savedDefaultGradeName = defaultGrade
+            Option("new-id")
+        }
+        val sut = setUseCase(insertGradeScaleUseCase = countingInsert)
+
+        sut.uiState.test {
+            sut.sendCommand(UpserGradeScaleUIEvent.SetOperation(Insert))
+            runCurrent()
+            assertEquals(Loaded(Insert), expectMostRecentItem().state)
+
+            sut.sendCommand(UpserGradeScaleUIEvent.SetNewName("New Scale"))
+            runCurrent()
+
+            sut.sendCommand(UpserGradeScaleUIEvent.Save("A"))
+            sut.sendCommand(UpserGradeScaleUIEvent.Save("A"))
+            testScheduler.advanceTimeBy(50)
+            testScheduler.runCurrent()
+
+            assertEquals(1, insertCount)
+            assertEquals(UpsertGradeScaleUIState.State.Success("new-id"), expectMostRecentItem().state)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }

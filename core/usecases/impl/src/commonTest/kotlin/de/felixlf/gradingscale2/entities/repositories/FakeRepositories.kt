@@ -38,9 +38,7 @@ class FakeGradeScaleRepository : GradeScaleRepository {
         return resultFlow
     }
 
-    override fun getGradeScales(): SharedFlow<ImmutableList<GradeScale>> {
-        return gradeScalesFlow
-    }
+    override val gradeScales: SharedFlow<ImmutableList<GradeScale>> = gradeScalesFlow
 
     override suspend fun upsertGradeScale(gradeScale: GradeScale): Option<String> = option {
         ensure(!shouldFail)

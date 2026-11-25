@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.features.weightedgradecalculator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.AddGradeAtPos
 import de.felixlf.gradingscale2.entities.features.weightedgradecalculator.WeightedCalculatorCommand.RemoveGrade
@@ -41,16 +42,24 @@ internal class WeightCalculatorUIModelWithEvents(
     private var openedGradeId by mutableStateOf<String?>(null)
 
     override val uiState: StateFlow<WeightCalculatorUIState> by stateProducer {
-        LaunchedEffect(Unit) { getLastSelectedGradeScaleIdUseCase()?.let { selectedGradeScaleId = it } }
-        val grades = getAllWeightedGradesUseCase().asState(persistentListOf())
+        LaunchedEffect(Unit) {
+            val savedId = getLastSelectedGradeScaleIdUseCase()
+            if (selectedGradeScaleId == null && !savedId.isNullOrBlank()) {
+                selectedGradeScaleId = savedId
+            }
+        }
+        val allWeightedGradesFlow = remember { getAllWeightedGradesUseCase() }
+        val allGradeScalesFlow = remember { getAllGradeScales() }
+        val selectedGradeScaleFlow = remember(selectedGradeScaleId) {
+            selectedGradeScaleId?.let { getGradeScaleByIdUseCase(it) }
+        }
+        val grades = allWeightedGradesFlow.asState(persistentListOf())
 
-        val gradeScalesNamesAndIds = getAllGradeScales().asState(persistentListOf()).map {
+        val gradeScalesNamesAndIds = allGradeScalesFlow.asState(persistentListOf()).map {
             GradeScaleNameAndId(name = it.gradeScaleName, id = it.id)
         }
 
-        val selectedGradeScale = selectedGradeScaleId?.let {
-            getGradeScaleByIdUseCase(it).asState(null)
-        }
+        val selectedGradeScale = selectedGradeScaleFlow?.asState(null)
 
         WeightCalculatorUIState(
             gradeScaleNameAndIds = gradeScalesNamesAndIds.toImmutableList(),

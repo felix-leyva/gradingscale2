@@ -15,10 +15,14 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertWeightedGradeUseCase
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -533,6 +537,116 @@ class WeightedGradeCalculatorUIModelTest {
             assertEquals("D", finalState.weightedGrades[0].name) // 65% should be D
 
             // Clean up
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun recompositionsOnSelectGradeDoNotRecreateOrRecollectFlows() = runTest {
+        var allGradeScalesCalls = 0
+        var allGradeScalesCollections = 0
+        var gradeScaleByIdCalls = 0
+        var gradeScaleByIdCollections = 0
+        var allWeightedGradesCalls = 0
+        var allWeightedGradesCollections = 0
+
+        val sut = WeightCalculatorUIModelWithEvents(
+            stateProducer = TestStateProducer(backgroundScope),
+            getAllGradeScales = GetAllGradeScalesUseCase {
+                allGradeScalesCalls++
+                flowOf(persistentListOf(testGradeScale)).onStart { allGradeScalesCollections++ }
+            },
+            getGradeScaleByIdUseCase = GetGradeScaleByIdUseCase { id ->
+                gradeScaleByIdCalls++
+                flowOf(if (id == testGradeScaleId) testGradeScale else null).onStart { gradeScaleByIdCollections++ }
+            },
+            getAllWeightedGradesUseCase = GetAllWeightedGradesUseCase {
+                allWeightedGradesCalls++
+                grades.map { it.toImmutableList() }.onStart { allWeightedGradesCollections++ }
+            },
+            upsertWeightedGradeUseCase = upsertWeightedGradeUseCase,
+            deleteWeightedGradeUseCase = deleteWeightedGradeUseCase,
+            getLastSelectedGradeScaleIdUseCase = { null },
+            setLastSelectedGradeScaleIdUseCase = { Option(Unit) },
+        )
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.isLoading) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(WeightedCalculatorCommand.SelectGradeScale(testGradeScaleId))
+            while (current.selectedGradeScale?.id != testGradeScaleId) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(
+                WeightedCalculatorCommand.AddGradeAtPos(
+                    position = 0,
+                    grade = WeightedGrade(0.85, 1.0, "UUID1"),
+                ),
+            )
+            while (current.grades.isEmpty()) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(WeightedCalculatorCommand.SelectGrade("UUID1"))
+            assertEquals("UUID1", awaitItem().selectedGrade?.uuid)
+            sut.sendCommand(WeightedCalculatorCommand.SelectGrade(null))
+            assertNull(awaitItem().selectedGrade)
+            sut.sendCommand(WeightedCalculatorCommand.SelectGrade("UUID1"))
+            assertEquals("UUID1", awaitItem().selectedGrade?.uuid)
+
+            assertEquals(1, allGradeScalesCalls)
+            assertEquals(1, allGradeScalesCollections)
+            assertEquals(1, gradeScaleByIdCalls)
+            assertEquals(1, gradeScaleByIdCollections)
+            assertEquals(1, allWeightedGradesCalls)
+            assertEquals(1, allWeightedGradesCollections)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun slowPreferenceLoadDoesNotOverwriteEarlierScaleSelection() = runTest {
+        val secondScaleId = "scale-2"
+        val secondScale = testGradeScale.copy(id = secondScaleId, gradeScaleName = "Second Scale")
+        val savedIdDeferred = CompletableDeferred<String?>()
+
+        val sut = WeightCalculatorUIModelWithEvents(
+            stateProducer = TestStateProducer(backgroundScope),
+            getAllGradeScales = { flowOf(persistentListOf(testGradeScale, secondScale)) },
+            getGradeScaleByIdUseCase = { id ->
+                flowOf(
+                    when (id) {
+                        testGradeScaleId -> testGradeScale
+                        secondScaleId -> secondScale
+                        else -> null
+                    },
+                )
+            },
+            getAllWeightedGradesUseCase = getAllWeightedGradesUseCase,
+            upsertWeightedGradeUseCase = upsertWeightedGradeUseCase,
+            deleteWeightedGradeUseCase = deleteWeightedGradeUseCase,
+            getLastSelectedGradeScaleIdUseCase = { savedIdDeferred.await() },
+            setLastSelectedGradeScaleIdUseCase = { Option(Unit) },
+        )
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.isLoading) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(WeightedCalculatorCommand.SelectGradeScale(secondScaleId))
+            runCurrent()
+            assertEquals(secondScaleId, sut.uiState.value.selectedGradeScale?.id)
+
+            savedIdDeferred.complete(testGradeScaleId)
+            runCurrent()
+            assertEquals(secondScaleId, sut.uiState.value.selectedGradeScale?.id)
             cancelAndIgnoreRemainingEvents()
         }
     }

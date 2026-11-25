@@ -9,7 +9,12 @@ import de.felixlf.gradingscale2.Database
 
 internal class IOSDriverFactory : DriverFactory {
     override fun createDriver(): SqlDriver = NativeSqliteDriver(
-        Database.Schema.synchronous(),
-        "gradingscale.db",
+        schema = Database.Schema.synchronous(),
+        name = "gradingscale.db",
+        onConfiguration = { config ->
+            config.copy(
+                extendedConfig = config.extendedConfig.copy(foreignKeyConstraints = true),
+            )
+        },
     )
 }

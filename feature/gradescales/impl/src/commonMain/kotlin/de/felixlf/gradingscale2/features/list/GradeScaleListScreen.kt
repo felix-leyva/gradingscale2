@@ -1,5 +1,7 @@
 package de.felixlf.gradingscale2.features.list
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,6 +38,7 @@ import de.felixlf.gradingscale2.features.list.upsertgradescaledialog.UpsertGrade
 import de.felixlf.gradingscale2.theme.AppTheme
 import de.felixlf.gradingscale2.theme.LocalHazeState
 import de.felixlf.gradingscale2.uicomponents.AdaptiveGradeScaleSelector
+import de.felixlf.gradingscale2.utils.applyTotalPointsInput
 import de.felixlf.gradingscale2.utils.textFieldManager
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.toImmutableList
@@ -138,8 +141,15 @@ private fun GradeScaleListScreen(
         },
         modifier = modifier.fillMaxSize(),
     ) { isListPaneVisible ->
-        val totalPointsState = textFieldManager(uiState.totalPointsString) {
-            onSetTotalPoints(it.toDoubleOrNull() ?: 1.0)
+        val totalPointsInteractionSource = remember { MutableInteractionSource() }
+        val isTotalPointsFocused by totalPointsInteractionSource.collectIsFocusedAsState()
+        val totalPointsState = textFieldManager(
+            externalFieldValue = uiState.totalPointsString,
+            isNumeric = true,
+            selectAllOnSettle = true,
+            isFocused = isTotalPointsFocused,
+        ) {
+            applyTotalPointsInput(this, it, uiState.totalPointsString, onSetTotalPoints, isEditing = isTotalPointsFocused)
         }
 
         Box(
@@ -168,6 +178,7 @@ private fun GradeScaleListScreen(
                         }
                     },
                     onOpenDialog = onOpenDialog,
+                    totalPointsInteractionSource = totalPointsInteractionSource,
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))

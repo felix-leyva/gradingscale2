@@ -50,7 +50,7 @@ class DeleteGradeScaleUseCaseTest {
         assertTrue(result.isSome())
 
         // Verify repository state
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(0, scales.size, "Repository should be empty after deletion")
             cancelAndConsumeRemainingEvents()
@@ -68,7 +68,7 @@ class DeleteGradeScaleUseCaseTest {
         assertTrue(result.isNone())
 
         // Verify repository state is unchanged
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(1, scales.size, "Repository should still contain the original grade scale")
             cancelAndConsumeRemainingEvents()
@@ -87,7 +87,7 @@ class DeleteGradeScaleUseCaseTest {
         assertTrue(result.isNone())
 
         // Verify repository state is unchanged
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(1, scales.size, "Repository should still contain the original grade scale")
             cancelAndConsumeRemainingEvents()

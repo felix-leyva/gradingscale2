@@ -1,5 +1,19 @@
 package de.felixlf.gradingscale2.storage
 
+interface KeyValueStorage {
+    fun getItem(key: String): String?
+    fun setItem(key: String, value: String)
+    fun removeItem(key: String)
+    fun clear()
+}
+
+internal object DefaultKeyValueStorage : KeyValueStorage {
+    override fun getItem(key: String): String? = WasmJsStorage.getItem(key)
+    override fun setItem(key: String, value: String) = WasmJsStorage.setItem(key, value)
+    override fun removeItem(key: String) = WasmJsStorage.removeItem(key)
+    override fun clear() = WasmJsStorage.clear()
+}
+
 /**
  * Common interface for WasmJS storage operations.
  * This allows for different implementations (localStorage, IndexedDB, etc.)

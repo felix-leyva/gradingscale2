@@ -96,4 +96,15 @@ class ExamTableDataBuilderImplTest {
 
         assertEquals(descResult.reversed(), ascResult)
     }
+
+    @Test
+    fun nonFiniteTotalPoints_fallsBackToGradeScaleTotalPoints() {
+        listOf(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NaN).forEach { badTotal ->
+            val rows = builder.buildRows(sampleScale, TableExportOptions(sortDescending = true), totalPoints = badTotal)
+            assertEquals(5, rows.size)
+            assertTrue(rows.all { it.minPoints.isFinite() && it.maxPoints.isFinite() })
+            assertEquals(72.0, rows.first().minPoints, 0.001)
+            assertEquals(80.0, rows.first().maxPoints, 0.001)
+        }
+    }
 }

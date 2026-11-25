@@ -14,6 +14,7 @@ kotlin {
     }
 
     wasmJs {
+        nodejs()
         browser {
             testTask {
                 enabled = false
@@ -26,6 +27,10 @@ kotlin {
             implementation(libs2.kstore)
             implementation(libs2.kotlinx.serialization)
             implementation(libs2.kotlinx.coroutines.core)
+        }
+        commonTest.dependencies {
+            implementation(libs2.kotlin.test)
+            implementation(libs2.coroutines.test)
         }
     }
 }

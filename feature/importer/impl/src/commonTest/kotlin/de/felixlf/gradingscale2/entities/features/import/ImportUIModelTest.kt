@@ -1,6 +1,7 @@
 package de.felixlf.gradingscale2.entities.features.import
 
 import app.cash.turbine.test
+import arrow.core.Option
 import arrow.core.left
 import arrow.core.right
 import arrow.core.some
@@ -19,7 +20,13 @@ import de.felixlf.gradingscale2.core.ui.resources.Res
 import de.felixlf.gradingscale2.core.ui.resources.import_grade_get_remote_grades_error
 import de.felixlf.gradingscale2.core.ui.resources.import_grade_open_import_dialog_error
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -27,6 +34,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -422,6 +430,176 @@ class ImportUIModelTest {
 
             // Clean up
             cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun refresh_retries_after_loadGrades_failure_and_recovers() = runTest {
+        var loadCalls = 0
+        val flakyUseCase = GetRemoteGradeScalesUseCase {
+            loadCalls++
+            if (loadCalls == 1) {
+                testRemoteError.left()
+            } else {
+                persistentListOf(testCountryGradingScales).right()
+            }
+        }
+        val sut = ImportUIModelWithEvents(
+            stateProducer = TestStateProducer(backgroundScope),
+            getRemoteGradeScalesUseCase = flakyUseCase,
+            getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
+            importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
+            showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
+        )
+
+        sut.uiState.test {
+            runCurrent()
+            val errorState = expectMostRecentItem()
+            assertEquals(Res.string.import_grade_get_remote_grades_error, errorState.error)
+            assertEquals(1, loadCalls)
+
+            sut.sendCommand(ImportCommand.Refresh)
+            runCurrent()
+
+            val recoveredState = expectMostRecentItem()
+            assertEquals(2, loadCalls)
+            assertNull(recoveredState.error)
+            assertFalse(recoveredState.isLoading)
+            assertEquals(persistentListOf(testCountryGradingScales), recoveredState.countryGradingScales)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun dismissImportDialog_when_error_is_set_does_not_reload_remote_scales() = runTest {
+        var loadCalls = 0
+        val countingLoadUseCase = GetRemoteGradeScalesUseCase {
+            loadCalls++
+            persistentListOf(testCountryGradingScales).right()
+        }
+        val failingDetailUseCase = GetRemoteGradeScaleUseCase {
+            testRemoteError.left()
+        }
+        val sut = ImportUIModelWithEvents(
+            stateProducer = TestStateProducer(backgroundScope),
+            getRemoteGradeScalesUseCase = countingLoadUseCase,
+            getRemoteGradeScaleUseCase = failingDetailUseCase,
+            importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
+            showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
+        )
+
+        sut.uiState.test {
+            runCurrent()
+            val loadedState = expectMostRecentItem()
+            assertFalse(loadedState.isLoading)
+            assertEquals(1, loadCalls)
+
+            sut.sendCommand(ImportCommand.OpenImportDialog(testCountryAndName))
+            runCurrent()
+            val errorState = expectMostRecentItem()
+            assertEquals(Res.string.import_grade_open_import_dialog_error, errorState.error)
+
+            sut.sendCommand(ImportCommand.DismissImportDialog)
+            runCurrent()
+            val dismissedState = expectMostRecentItem()
+            assertNull(dismissedState.error)
+            assertNull(dismissedState.displayedGradeScaleDTO)
+            assertEquals(1, loadCalls)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun importGradeScale_guards_duplicate_submissions_and_clears_dialog_before_loading_ends() = runTest {
+        val gate = CompletableDeferred<Option<String>>()
+        var importCalls = 0
+        val gatedImportUseCase = ImportRemoteGradeScaleIntoDbUseCase {
+            importCalls++
+            gate.await()
+        }
+        val sut = ImportUIModelWithEvents(
+            stateProducer = TestStateProducer(backgroundScope),
+            getRemoteGradeScalesUseCase = getRemoteGradeScalesUseCase,
+            getRemoteGradeScaleUseCase = getRemoteGradeScaleUseCase,
+            importRemoteGradeScaleIntoDbUseCase = gatedImportUseCase,
+            showSnackbarUseCase = showSnackbarUseCase,
+            trackErrorUseCase = fakeTrackerUseCase,
+        )
+
+        sut.uiState.test {
+            runCurrent()
+            expectMostRecentItem()
+
+            sut.sendCommand(ImportCommand.OpenImportDialog(testCountryAndName))
+            runCurrent()
+            val openState = expectMostRecentItem()
+            assertEquals(testGradeScaleDTO, openState.displayedGradeScaleDTO)
+
+            sut.sendCommand(ImportCommand.ImportGradeScale)
+            sut.sendCommand(ImportCommand.ImportGradeScale)
+            runCurrent()
+
+            assertEquals(1, importCalls)
+            val loadingState = expectMostRecentItem()
+            assertTrue(loadingState.isLoading)
+
+            gate.complete("scale-1".some())
+            runCurrent()
+
+            val doneState = awaitItem()
+            assertFalse(doneState.isLoading)
+            assertNull(doneState.displayedGradeScaleDTO)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun openImportDialog_resets_isLoading_when_useCase_throws_exception() = runTest {
+        var caughtError: Throwable? = null
+        val handler = CoroutineExceptionHandler { _, throwable -> caughtError = throwable }
+        val isolatedScope = CoroutineScope(SupervisorJob() + StandardTestDispatcher(testScheduler) + handler)
+        val gate = CompletableDeferred<Unit>()
+        try {
+            val throwingDetailUseCase = GetRemoteGradeScaleUseCase {
+                gate.await()
+                throw IllegalStateException("Offline")
+            }
+            val sut = ImportUIModelWithEvents(
+                stateProducer = TestStateProducer(isolatedScope),
+                getRemoteGradeScalesUseCase = getRemoteGradeScalesUseCase,
+                getRemoteGradeScaleUseCase = throwingDetailUseCase,
+                importRemoteGradeScaleIntoDbUseCase = importRemoteGradeScaleIntoDbUseCase,
+                showSnackbarUseCase = showSnackbarUseCase,
+                trackErrorUseCase = fakeTrackerUseCase,
+            )
+
+            sut.uiState.test {
+                runCurrent()
+                val loadedState = expectMostRecentItem()
+                assertFalse(loadedState.isLoading)
+
+                sut.sendCommand(ImportCommand.OpenImportDialog(testCountryAndName))
+                runCurrent()
+                val loadingState = expectMostRecentItem()
+                assertTrue(loadingState.isLoading)
+
+                gate.complete(Unit)
+                runCurrent()
+
+                assertNotNull(caughtError)
+                val afterFailure = awaitItem()
+                assertFalse(afterFailure.isLoading)
+                assertFalse(sut.uiState.value.isLoading)
+
+                cancelAndIgnoreRemainingEvents()
+            }
+        } finally {
+            isolatedScope.cancel()
         }
     }
 }

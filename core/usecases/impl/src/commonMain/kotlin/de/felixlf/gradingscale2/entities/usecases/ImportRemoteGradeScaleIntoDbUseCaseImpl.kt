@@ -1,6 +1,7 @@
 package de.felixlf.gradingscale2.entities.usecases
 
 import arrow.core.Option
+import arrow.core.raise.ensure
 import arrow.core.raise.option
 import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
@@ -18,8 +19,10 @@ internal class ImportRemoteGradeScaleIntoDbUseCaseImpl(
     @Suppress("MemberExtensionConflict")
     @OptIn(ExperimentalUuidApi::class)
     override suspend fun invoke(remoteGradeScaleDTO: GradeScaleDTO): Option<String> = option {
+        ensure(remoteGradeScaleDTO.grades.isNotEmpty())
+        ensure(remoteGradeScaleDTO.grades.all { it.percentage.isFinite() && it.percentage in 0.0..1.0 })
         val (currentNames, currentIds) = (
-            gradeScaleRepository.getGradeScales().firstOrNull()
+            gradeScaleRepository.gradeScales.firstOrNull()
                 ?.map { it.gradeScaleName to it.id.toIntOrNull() }
                 ?: persistentListOf()
             ).unzip()

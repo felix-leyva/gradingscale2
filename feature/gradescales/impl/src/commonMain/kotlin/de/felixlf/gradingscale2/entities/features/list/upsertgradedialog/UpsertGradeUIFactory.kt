@@ -13,8 +13,10 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeByUUIDUseCase
 import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
+import de.felixlf.gradingscale2.entities.util.toLocaleDoubleOrNull
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 /**
@@ -36,7 +38,8 @@ internal class UpsertGradeUIFactory(
 
     private var gradeName by mutableStateOf<String?>(null)
     private var percentage by mutableStateOf<String?>(null)
-    private var currentState by mutableStateOf<UpsertGradeUIState?>(null)
+    private var isSaving = false
+    private var isSaved by mutableStateOf(false)
 
     override val uiState: StateFlow<UpsertGradeUIState> by stateProducer {
         initUi()
@@ -46,9 +49,8 @@ internal class UpsertGradeUIFactory(
             name = gradeName,
             gradeScale = currentGradeScale,
             selectedGrade = selectedGrade,
-        ).also {
-            LaunchedEffect(it) { currentState = it }
-        }
+            isSaved = isSaved,
+        )
     }
 
     @Composable
@@ -60,12 +62,11 @@ internal class UpsertGradeUIFactory(
         }
 
         LaunchedEffect(gradeUUID) {
-            gradeUUID?.let { getGradeByUUIDUseCase(it) }?.filterNotNull()?.collect {
-                selectedGrade = it
-                gradeName = it.namedGrade
-                percentage = it.percentage.times(100).toString()
-                gradeScaleId = it.idOfGradeScale
-            }
+            val loaded = gradeUUID?.let { getGradeByUUIDUseCase(it) }?.filterNotNull()?.firstOrNull() ?: return@LaunchedEffect
+            selectedGrade = loaded
+            gradeName = loaded.namedGrade
+            percentage = loaded.percentage.times(100).toString()
+            gradeScaleId = loaded.idOfGradeScale
         }
     }
 
@@ -81,27 +82,53 @@ internal class UpsertGradeUIFactory(
     }
 
     private fun save(event: UpsertGradeUIEvent) {
+        if (isSaving || isSaved) return
+        val name = gradeName?.takeIf { it.isNotBlank() } ?: return
+        val parsedPercentage = percentage?.toLocaleDoubleOrNull()
+            ?.div(100.0)
+            ?.takeIf { it in 0.0..1.0 }
+            ?: return
+        val scaleId = gradeScaleId ?: return
+        val currentSelectedGrade = selectedGrade
+        val validationState = UpsertGradeUIState(
+            name = gradeName,
+            percentage = percentage,
+            grade = currentSelectedGrade,
+            gradeScale = currentGradeScale,
+            selectedGrade = currentSelectedGrade,
+            isSaved = isSaved,
+        )
+        val shouldUpdate = event is UpsertGradeUIEvent.Save && currentSelectedGrade != null && validationState.isSaveButtonEnabled
+        val shouldInsert = event is UpsertGradeUIEvent.SaveAsNew && validationState.isSaveNewButtonEnabled
+        if (!shouldUpdate && !shouldInsert) return
+
+        isSaving = true
         scope.launch {
-            val gradeName = requireNotNull(gradeName)
-            val percentage = requireNotNull(percentage?.toDoubleOrNull()?.div(100.0))
-            val gradeScaleId = requireNotNull(gradeScaleId)
-            val selectedGrade = selectedGrade
-            when {
-                currentState?.error?.isNotEmpty() == true -> return@launch
+            try {
+                when {
+                    shouldUpdate -> {
+                        val updatedGrade = currentSelectedGrade.copy(
+                            namedGrade = name,
+                            percentage = parsedPercentage,
+                        )
+                        if (upsertGradeUseCase(updatedGrade).isSome()) {
+                            isSaved = true
+                        }
+                    }
 
-                event is UpsertGradeUIEvent.Save && selectedGrade != null -> {
-                    val updatedGrade = selectedGrade.copy(
-                        namedGrade = gradeName,
-                        percentage = percentage,
-                    )
-                    upsertGradeUseCase(updatedGrade)
+                    shouldInsert -> {
+                        val inserted = insertGradeUseCase(
+                            gradeScaleId = scaleId,
+                            percentage = parsedPercentage,
+                            namedGrade = name,
+                        )
+                        if (inserted.isRight()) {
+                            isSaved = true
+                        }
+                    }
                 }
-
-                event is UpsertGradeUIEvent.SaveAsNew -> insertGradeUseCase(
-                    gradeScaleId = gradeScaleId,
-                    percentage = percentage,
-                    namedGrade = gradeName,
-                )
+            } finally {
+                isSaving = false
             }
         }
     }

@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.features.export
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import de.felixlf.gradingscale2.entities.models.ExamTableRow
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.TableExportOptions
 import de.felixlf.gradingscale2.entities.models.TableHeaders
@@ -17,6 +18,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.StringResource
 
 /**
  * UI State Factory for the Export Exam Table dialog.
@@ -55,11 +57,11 @@ internal class ExportExamTableUIModel(
         when (command) {
             is ExportExamTableUIEvent.SetGradeScale -> {
                 gradeScale = command.gradeScale
-                if (command.gradeScale.totalPoints > 0.0 && totalPoints == 10.0) {
+                if (command.gradeScale.totalPoints.isFinite() && command.gradeScale.totalPoints > 0.0 && totalPoints == 10.0) {
                     totalPoints = command.gradeScale.totalPoints
                 }
             }
-            is ExportExamTableUIEvent.SetTotalPoints -> if (command.points > 0) totalPoints = command.points
+            is ExportExamTableUIEvent.SetTotalPoints -> if (command.points.isFinite() && command.points > 0.0) totalPoints = command.points
             is ExportExamTableUIEvent.SetHeaders -> headers = command.headers
             ExportExamTableUIEvent.ToggleIncludePercentage -> {
                 options = options.copy(includePercentage = !options.includePercentage)
@@ -70,49 +72,39 @@ internal class ExportExamTableUIModel(
             ExportExamTableUIEvent.ToggleSortDescending -> {
                 options = options.copy(sortDescending = !options.sortDescending)
             }
-            ExportExamTableUIEvent.CopyWordTable -> copyWordTable()
-            ExportExamTableUIEvent.CopyTsvTable -> copyTsvTable()
+            ExportExamTableUIEvent.CopyWordTable -> copyTable(
+                successMessage = Res.string.gradescale_export_success_table_copied,
+                buildHtml = htmlFormatter::format,
+            )
+            ExportExamTableUIEvent.CopyTsvTable -> copyTable(
+                successMessage = Res.string.gradescale_export_success_text_copied,
+                buildHtml = { _, _, _ -> "" },
+            )
             ExportExamTableUIEvent.DismissHandled -> isCopiedDismiss = false
         }
     }
 
-    private fun copyWordTable() {
-        val currentRows = uiState.value.rows
+    private fun copyTable(
+        successMessage: StringResource,
+        buildHtml: (List<ExamTableRow>, TableExportOptions, TableHeaders) -> String,
+    ) {
+        val currentScale = gradeScale ?: return
+        val snapshotTotalPoints = totalPoints
+        val snapshotOptions = options
+        val snapshotHeaders = headers
+        val currentRows = examTableDataBuilder.buildRows(currentScale, snapshotOptions, snapshotTotalPoints)
         if (currentRows.isEmpty()) return
         scope.launch {
-            val html = htmlFormatter.format(currentRows, options, headers)
-            val tsv = tsvFormatter.format(currentRows, options, headers)
+            val html = buildHtml(currentRows, snapshotOptions, snapshotHeaders)
+            val tsv = tsvFormatter.format(currentRows, snapshotOptions, snapshotHeaders)
             val success = tableClipboardExporter.copyTableToClipboard(html, tsv)
             if (success) {
-                showSnackbarUseCase(
-                    message = Res.string.gradescale_export_success_table_copied,
-                    actionLabel = null,
-                    duration = null,
-                )
                 isCopiedDismiss = true
-            } else {
                 showSnackbarUseCase(
-                    message = Res.string.gradescale_export_error_copying,
+                    message = successMessage,
                     actionLabel = null,
                     duration = null,
                 )
-            }
-        }
-    }
-
-    private fun copyTsvTable() {
-        val currentRows = uiState.value.rows
-        if (currentRows.isEmpty()) return
-        scope.launch {
-            val tsv = tsvFormatter.format(currentRows, options, headers)
-            val success = tableClipboardExporter.copyTableToClipboard("", tsv)
-            if (success) {
-                showSnackbarUseCase(
-                    message = Res.string.gradescale_export_success_text_copied,
-                    actionLabel = null,
-                    duration = null,
-                )
-                isCopiedDismiss = true
             } else {
                 showSnackbarUseCase(
                     message = Res.string.gradescale_export_error_copying,

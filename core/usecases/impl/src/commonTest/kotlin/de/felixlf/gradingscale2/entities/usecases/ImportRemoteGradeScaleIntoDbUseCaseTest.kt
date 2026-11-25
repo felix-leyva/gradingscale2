@@ -7,6 +7,7 @@ import de.felixlf.gradingscale2.entities.models.remote.GradeDTO
 import de.felixlf.gradingscale2.entities.models.remote.GradeScaleDTO
 import de.felixlf.gradingscale2.entities.repositories.FakeGradeScaleRepository
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -49,7 +50,7 @@ class ImportRemoteGradeScaleIntoDbUseCaseTest {
         )
 
         // Verify repository state
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(1, scales.size)
 
@@ -102,7 +103,7 @@ class ImportRemoteGradeScaleIntoDbUseCaseTest {
         assertTrue(result.isSome())
 
         // Verify repository state
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(2, scales.size)
 
@@ -167,7 +168,7 @@ class ImportRemoteGradeScaleIntoDbUseCaseTest {
         assertTrue(result.isSome())
 
         // Verify repository state
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(3, scales.size)
 
@@ -200,11 +201,36 @@ class ImportRemoteGradeScaleIntoDbUseCaseTest {
         assertTrue(result.isNone())
 
         // Verify repository state (unchanged)
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(0, scales.size)
 
             cancelAndConsumeRemainingEvents()
         }
+    }
+
+    @Test
+    fun `test import rejects empty grades and out of range or non-finite percentages`() = runTest {
+        val emptyResult = useCase(
+            GradeScaleDTO(
+                gradeScaleName = "EmptyScale",
+                country = "Germany",
+                grades = emptyList(),
+            ),
+        )
+        assertTrue(emptyResult.isNone())
+
+        listOf(90.0, -0.1, Double.NaN, Double.POSITIVE_INFINITY).forEach { badPct ->
+            val result = useCase(
+                GradeScaleDTO(
+                    gradeScaleName = "Malformed",
+                    country = "Germany",
+                    grades = listOf(GradeDTO("A", badPct)),
+                ),
+            )
+            assertTrue(result.isNone(), "Expected None for percentage=$badPct")
+        }
+
+        assertEquals(0, fakeRepository.gradeScales.first().size)
     }
 }

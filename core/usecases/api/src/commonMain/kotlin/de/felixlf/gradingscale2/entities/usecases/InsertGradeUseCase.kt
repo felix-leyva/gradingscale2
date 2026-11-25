@@ -7,5 +7,5 @@ fun interface InsertGradeUseCase {
 }
 
 enum class InsertGradeUseCaseError {
-    GradeWithSameNameAlreadyExists, GradeScaleIdNotFound, PercentageAlreadyExists, ErrorInsertingGrade
+    GradeWithSameNameAlreadyExists, GradeScaleIdNotFound, PercentageAlreadyExists, ErrorInsertingGrade, InvalidPercentage
 }

@@ -34,10 +34,12 @@ kotlin {
             implementation(libs2.coroutines.extensions)
             implementation(libs2.sqldelight.runtime)
             implementation(libs2.kotlinx.serialization)
+            implementation(libs2.kstore)
         }
 
         jvmMain.dependencies {
             implementation(libs2.sqlite.driver)
+            implementation(libs2.appdirs)
         }
 
         val wasmJsMain by getting {

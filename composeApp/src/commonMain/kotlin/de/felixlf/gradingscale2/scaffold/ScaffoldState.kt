@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation3.ui.LocalNavAnimatedContentScope
 import de.felixlf.gradingscale2.AppState
-import org.koin.compose.koinInject
+import de.felixlf.gradingscale2.LocalAppState
 
 /**
  * UI logic state holder for handling persistent UI elements across navigation destinations.
@@ -29,8 +29,8 @@ internal constructor(
 @Composable
 fun rememberScaffoldState(
     animatedVisibilityScope: AnimatedVisibilityScope = LocalNavAnimatedContentScope.current,
+    appState: AppState = LocalAppState.current,
 ): ScaffoldState {
-    val appState = koinInject<AppState>()
     return remember(animatedVisibilityScope, appState) {
         ScaffoldState(
             animatedVisibilityScope = animatedVisibilityScope,

@@ -9,8 +9,12 @@ import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUse
 import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import de.felixlf.gradingscale2.entities.util.MockGradeScalesGenerator
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -156,6 +160,138 @@ class CalculatorUIStateFactoryTest {
                 assertEquals(0.9, currentGrade?.percentage)
                 assertEquals(mockGradeScales.first().gradeByPercentage(0.9).namedGrade, currentGrade?.grade?.namedGrade)
             }
+        }
+    }
+
+    @Test
+    fun `recompositions on local state updates do not recreate or re-collect flows`() = runTest {
+        var allGradeScalesCalls = 0
+        var allGradeScalesCollections = 0
+        var getScaleByIdCalls = 0
+        var getScaleByIdCollections = 0
+
+        val countingAllScalesUseCase = GetAllGradeScalesUseCase {
+            allGradeScalesCalls++
+            flowOf(mockGradeScales.toImmutableList()).onStart { allGradeScalesCollections++ }
+        }
+        val countingScaleByIdUseCase = GetGradeScaleByIdUseCase { id ->
+            getScaleByIdCalls++
+            flowOf(mockGradeScales.find { it.id == id }).onStart { getScaleByIdCollections++ }
+        }
+
+        val sut = CalculatorUIModel(
+            stateProducer = TestStateProducer(backgroundScope),
+            allGradeScalesUseCase = countingAllScalesUseCase,
+            getGradeScaleByIdUseCase = countingScaleByIdUseCase,
+            getLastSelectedGradeScaleIdUseCase = GetLastSelectedGradeScaleIdUseCase { null },
+            setLastSelectedGradeScaleIdUseCase = SetLastSelectedGradeScaleIdUseCase { Option(Unit) },
+        )
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.gradeScalesNamesWithId.isEmpty()) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(CalculatorUIEvent.SelectGradeScale(current.gradeScalesNames.first()))
+            while (current.selectedGradeScale == null) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(CalculatorUIEvent.SetTotalPoints(20.0))
+            while (current.totalPoints != 20.0) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(CalculatorUIEvent.SetPercentage(0.75))
+            while (current.currentPercentage != 0.75) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(CalculatorUIEvent.SetPoints(10.0))
+            while (current.currentPercentage != 0.5) {
+                current = awaitItem()
+            }
+
+            assertEquals(1, allGradeScalesCalls)
+            assertEquals(1, allGradeScalesCollections)
+            assertEquals(1, getScaleByIdCalls)
+            assertEquals(1, getScaleByIdCollections)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `slow preference load finishing after explicit scale selection does not overwrite selection`() = runTest {
+        val savedIdDeferred = CompletableDeferred<String?>()
+        setupSUT(getLastSelectedGradeScaleIdUseCase = { savedIdDeferred.await() })
+
+        factory.uiState.test {
+            var current = awaitItem()
+            while (current.gradeScalesNamesWithId.isEmpty()) {
+                current = awaitItem()
+            }
+
+            val chosenScale = mockGradeScales.last()
+            factory.sendCommand(CalculatorUIEvent.SelectGradeScale(chosenScale.gradeScaleName))
+            runCurrent()
+            assertEquals(chosenScale.id, factory.uiState.value.selectedGradeScale?.id)
+
+            // Late preference completion (both stale ID or null) must not clobber explicit choice.
+            savedIdDeferred.complete(mockGradeScales.first().id)
+            runCurrent()
+            assertEquals(chosenScale.id, factory.uiState.value.selectedGradeScale?.id)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        val nullIdDeferred = CompletableDeferred<String?>()
+        setupSUT(getLastSelectedGradeScaleIdUseCase = { nullIdDeferred.await() })
+        factory.uiState.test {
+            var current = awaitItem()
+            while (current.gradeScalesNamesWithId.isEmpty()) {
+                current = awaitItem()
+            }
+
+            val chosenScale = mockGradeScales.last()
+            factory.sendCommand(CalculatorUIEvent.SelectGradeScale(chosenScale.gradeScaleName))
+            runCurrent()
+            assertEquals(chosenScale.id, factory.uiState.value.selectedGradeScale?.id)
+
+            nullIdDeferred.complete(null)
+            runCurrent()
+            assertEquals(chosenScale.id, factory.uiState.value.selectedGradeScale?.id)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `non-finite inputs and unknown grade name do not corrupt calculator state`() = runTest {
+        setupSUT()
+        factory.uiState.test {
+            var current = awaitItem()
+            while (current.gradeScalesNamesWithId.isEmpty()) {
+                current = awaitItem()
+            }
+            factory.sendCommand(CalculatorUIEvent.SelectGradeScale(current.gradeScalesNames.first()))
+            factory.sendCommand(CalculatorUIEvent.SetTotalPoints(20.0))
+            factory.sendCommand(CalculatorUIEvent.SetPercentage(0.75))
+            runCurrent()
+
+            assertEquals(20.0, factory.uiState.value.totalPoints)
+            assertEquals(0.75, factory.uiState.value.currentPercentage)
+
+            factory.sendCommand(CalculatorUIEvent.SetTotalPoints(Double.POSITIVE_INFINITY))
+            factory.sendCommand(CalculatorUIEvent.SetTotalPoints(Double.NaN))
+            factory.sendCommand(CalculatorUIEvent.SetPercentage(Double.NaN))
+            factory.sendCommand(CalculatorUIEvent.SetPoints(Double.NaN))
+            factory.sendCommand(CalculatorUIEvent.SetGradeName("NonExistentGrade"))
+            runCurrent()
+
+            assertEquals(20.0, factory.uiState.value.totalPoints)
+            assertEquals(0.75, factory.uiState.value.currentPercentage)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }

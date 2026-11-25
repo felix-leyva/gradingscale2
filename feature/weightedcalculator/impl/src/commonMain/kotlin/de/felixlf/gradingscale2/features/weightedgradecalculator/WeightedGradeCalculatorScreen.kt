@@ -30,6 +30,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -84,15 +88,8 @@ internal fun WeightedGradeCalculatorScreen(
     uiState: WeightCalculatorUIState,
     onSendCommand: (WeightedCalculatorCommand) -> Unit,
 ) {
-    val onAddGrade: () -> Unit = {
-        val newGrade = WeightedGrade(
-            percentage = 1.0,
-            weight = 1.0,
-            uuid = Uuid.random().toString(),
-        )
-        onSendCommand(WeightedCalculatorCommand.AddGradeAtPos(uiState.grades.size, newGrade))
-        onSendCommand(WeightedCalculatorCommand.SelectGrade(newGrade.uuid))
-    }
+    val dialogCoordinator = remember { WeightedGradeDialogCoordinator() }
+    val onAddGrade: () -> Unit = { dialogCoordinator.startAddGrade(uiState) }
 
     Box(modifier = modifier.hazeSource(LocalHazeState.current).fillMaxSize()) {
         when {
@@ -106,29 +103,85 @@ internal fun WeightedGradeCalculatorScreen(
     }
 
     // Show dialog for editing/adding grades
-    uiState.selectedGrade?.let {
-        if (uiState.selectedGradeScale == null) return@let
-        GradeEditDialog(
-            grade = it,
-            gradeScale = uiState.selectedGradeScale!!,
-            onSave = { updatedGrade ->
-                val position = uiState.grades.indexOf(uiState.selectedGrade)
-                if (position != -1) {
-                    onSendCommand(WeightedCalculatorCommand.UpdateGrade(updatedGrade))
-                } else {
-                    onSendCommand(WeightedCalculatorCommand.AddGradeAtPos(0, updatedGrade))
-                }
-            },
-            onDelete = {
-                val position = uiState.grades.indexOf(uiState.selectedGrade)
-                if (position != -1) {
-                    onSendCommand(WeightedCalculatorCommand.RemoveGrade(it.uuid))
-                }
-            },
-            onDismiss = {
-                onSendCommand(WeightedCalculatorCommand.SelectGrade(null))
-            },
+    dialogCoordinator.activeDialogGrade(uiState)?.let { activeGrade ->
+        val selectedScale = uiState.selectedGradeScale ?: return@let
+        key(activeGrade.uuid) {
+            GradeEditDialog(
+                grade = activeGrade,
+                gradeScale = selectedScale,
+                isNewGrade = dialogCoordinator.isEditingDraft(),
+                onSave = { updatedGrade ->
+                    dialogCoordinator.save(updatedGrade, uiState, onSendCommand)
+                },
+                onDelete = {
+                    dialogCoordinator.delete(activeGrade, uiState, onSendCommand)
+                },
+                onDismiss = {
+                    dialogCoordinator.dismiss(onSendCommand)
+                },
+            )
+        }
+    }
+}
+
+internal class WeightedGradeDialogCoordinator(
+    private val createUuid: () -> String = { Uuid.random().toString() },
+) {
+    var draftGrade: WeightedGrade? by mutableStateOf(null)
+        private set
+
+    fun startAddGrade(uiState: WeightCalculatorUIState): Boolean {
+        if (uiState.selectedGradeScale == null || draftGrade != null || uiState.selectedGrade != null) {
+            return false
+        }
+        draftGrade = WeightedGrade(
+            percentage = 1.0,
+            weight = 1.0,
+            uuid = createUuid(),
         )
+        return true
+    }
+
+    fun activeDialogGrade(uiState: WeightCalculatorUIState): WeightedGrade? {
+        if (uiState.selectedGradeScale == null) return null
+        return draftGrade ?: uiState.selectedGrade
+    }
+
+    fun isEditingDraft(): Boolean = draftGrade != null
+
+    fun save(
+        updatedGrade: WeightedGrade,
+        uiState: WeightCalculatorUIState,
+        onSendCommand: (WeightedCalculatorCommand) -> Unit,
+    ) {
+        if (draftGrade?.uuid == updatedGrade.uuid) {
+            draftGrade = null
+            onSendCommand(WeightedCalculatorCommand.AddGradeAtPos(uiState.grades.size, updatedGrade))
+        } else if (uiState.grades.any { it.uuid == updatedGrade.uuid }) {
+            onSendCommand(WeightedCalculatorCommand.UpdateGrade(updatedGrade))
+        } else {
+            onSendCommand(WeightedCalculatorCommand.AddGradeAtPos(uiState.grades.size, updatedGrade))
+        }
+    }
+
+    fun delete(
+        grade: WeightedGrade,
+        uiState: WeightCalculatorUIState,
+        onSendCommand: (WeightedCalculatorCommand) -> Unit,
+    ) {
+        if (draftGrade?.uuid == grade.uuid) {
+            draftGrade = null
+        } else if (uiState.grades.any { it.uuid == grade.uuid }) {
+            onSendCommand(WeightedCalculatorCommand.RemoveGrade(grade.uuid))
+        }
+    }
+
+    fun dismiss(onSendCommand: (WeightedCalculatorCommand) -> Unit) {
+        if (draftGrade != null) {
+            draftGrade = null
+        } else {
+            onSendCommand(WeightedCalculatorCommand.SelectGrade(null))
+        }
     }
 }
 
@@ -254,6 +307,7 @@ private fun MobileWeightedCalculatorContent(
                 item(key = "empty_placeholder") {
                     EmptyWeightedGradesPlaceholder(
                         onAddGrade = onAddGrade,
+                        enabled = uiState.selectedGradeScale != null,
                     )
                 }
             } else {
@@ -369,6 +423,7 @@ private fun ExpandedWeightedCalculatorContent(
             item(span = { GridItemSpan(maxLineSpan) }, key = "empty_placeholder") {
                 EmptyWeightedGradesPlaceholder(
                     onAddGrade = onAddGrade,
+                    enabled = uiState.selectedGradeScale != null,
                 )
             }
         } else {

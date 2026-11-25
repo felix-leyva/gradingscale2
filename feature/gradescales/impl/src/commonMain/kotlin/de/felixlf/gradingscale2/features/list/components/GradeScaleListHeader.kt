@@ -1,5 +1,6 @@
 package de.felixlf.gradingscale2.features.list.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +62,7 @@ internal fun GradeScaleListHeader(
     onSelectGradeScaleId: (String?) -> Unit,
     onOpenDialog: (GradeScaleListDialogCommand) -> Unit,
     modifier: Modifier = Modifier,
+    totalPointsInteractionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -96,6 +99,7 @@ internal fun GradeScaleListHeader(
                         color = MaterialTheme.colorScheme.onSurface,
                     ),
                     label = stringResource(Res.string.gradescale_list_total_points),
+                    interactionSource = totalPointsInteractionSource,
                 )
 
                 Spacer(modifier = Modifier.width(4.dp))
@@ -165,6 +169,7 @@ internal fun GradeScaleListHeader(
                         color = MaterialTheme.colorScheme.onSurface,
                     ),
                     label = stringResource(Res.string.gradescale_list_total_points),
+                    interactionSource = totalPointsInteractionSource,
                 )
             }
         }

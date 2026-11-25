@@ -1,6 +1,7 @@
 package de.felixlf.gradingscale2.uicomponents
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.DropdownMenuItem
@@ -60,6 +61,7 @@ fun DropboxSelector(
             label = label,
             readOnly = true,
             selectAllOnFocus = false,
+            keyboardOptions = KeyboardOptions.Default,
             textStyle = textStyle,
             interactionSource = remember { MutableInteractionSource() },
         )

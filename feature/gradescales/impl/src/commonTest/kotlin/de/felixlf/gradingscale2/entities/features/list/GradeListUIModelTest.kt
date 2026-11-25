@@ -1,6 +1,7 @@
 package de.felixlf.gradingscale2.entities.features.list
 
 import app.cash.turbine.test
+import arrow.core.None
 import arrow.core.Some
 import de.felixlf.gradingscale2.entities.TestStateProducer
 import de.felixlf.gradingscale2.entities.models.Grade
@@ -12,9 +13,13 @@ import de.felixlf.gradingscale2.entities.usecases.GetLastSelectedGradeScaleIdUse
 import de.felixlf.gradingscale2.entities.usecases.SetLastSelectedGradeScaleIdUseCase
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -236,6 +241,166 @@ class GradeListUIModelTest {
             assertEquals("scale-2", afterDeleteState.selectedGradeScale?.id)
             assertEquals("scale-2", lastSavedSelectedId)
 
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun recompositionsOnSetTotalPoints_doNotRecreateOrRecollectFlows() = runTest {
+        var allGradeScalesCalls = 0
+        var allGradeScalesCollections = 0
+        var getScaleByIdCalls = 0
+        var getScaleByIdCollections = 0
+
+        val countingAllScalesUseCase = GetAllGradeScalesUseCase {
+            allGradeScalesCalls++
+            scalesFlow.map { it.toImmutableList() }.onStart { allGradeScalesCollections++ }
+        }
+        val countingScaleByIdUseCase = GetGradeScaleByIdUseCase { id ->
+            getScaleByIdCalls++
+            scalesFlow.map { list -> list.firstOrNull { it.id == id } }.onStart { getScaleByIdCollections++ }
+        }
+
+        val sut = GradeListUIModel(
+            stateProducer = TestStateProducer(backgroundScope),
+            allGradeScalesUseCase = countingAllScalesUseCase,
+            getGradeScaleByIdUseCase = countingScaleByIdUseCase,
+            getLastSelectedGradeScaleIdUseCase = GetLastSelectedGradeScaleIdUseCase { "scale-1" },
+            setLastSelectedGradeScaleIdUseCase = setLastSelectedGradeScaleIdUseCase,
+            deleteGradeScaleUseCase = deleteGradeScaleUseCase,
+        )
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.selectedGradeScale?.id != "scale-1") {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(GradeScaleListUIEvent.SetTotalPoints(20.0))
+            while (current.selectedGradeScale?.totalPoints != 20.0) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(GradeScaleListUIEvent.SetTotalPoints(30.0))
+            while (current.selectedGradeScale?.totalPoints != 30.0) {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(GradeScaleListUIEvent.SetTotalPoints(40.0))
+            while (current.selectedGradeScale?.totalPoints != 40.0) {
+                current = awaitItem()
+            }
+
+            assertEquals(1, allGradeScalesCalls)
+            assertEquals(1, allGradeScalesCollections)
+            assertEquals(1, getScaleByIdCalls)
+            assertEquals(1, getScaleByIdCollections)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun slowPreferenceLoadDoesNotOverwriteEarlierScaleSelection() = runTest {
+        val savedIdDeferred = CompletableDeferred<String?>()
+        val sut = GradeListUIModel(
+            stateProducer = TestStateProducer(backgroundScope),
+            allGradeScalesUseCase = getAllGradeScalesUseCase,
+            getGradeScaleByIdUseCase = getGradeScaleByIdUseCase,
+            getLastSelectedGradeScaleIdUseCase = GetLastSelectedGradeScaleIdUseCase { savedIdDeferred.await() },
+            setLastSelectedGradeScaleIdUseCase = setLastSelectedGradeScaleIdUseCase,
+            deleteGradeScaleUseCase = deleteGradeScaleUseCase,
+        )
+
+        sut.uiState.test {
+            awaitItem()
+            awaitItem()
+
+            sut.sendCommand(GradeScaleListUIEvent.SelectGradeScaleById("scale-2"))
+            runCurrent()
+            assertEquals("scale-2", sut.uiState.value.selectedGradeScale?.id)
+
+            savedIdDeferred.complete("scale-1")
+            runCurrent()
+            assertEquals("scale-2", sut.uiState.value.selectedGradeScale?.id)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun selectGradeScaleByIdPersistsSelectedId() = runTest {
+        val sut = createSUT()
+        sut.uiState.test {
+            awaitItem()
+            awaitItem()
+
+            sut.sendCommand(GradeScaleListUIEvent.SelectGradeScaleById("scale-2"))
+            runCurrent()
+
+            assertEquals("scale-2", sut.uiState.value.selectedGradeScale?.id)
+            assertEquals("scale-2", lastSavedSelectedId)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun failedDeleteGradeScaleLeavesSelectionAndSavedPreferenceUnchanged() = runTest {
+        deleteGradeScaleUseCase = DeleteGradeScaleUseCase { None }
+        val sut = createSUT(initialSavedId = "scale-1")
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.selectedGradeScale?.id != "scale-1") {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(GradeScaleListUIEvent.DeleteGradeScale("scale-1"))
+            runCurrent()
+
+            assertEquals("scale-1", sut.uiState.value.selectedGradeScale?.id)
+            assertEquals("scale-1", lastSavedSelectedId)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun deletingLastRemainingScaleClearsSelectionAndSavedPreference() = runTest {
+        scalesFlow.value = listOf(scale1)
+        val sut = createSUT(initialSavedId = "scale-1")
+
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.selectedGradeScale?.id != "scale-1") {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(GradeScaleListUIEvent.DeleteGradeScale("scale-1"))
+            runCurrent()
+
+            assertNull(sut.uiState.value.selectedGradeScale)
+            assertEquals("", lastSavedSelectedId)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun setTotalPointsIgnoresNonFiniteValues() = runTest {
+        val sut = createSUT(initialSavedId = "scale-1")
+        sut.uiState.test {
+            var current = awaitItem()
+            while (current.selectedGradeScale?.id != "scale-1") {
+                current = awaitItem()
+            }
+
+            sut.sendCommand(GradeScaleListUIEvent.SetTotalPoints(Double.POSITIVE_INFINITY))
+            sut.sendCommand(GradeScaleListUIEvent.SetTotalPoints(Double.NaN))
+            runCurrent()
+
+            assertEquals(10.0, sut.uiState.value.selectedGradeScale?.totalPoints)
             cancelAndIgnoreRemainingEvents()
         }
     }

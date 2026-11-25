@@ -8,6 +8,7 @@ import de.felixlf.gradingscale2.entities.daos.WeightedGradeDao
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import de.felixlf.gradingscale2.entities.util.DispatcherProvider
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 internal class WeightedGradeDaoImpl(
     private val dbToWeightedGradeMapper: DbToWeightedGradeMapper,
@@ -20,19 +21,25 @@ internal class WeightedGradeDaoImpl(
             .mapToList(dispatcherProvider.io)
     }
 
-    override suspend fun upsertWeightedGrade(weightedGrade: WeightedGrade) = Option.catch {
-        queries.transactionWithResult {
-            queries.upsertWeightedGrade(
-                id = weightedGrade.uuid,
-                percentage = weightedGrade.percentage,
-                weight = weightedGrade.weight,
-            )
+    override suspend fun upsertWeightedGrade(weightedGrade: WeightedGrade): Option<Long> =
+        withContext(dispatcherProvider.io) {
+            Option.catch {
+                queries.transactionWithResult {
+                    queries.upsertWeightedGrade(
+                        id = weightedGrade.uuid,
+                        percentage = weightedGrade.percentage,
+                        weight = weightedGrade.weight,
+                    )
+                }
+            }
         }
-    }
 
-    override suspend fun deleteWeightedGrade(weightedGradeId: String): Option<Unit> = Option.catch {
-        queries.transactionWithResult {
-            queries.deleteWeightedGradeById(weightedGradeId)
+    override suspend fun deleteWeightedGrade(weightedGradeId: String): Option<Unit> =
+        withContext(dispatcherProvider.io) {
+            Option.catch {
+                queries.transactionWithResult {
+                    queries.deleteWeightedGradeById(weightedGradeId)
+                }
+            }.filter { deletedRows -> deletedRows > 0L }.map {}
         }
-    }
 }

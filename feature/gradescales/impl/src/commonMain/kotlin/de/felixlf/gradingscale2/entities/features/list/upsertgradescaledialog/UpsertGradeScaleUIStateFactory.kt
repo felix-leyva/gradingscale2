@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.upsertgradescaledialog.UpsertGradeScaleUIState.State
 import de.felixlf.gradingscale2.entities.models.GradeScaleNameAndId
@@ -30,9 +31,11 @@ internal class UpsertGradeScaleUIStateFactory(
     private var newGradeScaleName by mutableStateOf("")
     private var uiSaveState by mutableStateOf<State>(State.Loading)
     private var operation by mutableStateOf<State.Operation?>(null)
+    private var initializedOperation by mutableStateOf<State.Operation?>(null)
 
     override val uiState: StateFlow<UpsertGradeScaleUIState> by stateProducer {
-        val existingGradeScaleNames = getAllGradeScalesUseCase().asState(persistentListOf()).map { gradeScale ->
+        val allGradeScalesFlow = remember { getAllGradeScalesUseCase() }
+        val existingGradeScaleNames = allGradeScalesFlow.asState(persistentListOf()).map { gradeScale ->
             GradeScaleNameAndId(
                 name = gradeScale.gradeScaleName,
                 id = gradeScale.id,
@@ -40,11 +43,23 @@ internal class UpsertGradeScaleUIStateFactory(
         }.toImmutableList()
 
         LaunchedEffect(existingGradeScaleNames, operation) {
-            (operation as? State.Operation.Update)?.let { operation ->
-                val gradeScale = existingGradeScaleNames.find { it.id == operation.currentGradeScaleId }
-                newGradeScaleName = gradeScale?.name ?: ""
+            val currentOp = operation ?: return@LaunchedEffect
+            if (initializedOperation == currentOp) return@LaunchedEffect
+            when (currentOp) {
+                is State.Operation.Insert -> {
+                    uiSaveState = State.Loaded(currentOp)
+                    initializedOperation = currentOp
+                }
+
+                is State.Operation.Update -> {
+                    val gradeScale = existingGradeScaleNames.find { it.id == currentOp.currentGradeScaleId }
+                    if (gradeScale != null || existingGradeScaleNames.isNotEmpty()) {
+                        newGradeScaleName = gradeScale?.name ?: ""
+                        uiSaveState = State.Loaded(currentOp)
+                        initializedOperation = currentOp
+                    }
+                }
             }
-            operation?.let { uiSaveState = State.Loaded(it) }
         }
 
         UpsertGradeScaleUIState(
@@ -63,6 +78,7 @@ internal class UpsertGradeScaleUIStateFactory(
     }
 
     private fun save(event: UpserGradeScaleUIEvent.Save) {
+        if (uiSaveState == State.Loading || uiSaveState is State.Success) return
         uiSaveState = State.Loading
         scope.launch {
             val id = (operation as? State.Operation.Update)?.currentGradeScaleId

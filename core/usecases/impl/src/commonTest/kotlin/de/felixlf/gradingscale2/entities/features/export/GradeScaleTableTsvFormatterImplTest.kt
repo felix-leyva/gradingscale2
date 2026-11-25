@@ -134,4 +134,37 @@ class GradeScaleTableTsvFormatterImplTest {
         assertEquals("Grade 1  Plus\t≥ 95\t≥ 95%", lines[1])
         assertFalse(lines[0].startsWith("Grade\tName"))
     }
+
+    @Test
+    fun format_neutralizesFormulaInjectionPrefixesOnGradesAndHeaders() {
+        val maliciousRows = listOf(
+            ExamTableRow("=HYPERLINK(\"https://evil.example\",\"A\")", 90.0, 100.0, 0.9, 1.0),
+            ExamTableRow("+cmd", 80.0, 90.0, 0.8, 0.9),
+            ExamTableRow("-1", 70.0, 80.0, 0.7, 0.8),
+            ExamTableRow("@SUM(A1:A2)", 60.0, 70.0, 0.6, 0.7),
+            ExamTableRow("  =1+1", 50.0, 60.0, 0.5, 0.6),
+            ExamTableRow("A+", 40.0, 50.0, 0.4, 0.5),
+            ExamTableRow("B-", 0.0, 40.0, 0.0, 0.4),
+        )
+        val headers = TableHeaders(
+            gradeTitle = "=Header",
+            pointsTitle = "Points",
+            percentageTitle = "@Pct",
+        )
+        val result = formatter.format(
+            rows = maliciousRows,
+            options = TableExportOptions(includePercentage = true, showAsRange = false),
+            headers = headers,
+        )
+        val lines = result.lines()
+
+        assertEquals("'=Header\tPoints\t'@Pct", lines[0])
+        assertEquals("'=HYPERLINK(\"https://evil.example\",\"A\")", lines[1].substringBefore('\t'))
+        assertEquals("'+cmd", lines[2].substringBefore('\t'))
+        assertEquals("'-1", lines[3].substringBefore('\t'))
+        assertEquals("'@SUM(A1:A2)", lines[4].substringBefore('\t'))
+        assertEquals("'  =1+1", lines[5].substringBefore('\t'))
+        assertEquals("A+", lines[6].substringBefore('\t'))
+        assertEquals("B-", lines[7].substringBefore('\t'))
+    }
 }

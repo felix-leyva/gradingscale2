@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.features.list
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SelectGradeScale
 import de.felixlf.gradingscale2.entities.features.list.GradeScaleListUIEvent.SetTotalPoints
@@ -31,22 +32,21 @@ internal class GradeListUIModel(
     private val deleteGradeScaleUseCase: DeleteGradeScaleUseCase? = null,
 ) : UIModel<GradeScaleListUIState, GradeScaleListUIEvent> {
 
-    // MutableStateOf causes inside the produceUI function recomposition which is helpful to update the State. If we wish to "observe" this
-    // value in other places, we need to do this inside @Composable functions.
     private var gradeScaleId by mutableStateOf<String?>(null)
     private var totalPoints by mutableStateOf(10.0)
 
-    // Important exception: do not use this state value in the produceUI function, to avoid recomposition loops.
-    private var state by mutableStateOf<GradeScaleListUIState?>(null)
     override val uiState: StateFlow<GradeScaleListUIState> by stateProducer {
         LaunchedEffect(Unit) {
-            getLastSelectedGradeScaleIdUseCase()?.let {
-                gradeScaleId = it
+            val savedId = getLastSelectedGradeScaleIdUseCase()
+            if (gradeScaleId == null && !savedId.isNullOrBlank()) {
+                gradeScaleId = savedId
             }
         }
-        val selectedGradeScale = gradeScaleId?.let { getGradeScaleByIdUseCase(it).asState(null) }
+        val allGradeScalesFlow = remember { allGradeScalesUseCase() }
+        val selectedGradeScaleFlow = remember(gradeScaleId) { gradeScaleId?.let { getGradeScaleByIdUseCase(it) } }
+        val selectedGradeScale = selectedGradeScaleFlow?.asState(null)
         val modifiedGradeScale = selectedGradeScale?.copy(totalPoints = totalPoints)
-        val gradeScalesNamesWithId = allGradeScalesUseCase().asState(persistentListOf()).map {
+        val gradeScalesNamesWithId = allGradeScalesFlow.asState(persistentListOf()).map {
             GradeScaleListUIState.GradeScaleNameWithId(
                 gradeScaleName = it.gradeScaleName,
                 gradeScaleId = it.id,
@@ -56,31 +56,41 @@ internal class GradeListUIModel(
         GradeScaleListUIState(
             selectedGradeScale = modifiedGradeScale,
             gradeScalesNamesWithId = gradeScalesNamesWithId,
-        ).also { state = it }
+        )
     }
 
     override fun sendCommand(command: GradeScaleListUIEvent) {
         when (command) {
             is SelectGradeScale -> {
-                gradeScaleId = state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == command.gradeScaleName }?.gradeScaleId
-                scope.launch { gradeScaleId?.let { setLastSelectedGradeScaleIdUseCase.invoke(it) } }
+                val matchedId = uiState.value.gradeScalesNamesWithId
+                    .firstOrNull { it.gradeScaleName == command.gradeScaleName }
+                    ?.gradeScaleId
+                    ?: return
+                gradeScaleId = matchedId
+                scope.launch { setLastSelectedGradeScaleIdUseCase.invoke(matchedId) }
             }
 
             is SetTotalPoints -> {
-                if (command.points <= 0) return
+                if (!command.points.isFinite() || command.points <= 0.0) return
                 totalPoints = command.points
             }
 
-            is GradeScaleListUIEvent.SelectGradeScaleById -> gradeScaleId = command.gradeScaleId
+            is GradeScaleListUIEvent.SelectGradeScaleById -> {
+                gradeScaleId = command.gradeScaleId
+                scope.launch { setLastSelectedGradeScaleIdUseCase(command.gradeScaleId) }
+            }
 
             is GradeScaleListUIEvent.DeleteGradeScale -> {
+                val deleteUseCase = deleteGradeScaleUseCase ?: return
                 scope.launch {
-                    deleteGradeScaleUseCase?.invoke(command.gradeScaleId)
-                    if (gradeScaleId == command.gradeScaleId) {
-                        val remaining = state?.gradeScalesNamesWithId?.filter { it.gradeScaleId != command.gradeScaleId }
-                        val nextScale = remaining?.firstOrNull()
-                        gradeScaleId = nextScale?.gradeScaleId
-                        nextScale?.gradeScaleId?.let { setLastSelectedGradeScaleIdUseCase.invoke(it) }
+                    deleteUseCase(command.gradeScaleId).onSome {
+                        if (gradeScaleId == command.gradeScaleId) {
+                            val remaining = uiState.value.gradeScalesNamesWithId
+                                .filter { it.gradeScaleId != command.gradeScaleId }
+                            val nextScale = remaining.firstOrNull()
+                            gradeScaleId = nextScale?.gradeScaleId
+                            setLastSelectedGradeScaleIdUseCase(nextScale?.gradeScaleId ?: "")
+                        }
                     }
                 }
             }

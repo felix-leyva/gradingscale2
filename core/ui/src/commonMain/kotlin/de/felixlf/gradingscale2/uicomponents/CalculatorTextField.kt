@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.selectAll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,6 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,7 +37,7 @@ fun CalculatorTextField(
     singleLine: Boolean = true,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default.copy(
-        keyboardType = KeyboardType.Number,
+        keyboardType = KeyboardType.Decimal,
         imeAction = ImeAction.Done,
     ),
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(color = MaterialTheme.colorScheme.onSurface),
@@ -44,13 +46,12 @@ fun CalculatorTextField(
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
     LaunchedEffect(isFocused, selectAllOnFocus) {
-        if (isFocused && selectAllOnFocus) state.edit { selectAll() }
+        syncSelectionWithFocus(state, isFocused, selectAllOnFocus)
     }
 
-    // Apply numeric filter if keyboard type is Number
-    val isNumberKeyboard = keyboardOptions.keyboardType == KeyboardType.Number
-    val combinedTransformation = remember(inputTransformation, isNumberKeyboard) {
-        if (isNumberKeyboard) {
+    val applyNumericFilter = shouldApplyNumericFilter(readOnly, keyboardOptions.keyboardType)
+    val combinedTransformation = remember(inputTransformation, applyNumericFilter) {
+        if (applyNumericFilter) {
             val numericFilter = NumericInputFilter()
             if (inputTransformation != null) {
                 // Chain both transformations
@@ -73,6 +74,7 @@ fun CalculatorTextField(
         state = state,
         enabled = enabled,
         readOnly = readOnly,
+        lineLimits = if (singleLine) TextFieldLineLimits.SingleLine else TextFieldLineLimits.Default,
         keyboardOptions = keyboardOptions,
         textStyle = textStyle,
         interactionSource = interactionSource,
@@ -89,4 +91,21 @@ fun CalculatorTextField(
             )
         },
     )
+}
+
+internal fun shouldApplyNumericFilter(
+    readOnly: Boolean,
+    keyboardType: KeyboardType,
+): Boolean = !readOnly && (keyboardType == KeyboardType.Decimal || keyboardType == KeyboardType.Number)
+
+internal fun syncSelectionWithFocus(
+    state: TextFieldState,
+    isFocused: Boolean,
+    selectAllOnFocus: Boolean,
+) {
+    if (isFocused && selectAllOnFocus) {
+        state.edit { selectAll() }
+    } else if (!isFocused && !state.selection.collapsed) {
+        state.edit { selection = TextRange(length) }
+    }
 }

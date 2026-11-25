@@ -6,6 +6,7 @@ import de.felixlf.gradingscale2.entities.models.Grade
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.models.weightedgrade.WeightedGrade
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -505,6 +506,84 @@ class modelTest {
 
             // Verify no state update
             expectNoEvents()
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun setPercentageWithLocaleCommaUpdatesPercentage() = runTest {
+        val model = createModel()
+
+        model.uiState.test {
+            awaitItem()
+            model.sendCommand(
+                WeightedGradeDialogCommand.Init(
+                    weightedGrade = testWeightedGrade,
+                    gradeScale = testGradeScale,
+                ),
+            )
+            awaitItem()
+
+            model.sendCommand(WeightedGradeDialogCommand.SetPercentage("85,5"))
+            val state = awaitItem()
+            assertEquals(0.855, state.percentage)
+            assertEquals("85.5", state.percentageString)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun setWeightAndRelativeWeightWithLocaleCommaUpdateState() = runTest {
+        val model = createModel()
+
+        model.uiState.test {
+            awaitItem()
+            model.sendCommand(
+                WeightedGradeDialogCommand.Init(
+                    weightedGrade = testWeightedGrade,
+                    gradeScale = testGradeScale,
+                ),
+            )
+            awaitItem()
+
+            model.sendCommand(WeightedGradeDialogCommand.SetWeight("3,5"))
+            val weightUpdated = awaitItem()
+            assertEquals(3.5, weightUpdated.weight)
+
+            model.sendCommand(WeightedGradeDialogCommand.SetRelativeWeight("1,75"))
+            val relUpdated = awaitItem()
+            assertEquals(0.5, relUpdated.percentage)
+
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun nonFiniteInputsAreIgnored() = runTest {
+        val model = createModel()
+
+        model.uiState.test {
+            awaitItem()
+            model.sendCommand(
+                WeightedGradeDialogCommand.Init(
+                    weightedGrade = testWeightedGrade,
+                    gradeScale = testGradeScale,
+                ),
+            )
+            awaitItem()
+
+            listOf("NaN", "1e400", "Infinity", "-Infinity").forEach { nonFinite ->
+                model.sendCommand(WeightedGradeDialogCommand.SetPercentage(nonFinite))
+                model.sendCommand(WeightedGradeDialogCommand.SetWeight(nonFinite))
+                model.sendCommand(WeightedGradeDialogCommand.SetRelativeWeight(nonFinite))
+                testScheduler.runCurrent()
+                expectNoEvents()
+                assertEquals(testWeightedGrade.percentage, model.uiState.value.percentage)
+                assertEquals(testWeightedGrade.weight, model.uiState.value.weight)
+            }
 
             cancelAndIgnoreRemainingEvents()
         }
