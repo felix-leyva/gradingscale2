@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -78,19 +79,17 @@ private fun UpsertGradeDialog(
     uiState: State<UpsertGradeUIState>,
     viewModel: UpsertGradeViewModel,
 ) {
+    LaunchedEffect(uiState.value.isSaved) {
+        if (uiState.value.isSaved) onDismiss()
+    }
+
     Dialog(onDismissRequest = onDismiss) {
         UpsertGradeDialog(
             uiState = uiState.value,
             onSetPercentage = { viewModel.sendCommand(UpsertGradeUIEvent.SetPercentage(it)) },
             onSetName = { viewModel.sendCommand(UpsertGradeUIEvent.SetGradeName(it)) },
-            onSave = {
-                viewModel.sendCommand(UpsertGradeUIEvent.Save)
-                onDismiss()
-            },
-            onSaveNew = {
-                viewModel.sendCommand(UpsertGradeUIEvent.SaveAsNew)
-                onDismiss()
-            },
+            onSave = { viewModel.sendCommand(UpsertGradeUIEvent.Save) },
+            onSaveNew = { viewModel.sendCommand(UpsertGradeUIEvent.SaveAsNew) },
         )
     }
 }
@@ -187,13 +186,15 @@ private fun EditGradeTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
-    val textFieldValue = textFieldManager(value) { onValueChange(it) }
+    val interactionSource = remember { MutableInteractionSource() }
+    val textFieldValue = textFieldManager(externalFieldValue = value, delay = 0L) { onValueChange(it) }
     BasicTextField(
         modifier = modifier,
         state = textFieldValue,
         textStyle = TextStyle.Default.copy(color = MaterialTheme.colorScheme.primary),
         lineLimits = TextFieldLineLimits.SingleLine,
         keyboardOptions = keyboardOptions,
+        interactionSource = interactionSource,
         decorator = @Composable { textField ->
             OutlinedTextFieldDefaults.DecorationBox(
                 value = textFieldValue.text.toString(),
@@ -201,7 +202,7 @@ private fun EditGradeTextField(
                 innerTextField = textField,
                 enabled = true,
                 singleLine = true,
-                interactionSource = MutableInteractionSource(),
+                interactionSource = interactionSource,
                 visualTransformation = VisualTransformation.None,
                 isError = error,
             )

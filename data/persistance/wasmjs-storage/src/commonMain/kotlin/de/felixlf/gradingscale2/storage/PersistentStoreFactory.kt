@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.storage
 import io.github.xxfast.kstore.Codec
 import io.github.xxfast.kstore.KStore
 import io.github.xxfast.kstore.storeOf
+import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 
@@ -65,23 +66,26 @@ class WasmJsStorageCodec<T : Any>(
     private val serializer: KSerializer<T>,
     private val storageKey: String,
     private val config: StorageConfig = StorageConfig(),
+    private val storage: KeyValueStorage = DefaultKeyValueStorage,
 ) : Codec<T> {
 
     override suspend fun encode(value: T?) {
         try {
             if (value != null) {
                 val jsonString = config.json.encodeToString(serializer, value)
-                WasmJsStorage.setItem(storageKey, jsonString)
+                storage.setItem(storageKey, jsonString)
                 if (config.enableLogging) {
                     println("✅ Persisted $storageKey (${jsonString.length} chars)")
                 }
             } else {
-                WasmJsStorage.removeItem(storageKey)
+                storage.removeItem(storageKey)
                 if (config.enableLogging) {
                     println("🗑️ Removed $storageKey from storage")
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
             if (config.enableLogging) {
                 println("❌ Failed to encode $storageKey: ${e.message}")
             }
@@ -91,7 +95,7 @@ class WasmJsStorageCodec<T : Any>(
 
     override suspend fun decode(): T? {
         return try {
-            val jsonString = WasmJsStorage.getItem(storageKey)
+            val jsonString = storage.getItem(storageKey)
             when {
                 jsonString.isNullOrEmpty() -> {
                     if (config.enableLogging) {
@@ -107,7 +111,9 @@ class WasmJsStorageCodec<T : Any>(
                     decoded
                 }
             }
-        } catch (e: Exception) {
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Throwable) {
             if (config.enableLogging) {
                 println("❌ Failed to decode $storageKey: ${e.message}")
             }
@@ -115,7 +121,15 @@ class WasmJsStorageCodec<T : Any>(
                 if (config.enableLogging) {
                     println("🔧 Clearing corrupted data")
                 }
-                WasmJsStorage.removeItem(storageKey)
+                try {
+                    storage.removeItem(storageKey)
+                } catch (removeError: CancellationException) {
+                    throw removeError
+                } catch (removeError: Throwable) {
+                    if (config.enableLogging) {
+                        println("⚠️ Failed to clear corrupted data for $storageKey: ${removeError.message}")
+                    }
+                }
             }
             null
         }

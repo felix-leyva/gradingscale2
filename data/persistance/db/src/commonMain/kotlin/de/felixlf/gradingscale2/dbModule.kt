@@ -2,6 +2,7 @@
 
 package de.felixlf.gradingscale2
 
+import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.db.SqlDriver
 import de.felixlf.gradingscale2.db.DriverFactory
 import de.felixlf.gradingscale2.entities.daos.GradeScaleDao
@@ -24,7 +25,35 @@ class DatabaseSchemaInitializer(
     private val driver: SqlDriver,
 ) {
     suspend fun initSchema() {
-        Database.Schema.create(driver).await()
+        val currentVersion = driver.executeQuery(
+            identifier = null,
+            sql = "PRAGMA user_version",
+            mapper = { cursor ->
+                when (val next = cursor.next()) {
+                    is QueryResult.Value -> QueryResult.Value(if (next.value) cursor.getLong(0) ?: 0L else 0L)
+                    is QueryResult.AsyncValue -> QueryResult.AsyncValue { if (next.await()) cursor.getLong(0) ?: 0L else 0L }
+                }
+            },
+            parameters = 0,
+        ).await()
+        val schemaVersion = Database.Schema.version
+        val applySchema: (suspend () -> Unit)? = when {
+            currentVersion == 0L -> {
+                { Database.Schema.create(driver).await() }
+            }
+
+            currentVersion < schemaVersion -> {
+                { Database.Schema.migrate(driver, currentVersion, schemaVersion).await() }
+            }
+
+            else -> null
+        }
+        if (applySchema != null) {
+            Database(driver).transaction {
+                applySchema()
+                driver.execute(null, "PRAGMA user_version = $schemaVersion", 0).await()
+            }
+        }
     }
 }
 

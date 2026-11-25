@@ -1,6 +1,7 @@
 CREATE TABLE grade_scale (
     id TEXT PRIMARY KEY NOT NULL,
-    grade_scale_name TEXT NOT NULL
+    grade_scale_name TEXT NOT NULL,
+    total_points REAL NOT NULL DEFAULT 10.0
 );
 
 CREATE TABLE grade (
@@ -8,13 +9,19 @@ CREATE TABLE grade (
     named_grade TEXT NOT NULL,
     percentage REAL NOT NULL,
     scale_id TEXT NOT NULL,
-    FOREIGN KEY (scale_id) REFERENCES grade_scale(id)
+    FOREIGN KEY (scale_id) REFERENCES grade_scale(id) ON DELETE CASCADE
 );
 
--- Upsert a grade scale
-upsertGradeScale:
-INSERT OR REPLACE INTO grade_scale (id, grade_scale_name)
-VALUES (?, ?);
+-- Insert a new grade scale
+insertGradeScale:
+INSERT INTO grade_scale (id, grade_scale_name, total_points)
+VALUES (?, ?, ?);
+
+-- Update an existing grade scale in place without triggering ON DELETE CASCADE
+updateGradeScale:
+UPDATE grade_scale
+SET grade_scale_name = ?, total_points = ?
+WHERE id = ?;
 
 -- Upsert a grade
 upsertGrade:
@@ -24,6 +31,18 @@ VALUES (?, ?, ?, ?);
 -- Delete a grade by uuid
 deleteGradesByUuid:
 DELETE FROM grade WHERE uuid = ?;
+
+-- Delete all grades belonging to a grade scale
+deleteGradesByScaleId:
+DELETE FROM grade WHERE scale_id = ?;
+
+-- Delete grades belonging to a grade scale except the given uuids
+deleteGradesByScaleIdExcludingUuids:
+DELETE FROM grade WHERE scale_id = ? AND uuid NOT IN ?;
+
+-- Delete a grade scale by id
+deleteGradeScaleById:
+DELETE FROM grade_scale WHERE id = ?;
 
 -- Get a single grade by uuid
 getGradeByUuid:
@@ -49,14 +68,13 @@ WHERE grade_scale.id = ?;
 
 -- Get a grade scale with all its associated grades (1-to-many)
 getGradeScaleWithGrades:
-SELECT grade_scale.id AS grade_scale_id, grade_scale.grade_scale_name, grade.uuid AS grade_uuid, grade.named_grade, grade.percentage, grade.scale_id
+SELECT grade_scale.id AS grade_scale_id, grade_scale.grade_scale_name, grade_scale.total_points, grade.uuid AS grade_uuid, grade.named_grade, grade.percentage, grade.scale_id
 FROM grade_scale
-INNER JOIN grade ON grade_scale.id = grade.scale_id
+LEFT JOIN grade ON grade_scale.id = grade.scale_id
 WHERE grade_scale.id = ?;
 
 -- Get all grade scales with all their associated grades (1-to-many)
 getAllGradeScalesWithGrades:
-SELECT grade_scale.id AS grade_scale_id, grade_scale.grade_scale_name, grade.uuid AS grade_uuid, grade.named_grade, grade.percentage, grade.scale_id
+SELECT grade_scale.id AS grade_scale_id, grade_scale.grade_scale_name, grade_scale.total_points, grade.uuid AS grade_uuid, grade.named_grade, grade.percentage, grade.scale_id
 FROM grade_scale
-INNER JOIN grade ON grade_scale.id = grade.scale_id;
-
+LEFT JOIN grade ON grade_scale.id = grade.scale_id;

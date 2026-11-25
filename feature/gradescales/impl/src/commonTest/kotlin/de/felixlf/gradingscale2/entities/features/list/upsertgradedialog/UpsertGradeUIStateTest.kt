@@ -232,7 +232,7 @@ class UpsertGradeUIStateTest {
     }
 
     @Test
-    fun isLoading_onlyTrueWhenBothGradeAndGradeScaleAreNull() {
+    fun isLoading_isTrueWheneverGradeScaleIsNull() {
         val stateBothNull = UpsertGradeUIState(
             name = "A",
             percentage = "90",
@@ -251,7 +251,9 @@ class UpsertGradeUIStateTest {
             gradeScale = null,
             selectedGrade = null,
         )
-        assertFalse(stateGradeOnly.isLoading)
+        assertTrue(stateGradeOnly.isLoading)
+        assertFalse(stateGradeOnly.isSaveButtonEnabled)
+        assertFalse(stateGradeOnly.isSaveNewButtonEnabled)
 
         val stateScaleOnly = UpsertGradeUIState(
             name = "A",
@@ -261,5 +263,53 @@ class UpsertGradeUIStateTest {
             selectedGrade = null,
         )
         assertFalse(stateScaleOnly.isLoading)
+    }
+
+    @Test
+    fun nonNumericPercentages_flagInvalidPercentage_andDisableSaveButtons() {
+        listOf("abc", ".", "-", "85,5,5", "NaN", "Infinity").forEach { rawPercentage ->
+            val state = UpsertGradeUIState(
+                name = "C",
+                percentage = rawPercentage,
+                grade = sampleGrade,
+                gradeScale = sampleScale,
+                selectedGrade = sampleGrade,
+            )
+            assertTrue(
+                state.error.contains(UpsertGradeUIState.Error.INVALID_PERCENTAGE),
+                "Expected INVALID_PERCENTAGE for '$rawPercentage'",
+            )
+            assertFalse(state.isSaveButtonEnabled, "Expected Save disabled for '$rawPercentage'")
+            assertFalse(state.isSaveNewButtonEnabled, "Expected SaveNew disabled for '$rawPercentage'")
+        }
+    }
+
+    @Test
+    fun localeCommaDecimalPercentage_isValidAndEnablesSaveButtons() {
+        val state = UpsertGradeUIState(
+            name = "B+",
+            percentage = "85,5",
+            grade = sampleGrade,
+            gradeScale = sampleScale,
+            selectedGrade = sampleGrade,
+        )
+        assertFalse(state.error.contains(UpsertGradeUIState.Error.INVALID_PERCENTAGE))
+        assertTrue(state.isSaveButtonEnabled)
+        assertTrue(state.isSaveNewButtonEnabled)
+    }
+
+    @Test
+    fun outOfRangePercentages_disableSaveNewButton() {
+        listOf("150", "-5").forEach { outOfRange ->
+            val state = UpsertGradeUIState(
+                name = "C",
+                percentage = outOfRange,
+                grade = sampleGrade,
+                gradeScale = sampleScale,
+                selectedGrade = sampleGrade,
+            )
+            assertTrue(state.error.contains(UpsertGradeUIState.Error.INVALID_PERCENTAGE))
+            assertFalse(state.isSaveNewButtonEnabled, "Expected SaveNew disabled for '$outOfRange'")
+        }
     }
 }

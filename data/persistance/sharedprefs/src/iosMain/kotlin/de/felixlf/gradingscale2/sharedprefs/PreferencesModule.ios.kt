@@ -1,6 +1,7 @@
 package de.felixlf.gradingscale2.sharedprefs
 
-import io.github.xxfast.kstore.file.storeOf
+import io.github.xxfast.kstore.file.FileCodec
+import io.github.xxfast.kstore.storeOf
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.io.files.Path
 import org.koin.core.module.Module
@@ -23,7 +24,10 @@ private fun providePreferenceStore(): PreferenceStore {
     )!!
 
     val files = Path("${documentsUrl.path}/preferences.json")
-    return storeOf(file = files, default = AppPreferences.default)
+    return storeOf(
+        codec = ResilientCodec(FileCodec(file = files, json = preferencesJson)),
+        default = AppPreferences.default,
+    )
 }
 
 actual fun getPlatformPreferencesModule(): Module = module {

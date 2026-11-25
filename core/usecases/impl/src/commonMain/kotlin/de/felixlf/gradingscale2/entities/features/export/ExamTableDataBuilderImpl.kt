@@ -17,7 +17,7 @@ internal class ExamTableDataBuilderImpl : ExamTableDataBuilder {
         val sortedGrades = gradeScale.sortedGrades
         if (sortedGrades.isEmpty()) return emptyList()
 
-        val effectiveTotal = if (totalPoints > 0) totalPoints else gradeScale.totalPoints
+        val effectiveTotal = if (totalPoints.isFinite() && totalPoints > 0.0) totalPoints else gradeScale.totalPoints
 
         val rows = sortedGrades.mapIndexed { index, grade ->
             val minPercentage = grade.percentage

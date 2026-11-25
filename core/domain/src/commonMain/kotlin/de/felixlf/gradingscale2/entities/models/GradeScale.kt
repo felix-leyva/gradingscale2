@@ -24,7 +24,7 @@ data class GradeScale(
     val grades: PersistentList<Grade>,
 ) {
     init {
-        require(totalPoints > 0) { "Total points must be greater than 0" }
+        require(totalPoints.isFinite() && totalPoints > 0.0) { "Total points must be finite and greater than 0" }
     }
 
     @Transient
@@ -42,18 +42,32 @@ data class GradeScale(
 
     fun getPercentage(gradeName: String): Double = getPercentageOrNull(gradeName) ?: 0.0
 
-    fun gradeByPercentage(percentage: Double) =
-        sortedGrades
+    fun gradeByPercentageOrNull(percentage: Double): PointedGrade? {
+        if (sortedGrades.isEmpty()) return null
+        return sortedGrades
             .find { validPercentage(percentage) >= it.percentage }
             ?.toPointedGrade(totalPoints)
-            ?: sortedPointedGrades.last()
+            ?: sortedPointedGrades.lastOrNull()
+    }
 
-    fun gradeByPoints(points: Double) =
-        (points.coerceIn(0.0, totalPoints) / totalPoints)
-            .let(::gradeByPercentage)
+    fun gradeByPointsOrNull(points: Double): PointedGrade? {
+        if (sortedGrades.isEmpty()) return null
+        val safePoints = if (points.isFinite()) points.coerceIn(0.0, totalPoints) else 0.0
+        return gradeByPercentageOrNull(safePoints / totalPoints)
+    }
 
-    private fun validPercentage(percentage: Double) = percentage.coerceIn(0.0, 1.0)
+    fun nameByPercentageOrNull(percentage: Double): String? =
+        gradeByPercentageOrNull(percentage)?.namedGrade
+
+    fun gradeByPercentage(percentage: Double): PointedGrade =
+        gradeByPercentageOrNull(percentage) ?: throw NoSuchElementException("GradeScale has no grades")
+
+    fun gradeByPoints(points: Double): PointedGrade =
+        gradeByPointsOrNull(points) ?: throw NoSuchElementException("GradeScale has no grades")
+
+    private fun validPercentage(percentage: Double): Double =
+        if (percentage.isFinite()) percentage.coerceIn(0.0, 1.0) else 0.0
 
     fun nameByPercentage(percentage: Double): String =
-        gradeByPercentage(percentage).namedGrade
+        nameByPercentageOrNull(percentage) ?: ""
 }

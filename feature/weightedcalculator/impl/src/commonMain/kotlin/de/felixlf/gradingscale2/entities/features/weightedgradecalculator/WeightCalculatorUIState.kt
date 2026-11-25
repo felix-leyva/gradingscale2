@@ -25,7 +25,11 @@ internal class WeightCalculatorUIState(
     val weightedGradeSummary = selectedGradeScale?.let { gradeScale ->
         if (grades.isEmpty()) return@let null
         val totalPoints = grades.sumOf { it.percentage * it.weight }
-        val weightedPercentage = if (totalWeight > 0.0) totalPoints / totalWeight else 0.0
+        val weightedPercentage = if (totalWeight.isFinite() && totalWeight > 0.0 && totalPoints.isFinite()) {
+            (totalPoints / totalWeight).coerceIn(0.0, 1.0)
+        } else {
+            0.0
+        }
         val totalGradeName = gradeScale.nameByPercentage(weightedPercentage)
         WeightedGradeSummary(
             totalGradeName = totalGradeName,

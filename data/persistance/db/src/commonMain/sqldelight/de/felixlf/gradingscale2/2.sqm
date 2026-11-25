@@ -1,0 +1,15 @@
+CREATE TABLE grade_new (
+    uuid TEXT PRIMARY KEY NOT NULL,
+    named_grade TEXT NOT NULL,
+    percentage REAL NOT NULL,
+    scale_id TEXT NOT NULL,
+    FOREIGN KEY (scale_id) REFERENCES grade_scale(id) ON DELETE CASCADE
+);
+
+INSERT INTO grade_new (uuid, named_grade, percentage, scale_id)
+SELECT uuid, named_grade, percentage, scale_id
+FROM grade
+WHERE scale_id IN (SELECT id FROM grade_scale);
+
+DROP TABLE grade;
+ALTER TABLE grade_new RENAME TO grade;

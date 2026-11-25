@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class SelectedGradeScalePreferencesUseCasesTest {
@@ -51,5 +52,15 @@ class SelectedGradeScalePreferencesUseCasesTest {
         repository.shouldFail = true
         val failedResult = useCase("fail-scale")
         assertTrue(failedResult.isNone())
+    }
+
+    @Test
+    fun getLastSelectedGradeScaleIdUseCase_treatsBlankStoredIdAsNull() = runTest {
+        val useCase = GetLastSelectedGradeScaleIdUseCaseImpl(repository)
+        repository.flow.value = ""
+        assertNull(useCase())
+
+        repository.flow.value = "   "
+        assertNull(useCase())
     }
 }

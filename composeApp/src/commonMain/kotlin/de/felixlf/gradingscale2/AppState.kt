@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.staticCompositionLocalOf
 import de.felixlf.gradingscale2.navigation.AppNavController
 
 /**
@@ -15,3 +16,8 @@ class AppState(
     val navController: AppNavController,
     val sharedTransitionScope: SharedTransitionScope,
 )
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+internal val LocalAppState = staticCompositionLocalOf<AppState> {
+    error("No AppState provided. Ensure rememberScaffoldState is called inside App() or a LocalAppState provider.")
+}

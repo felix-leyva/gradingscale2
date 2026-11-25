@@ -39,7 +39,7 @@ class InsertGradeScaleUseCaseTest {
         )
 
         // Verify repository state
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(1, scales.size)
 
@@ -86,7 +86,7 @@ class InsertGradeScaleUseCaseTest {
         )
 
         // Verify repository state
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(2, scales.size)
 
@@ -113,7 +113,7 @@ class InsertGradeScaleUseCaseTest {
         assertTrue(result.isNone())
 
         // Verify repository state is unchanged
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(0, scales.size)
             cancelAndConsumeRemainingEvents()

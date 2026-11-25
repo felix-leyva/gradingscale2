@@ -128,4 +128,12 @@ class InsertGradeUseCaseTest {
         assertTrue(result.isLeft())
         assertEquals(InsertGradeUseCaseError.ErrorInsertingGrade, result.leftOrNull())
     }
+
+    @Test
+    fun `test insert grade with out of range or NaN percentage returns InvalidPercentage`() = runTest {
+        listOf(1.5, -0.1, Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).forEach { badPct ->
+            val result = useCase("1", badPct, "Bad")
+            assertEquals(InsertGradeUseCaseError.InvalidPercentage, result.leftOrNull())
+        }
+    }
 }

@@ -13,7 +13,10 @@ import de.felixlf.gradingscale2.core.ui.resources.gradescale_export_error_copyin
 import de.felixlf.gradingscale2.core.ui.resources.gradescale_export_success_table_copied
 import de.felixlf.gradingscale2.core.ui.resources.gradescale_export_success_text_copied
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.jetbrains.compose.resources.StringResource
 import kotlin.test.BeforeTest
@@ -90,7 +93,10 @@ class ExportExamTableUIModelTest {
             rows: List<ExamTableRow>,
             options: TableExportOptions,
             headers: TableHeaders,
-        ): String = "${headers.gradeTitle}\t${headers.pointsTitle}\n"
+        ): String = buildString {
+            append(headers.gradeTitle).append('\t').append(headers.pointsTitle).append('\n')
+            rows.forEach { row -> append(row.gradeName).append('\t').append(row.minPoints).append('\n') }
+        }.trimEnd('\n')
     }
 
     private fun TestScope.createUIModel(
@@ -228,6 +234,77 @@ class ExportExamTableUIModelTest {
             model.sendCommand(ExportExamTableUIEvent.DismissHandled)
             val stateAfterReset = awaitItem()
             assertFalse(stateAfterReset.isCopiedDismiss)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun setTotalPoints_ignoresNonFiniteValues() = runTest {
+        val model = createUIModel()
+        model.sendCommand(ExportExamTableUIEvent.SetGradeScale(testScale))
+        model.sendCommand(ExportExamTableUIEvent.SetTotalPoints(40.0))
+
+        model.uiState.test {
+            val loaded = awaitItem()
+            assertEquals(40.0, loaded.totalPoints)
+
+            model.sendCommand(ExportExamTableUIEvent.SetTotalPoints(Double.POSITIVE_INFINITY))
+            model.sendCommand(ExportExamTableUIEvent.SetTotalPoints(Double.NEGATIVE_INFINITY))
+            model.sendCommand(ExportExamTableUIEvent.SetTotalPoints(Double.NaN))
+            testScheduler.runCurrent()
+            expectNoEvents()
+            assertEquals(40.0, model.uiState.value.totalPoints)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun copyWordTableAndTsv_dismissImmediatelyWhileSnackbarSuspends_andSnapshotsRowsConsistently() = runTest {
+        var snackbarDeferred = CompletableDeferred<ShowSnackbarUseCase.SnackbarResult>()
+        val suspendingSnackbar = ShowSnackbarUseCase { message, _, _ ->
+            lastSnackbarMessage = message
+            snackbarDeferred.await()
+        }
+        val model = createUIModel(showSnackbar = suspendingSnackbar)
+
+        model.uiState.test {
+            awaitItem()
+            model.sendCommand(ExportExamTableUIEvent.SetGradeScale(testScale))
+            testScheduler.runCurrent()
+            expectMostRecentItem()
+
+            // Toggle to ascending AND immediately copy in the same frame before recomposition settles.
+            model.sendCommand(ExportExamTableUIEvent.ToggleSortDescending)
+            model.sendCommand(ExportExamTableUIEvent.CopyTsvTable)
+            testScheduler.runCurrent()
+
+            val tsvState = expectMostRecentItem()
+            assertTrue(tsvState.isCopiedDismiss)
+            assertEquals(Res.string.gradescale_export_success_text_copied, lastSnackbarMessage)
+            val dataLines = lastCopiedText?.lines()?.drop(1).orEmpty()
+            assertEquals("6", dataLines.first().substringBefore('\t'))
+
+            snackbarDeferred.complete(ShowSnackbarUseCase.SnackbarResult.Dismissed)
+            testScheduler.runCurrent()
+            model.sendCommand(ExportExamTableUIEvent.DismissHandled)
+            testScheduler.runCurrent()
+            expectMostRecentItem()
+
+            snackbarDeferred = CompletableDeferred()
+            model.sendCommand(ExportExamTableUIEvent.ToggleSortDescending)
+            model.sendCommand(ExportExamTableUIEvent.CopyWordTable)
+            testScheduler.runCurrent()
+
+            val wordState = expectMostRecentItem()
+            assertTrue(wordState.isCopiedDismiss)
+            assertEquals(Res.string.gradescale_export_success_table_copied, lastSnackbarMessage)
+            val wordLines = lastCopiedText?.lines()?.drop(1).orEmpty()
+            assertEquals("1", wordLines.first().substringBefore('\t'))
+
+            snackbarDeferred.complete(ShowSnackbarUseCase.SnackbarResult.Dismissed)
+            testScheduler.runCurrent()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }

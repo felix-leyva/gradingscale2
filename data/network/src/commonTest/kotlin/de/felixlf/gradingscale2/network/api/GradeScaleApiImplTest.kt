@@ -1,6 +1,7 @@
 package de.felixlf.gradingscale2.network.api
 
 import de.felixlf.gradingscale2.entities.network.BaseUrlProvider
+import de.felixlf.gradingscale2.network.di.gradingScaleJson
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.mock.MockEngine
@@ -12,10 +13,12 @@ import io.ktor.client.request.HttpResponseData
 import io.ktor.http.headersOf
 import io.ktor.serialization.kotlinx.json.json
 import io.ktor.utils.io.ByteReadChannel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -42,12 +45,7 @@ class GradeScaleApiImplTest {
 
     private fun HttpClientConfig<*>.setupJson() {
         install(ContentNegotiation) {
-            json(
-                Json {
-                    prettyPrint = true
-                    isLenient = true
-                },
-            )
+            json(gradingScaleJson)
         }
     }
 
@@ -93,7 +91,10 @@ class GradeScaleApiImplTest {
         val result = sut.gradeScaleWithName("Germany", "Berlin JGH Französisch, Spanisch, Russisch")
 
         // Then
-        assertEquals("https://something.example//gradeScales/Germany_Berlin%20JGH%20Franz%C3%B6sisch,%20Spanisch,%20Russisch.json", capturedUrl)
+        assertEquals(
+            "https://something.example/gradeScales/Germany_Berlin%20JGH%20Franz%C3%B6sisch,%20Spanisch,%20Russisch.json",
+            capturedUrl,
+        )
         val gradeScale = result.getOrNull()
         assertNotNull(gradeScale)
         assertEquals("Berlin JGH Französisch, Spanisch, Russisch", gradeScale.gradeScaleName)
@@ -120,7 +121,7 @@ class GradeScaleApiImplTest {
     }
 
     @Test
-    fun `test countriesAndGrades returns RemoteError 400 when network throws exception`() = runTest {
+    fun `test countriesAndGrades returns RemoteError when network throws exception`() = runTest {
         setUpMockEngineResponse {
             throw RuntimeException("Network unreachable")
         }
@@ -129,8 +130,8 @@ class GradeScaleApiImplTest {
         assertTrue(result.isLeft())
         val error = result.leftOrNull()
         assertNotNull(error)
-        assertEquals(400, error.code)
-        assertEquals("", error.message)
+        assertEquals(0, error.code)
+        assertEquals("Network unreachable", error.message)
     }
 
     @Test
@@ -179,6 +180,144 @@ class GradeScaleApiImplTest {
         val resultGradeScale300 = sut.gradeScaleWithName("Germany", "Scale")
         assertTrue(resultGradeScale300.isLeft())
         assertEquals(300, resultGradeScale300.leftOrNull()?.code)
+    }
+
+    @Test
+    fun `countriesAndGrades rethrows CancellationException instead of returning RemoteError`() = runTest {
+        setUpMockEngineResponse {
+            throw CancellationException("cancelled")
+        }
+
+        assertFailsWith<CancellationException> {
+            sut.countriesAndGrades()
+        }
+    }
+
+    @Test
+    fun `gradeScaleWithName returns RemoteError when network throws exception`() = runTest {
+        setUpMockEngineResponse {
+            throw RuntimeException("Network unreachable")
+        }
+
+        val result = sut.gradeScaleWithName("Germany", "Scale")
+        assertTrue(result.isLeft())
+        val error = result.leftOrNull()
+        assertNotNull(error)
+        assertEquals(0, error.code)
+        assertTrue(error.message.contains("Network unreachable"))
+    }
+
+    @Test
+    fun `gradeScaleWithName rethrows CancellationException`() = runTest {
+        setUpMockEngineResponse {
+            throw CancellationException("cancelled")
+        }
+
+        assertFailsWith<CancellationException> {
+            sut.gradeScaleWithName("Germany", "Scale")
+        }
+    }
+
+    @Test
+    fun `countriesAndGrades returns RemoteError on null body, HTML body, and non-array country values`() = runTest {
+        val payloads = listOf(
+            "null",
+            "<html>error</html>",
+            """{"Germany":"not-an-array"}""",
+        )
+
+        for (payload in payloads) {
+            setUpMockEngineResponse {
+                respond(
+                    content = ByteReadChannel(payload),
+                    headers = headersOf("Content-Type", "application/json"),
+                )
+            }
+
+            val result = sut.countriesAndGrades()
+            assertTrue(result.isLeft(), "Expected Left for payload: $payload")
+        }
+    }
+
+    @Test
+    fun `gradeScaleWithName returns RemoteError on null body and malformed JSON`() = runTest {
+        val payloads = listOf(
+            "null",
+            "<html>captive portal</html>",
+        )
+
+        for (payload in payloads) {
+            setUpMockEngineResponse {
+                respond(
+                    content = ByteReadChannel(payload),
+                    headers = headersOf("Content-Type", "application/json"),
+                )
+            }
+
+            val result = sut.gradeScaleWithName("Germany", "Scale")
+            assertTrue(result.isLeft(), "Expected Left for payload: $payload")
+        }
+    }
+
+    @Test
+    fun `gradeScaleWithName normalizes trailing slash and encodes special URL characters in path segments`() = runTest {
+        var capturedUrl = ""
+        setUpMockEngineResponse { request ->
+            capturedUrl = request.url.toString()
+            respond(
+                content = ByteReadChannel(gradeScaleResponse),
+                headers = headersOf("Content-Type", "application/json"),
+            )
+        }
+
+        val result = sut.gradeScaleWithName("Germany", "A/B?x=1#frag%20")
+        assertTrue(result.isRight())
+        assertFalse(capturedUrl.contains("//gradeScales/"), "Unexpected double slash in $capturedUrl")
+        assertTrue(
+            capturedUrl.startsWith("https://something.example/gradeScales/"),
+            "Expected normalized base path in $capturedUrl",
+        )
+        assertTrue(
+            capturedUrl.endsWith(".json"),
+            "Expected unfragmented .json suffix in $capturedUrl",
+        )
+        assertFalse(capturedUrl.contains("?x=1"), "Query delimiter was not encoded in $capturedUrl")
+        assertFalse(capturedUrl.contains("#frag"), "Fragment delimiter was not encoded in $capturedUrl")
+    }
+
+    @Test
+    fun `countriesAndGrades normalizes trailing slash in baseApiUrl`() = runTest {
+        var capturedUrl = ""
+        setUpMockEngineResponse { request ->
+            capturedUrl = request.url.toString()
+            respond(
+                content = ByteReadChannel(gradeNamesResponseEx),
+                headers = headersOf("Content-Type", "application/json"),
+            )
+        }
+
+        val result = sut.countriesAndGrades()
+        assertTrue(result.isRight())
+        assertEquals("https://something.example/countriesAndGrades.json", capturedUrl)
+    }
+
+    @Test
+    fun `gradeScaleWithName ignores unknown JSON keys`() = runTest {
+        val payloadWithExtraKeys =
+            """{"country":"Germany","gradeScaleName":"Custom","extraRootField":123,"grades":[{"gradeName":"A","percentage":0.95,"extraGradeField":"ignored"}]}"""
+        setUpMockEngineResponse {
+            respond(
+                content = ByteReadChannel(payloadWithExtraKeys),
+                headers = headersOf("Content-Type", "application/json"),
+            )
+        }
+
+        val result = sut.gradeScaleWithName("Germany", "Custom")
+        assertTrue(result.isRight())
+        val dto = result.getOrNull()
+        assertNotNull(dto)
+        assertEquals("Custom", dto.gradeScaleName)
+        assertEquals(1, dto.grades.size)
     }
 }
 

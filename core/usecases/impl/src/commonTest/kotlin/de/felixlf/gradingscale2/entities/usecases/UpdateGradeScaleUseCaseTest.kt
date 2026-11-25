@@ -81,7 +81,7 @@ class UpdateGradeScaleUseCaseTest {
         assertTrue(result.isNone())
 
         // Verify repository state (unchanged)
-        fakeRepository.getGradeScales().test {
+        fakeRepository.gradeScales.test {
             val scales = awaitItem()
             assertEquals(1, scales.size)
             assertEquals("Original Scale Name", scales.first().gradeScaleName)

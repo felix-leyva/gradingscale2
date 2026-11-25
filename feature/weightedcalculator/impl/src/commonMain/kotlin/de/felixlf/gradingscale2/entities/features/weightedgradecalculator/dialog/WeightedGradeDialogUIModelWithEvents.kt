@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.models.GradeScale
 import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModelWithEvents
+import de.felixlf.gradingscale2.entities.util.toLocaleDoubleOrNull
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.StateFlow
 
@@ -39,26 +40,26 @@ internal class WeightedGradeDialogUIModelWithEvents(
             }
 
             is WeightedGradeDialogCommand.SetPercentage -> {
-                val newPercentage = command.percentage.toDoubleOrNull()?.coerceIn(0.0, 100.0) ?: return
+                val newPercentage = command.percentage.toLocaleDoubleOrNull()?.coerceIn(0.0, 100.0) ?: return
                 percentage = newPercentage / 100
             }
 
             is WeightedGradeDialogCommand.SetRelativeWeight -> {
-                val relativeWeight = command.relativeWeight.toDoubleOrNull()?.coerceAtLeast(0.01) ?: return
-                val weight = weight ?: return
+                val relativeWeight = command.relativeWeight.toLocaleDoubleOrNull()?.coerceAtLeast(0.01) ?: return
+                val currentWeight = weight ?: return
 
                 when {
-                    relativeWeight > weight -> {
+                    relativeWeight > currentWeight -> {
                         this.weight = relativeWeight
                         percentage = 1.0
                     }
 
-                    else -> percentage = relativeWeight / weight
+                    else -> percentage = (relativeWeight / currentWeight).coerceIn(0.0, 1.0)
                 }
             }
 
             is WeightedGradeDialogCommand.SetWeight -> {
-                val newWeight = command.weight.toDoubleOrNull()?.coerceAtLeast(0.01) ?: return
+                val newWeight = command.weight.toLocaleDoubleOrNull()?.coerceAtLeast(0.01) ?: return
                 weight = newWeight
             }
         }

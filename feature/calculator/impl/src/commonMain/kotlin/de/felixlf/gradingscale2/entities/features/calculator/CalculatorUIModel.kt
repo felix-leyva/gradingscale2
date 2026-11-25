@@ -3,6 +3,7 @@ package de.felixlf.gradingscale2.entities.features.calculator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import de.felixlf.gradingscale2.entities.uimodel.StateProducer
 import de.felixlf.gradingscale2.entities.uimodel.UIModel
@@ -29,22 +30,22 @@ internal class CalculatorUIModel(
     private val setLastSelectedGradeScaleIdUseCase: SetLastSelectedGradeScaleIdUseCase,
 ) : UIModel<GradeScaleCalculatorUIState, CalculatorUIEvent> {
 
-    // MutableStateOf causes inside the produceUI function recomposition which is helpful to update the State. If we wish to "observe" this
-    // value in other places, we need to do this inside @Composable functions.
     private var gradeScaleId by mutableStateOf<String?>(null)
     private var totalPoints by mutableStateOf(10.0)
     private var percentage by mutableStateOf(1.0)
 
-    // Important exception: do not use this state value in the produceUI function, to avoid recomposition loops.
-    private var state by mutableStateOf<GradeScaleCalculatorUIState?>(null)
-
     override val uiState: StateFlow<GradeScaleCalculatorUIState> by stateProducer {
         LaunchedEffect(Unit) {
-            gradeScaleId = getLastSelectedGradeScaleIdUseCase()
+            val savedId = getLastSelectedGradeScaleIdUseCase()
+            if (gradeScaleId == null && !savedId.isNullOrBlank()) {
+                gradeScaleId = savedId
+            }
         }
 
-        val selectedGradeScale = gradeScaleId?.let { getGradeScaleByIdUseCase(it).asState(null) }
-        val gradeScalesNamesWithId = allGradeScalesUseCase().asState(persistentListOf()).map {
+        val allGradeScalesFlow = remember { allGradeScalesUseCase() }
+        val selectedGradeScaleFlow = remember(gradeScaleId) { gradeScaleId?.let { getGradeScaleByIdUseCase(it) } }
+        val selectedGradeScale = selectedGradeScaleFlow?.asState(null)
+        val gradeScalesNamesWithId = allGradeScalesFlow.asState(persistentListOf()).map {
             GradeScaleCalculatorUIState.GradeScaleNameWithId(
                 gradeScaleName = it.gradeScaleName,
                 gradeScaleId = it.id,
@@ -56,32 +57,35 @@ internal class CalculatorUIModel(
             gradeScalesNamesWithId = gradeScalesNamesWithId,
             currentPercentage = percentage,
             totalPoints = totalPoints,
-        ).also { state = it }
+        )
     }
 
     override fun sendCommand(command: CalculatorUIEvent) {
         when (command) {
             is CalculatorUIEvent.SelectGradeScale -> {
-                gradeScaleId =
-                    state?.gradeScalesNamesWithId?.firstOrNull { it.gradeScaleName == command.gradeScaleName }?.gradeScaleId
-                scope.launch { gradeScaleId?.let { setLastSelectedGradeScaleIdUseCase(it) } }
+                val matchedId = uiState.value.gradeScalesNamesWithId
+                    .firstOrNull { it.gradeScaleName == command.gradeScaleName }
+                    ?.gradeScaleId
+                    ?: return
+                gradeScaleId = matchedId
+                scope.launch { setLastSelectedGradeScaleIdUseCase(matchedId) }
             }
 
             is CalculatorUIEvent.SetTotalPoints -> {
-                if (command.points <= 0) return
+                if (!command.points.isFinite() || command.points <= 0.0) return
                 totalPoints = command.points
             }
 
-            is CalculatorUIEvent.SetPercentage -> if (command.percentage in 0.0..1.0) {
+            is CalculatorUIEvent.SetPercentage -> if (command.percentage.isFinite() && command.percentage in 0.0..1.0) {
                 percentage = command.percentage
             }
 
-            is CalculatorUIEvent.SetPoints -> if (command.points in 0.0..totalPoints) {
+            is CalculatorUIEvent.SetPoints -> if (command.points.isFinite() && command.points in 0.0..totalPoints) {
                 percentage = command.points / totalPoints
             }
 
             is CalculatorUIEvent.SetGradeName -> {
-                val selectedGradePercentage = state?.selectedGradeScale?.getPercentage(command.gradeName) ?: return
+                val selectedGradePercentage = uiState.value.selectedGradeScale?.getPercentageOrNull(command.gradeName) ?: return
                 percentage = selectedGradePercentage
             }
         }

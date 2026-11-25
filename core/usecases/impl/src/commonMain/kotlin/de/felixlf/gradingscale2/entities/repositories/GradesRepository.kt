@@ -2,11 +2,11 @@ package de.felixlf.gradingscale2.entities.repositories
 
 import arrow.core.Option
 import de.felixlf.gradingscale2.entities.models.Grade
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.Flow
 
 internal interface GradesRepository {
-    fun getAllGradesFromGradeScale(gradeScaleId: String): SharedFlow<List<Grade>>
-    fun getGradeById(gradeId: String): SharedFlow<Grade?>
+    fun getAllGradesFromGradeScale(gradeScaleId: String): Flow<List<Grade>>
+    fun getGradeById(gradeId: String): Flow<Grade?>
     suspend fun upsertGrade(grade: Grade): Option<Long>
     suspend fun deleteGrade(gradeId: String): Option<Unit>
 }

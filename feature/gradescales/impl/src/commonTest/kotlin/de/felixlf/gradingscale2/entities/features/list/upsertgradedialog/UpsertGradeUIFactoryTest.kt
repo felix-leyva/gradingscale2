@@ -11,9 +11,11 @@ import de.felixlf.gradingscale2.entities.usecases.GetGradeScaleByIdUseCase
 import de.felixlf.gradingscale2.entities.usecases.InsertGradeUseCase
 import de.felixlf.gradingscale2.entities.usecases.UpsertGradeUseCase
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -258,6 +260,142 @@ class UpsertGradeUIFactoryTest {
 
             assertNull(upsertedGrade)
 
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun save_and_saveAsNew_withNonNumericOrOutOfRangeOrNullPercentage_doNotCrashOrInvokeUseCases() = runTest {
+        val sut = createSUT()
+
+        sut.uiState.test {
+            awaitItem()
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeScaleId("scale-1"))
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeName("C"))
+            runCurrent()
+
+            // Null percentage
+            sut.sendCommand(UpsertGradeUIEvent.Save)
+            sut.sendCommand(UpsertGradeUIEvent.SaveAsNew)
+            runCurrent()
+
+            // Non-numeric percentage
+            sut.sendCommand(UpsertGradeUIEvent.SetPercentage("abc"))
+            runCurrent()
+            sut.sendCommand(UpsertGradeUIEvent.Save)
+            sut.sendCommand(UpsertGradeUIEvent.SaveAsNew)
+            runCurrent()
+
+            // Out-of-range percentage
+            sut.sendCommand(UpsertGradeUIEvent.SetPercentage("150"))
+            runCurrent()
+            sut.sendCommand(UpsertGradeUIEvent.Save)
+            sut.sendCommand(UpsertGradeUIEvent.SaveAsNew)
+            runCurrent()
+
+            assertNull(upsertedGrade)
+            assertNull(insertedNamedGrade)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun rapidDoubleSaveAsNew_invokesInsertGradeUseCaseOnlyOnce() = runTest {
+        var insertCount = 0
+        insertGradeUseCase = InsertGradeUseCase { gradeScaleId, percentage, namedGrade ->
+            kotlinx.coroutines.delay(10)
+            insertCount++
+            insertedGradeScaleId = gradeScaleId
+            insertedPercentage = percentage
+            insertedNamedGrade = namedGrade
+            Either.Right(Unit)
+        }
+        val sut = createSUT()
+
+        sut.uiState.test {
+            var state = awaitItem()
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeScaleId("scale-1"))
+            while (state.gradeScale == null) {
+                state = awaitItem()
+            }
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeName("C"))
+            sut.sendCommand(UpsertGradeUIEvent.SetPercentage("70"))
+            while (!state.isSaveNewButtonEnabled) {
+                state = awaitItem()
+            }
+
+            sut.sendCommand(UpsertGradeUIEvent.SaveAsNew)
+            sut.sendCommand(UpsertGradeUIEvent.SaveAsNew)
+            testScheduler.advanceTimeBy(50)
+            testScheduler.runCurrent()
+
+            assertEquals(1, insertCount)
+            assertTrue(expectMostRecentItem().isSaved)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun rapidDoubleSave_invokesUpsertGradeUseCaseOnlyOnce() = runTest {
+        var upsertCount = 0
+        upsertGradeUseCase = UpsertGradeUseCase { grade ->
+            kotlinx.coroutines.delay(10)
+            upsertCount++
+            upsertedGrade = grade
+            Some(Unit)
+        }
+        val sut = createSUT()
+
+        sut.uiState.test {
+            var state = awaitItem()
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeUUID("g-1"))
+            while (!state.isSaveButtonEnabled) {
+                state = awaitItem()
+            }
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeName("A+"))
+            sut.sendCommand(UpsertGradeUIEvent.SetPercentage("95"))
+            while (state.name != "A+" || state.percentage != "95") {
+                state = awaitItem()
+            }
+
+            sut.sendCommand(UpsertGradeUIEvent.Save)
+            sut.sendCommand(UpsertGradeUIEvent.Save)
+            testScheduler.advanceTimeBy(50)
+            testScheduler.runCurrent()
+
+            assertEquals(1, upsertCount)
+            assertTrue(expectMostRecentItem().isSaved)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun dbReEmissionDuringEdit_doesNotOverwriteUnsavedUserEdits() = runTest {
+        val sut = createSUT()
+
+        sut.uiState.test {
+            var state = awaitItem()
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeUUID("g-1"))
+            while (!state.isSaveButtonEnabled) {
+                state = awaitItem()
+            }
+
+            sut.sendCommand(UpsertGradeUIEvent.SetGradeName("A+"))
+            sut.sendCommand(UpsertGradeUIEvent.SetPercentage("95"))
+            runCurrent()
+            assertEquals("A+", sut.uiState.value.name)
+            assertEquals("95", sut.uiState.value.percentage)
+
+            // Simulate background DB table emission updating the loaded grade row.
+            gradeFlow.value = sampleGrade.copy(namedGrade = "A-external", percentage = 0.88)
+            runCurrent()
+
+            assertEquals("A+", sut.uiState.value.name)
+            assertEquals("95", sut.uiState.value.percentage)
             cancelAndIgnoreRemainingEvents()
         }
     }
